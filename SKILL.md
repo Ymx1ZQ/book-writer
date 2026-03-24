@@ -17,6 +17,8 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `setup` | Interactive wizard to populate project files (worldbuilding, characters, plot) | `/book setup` |
 | `coherence [scope]` | Find problems across project, write fix devplan | `/book coherence all` |
 | `fix <book>` | Apply ALL pending fixes (REVIEW.md + PROOFREAD.md + coherence devplan) | `/book fix book-1` |
+| `fix all` | Apply ALL pending fixes for every book, in sequence | `/book fix all` |
+| `fix common` | Apply ONLY coherence fixes on shared files (world/, characters/, plot/) | `/book fix common` |
 | `write <book>` | Write chapters in batches of 5 | `/book write book-1` |
 | `chapter <book> <ch>` | Write a single chapter | `/book chapter book-1 ch03` |
 | `review <book> [ch]` | Editorial review → REVIEW.md | `/book review book-1` |
@@ -32,7 +34,9 @@ PROJECT SETUP
 
 PRE-WRITING
   3. /book coherence all       → find problems, write devplan
-  4. /book fix book-1          → apply coherence fixes
+  4. /book fix all             → apply all fixes across all books
+     /book fix common          → apply only shared-file coherence fixes
+     /book fix book-1          → apply fixes for a specific book
 
 WRITING LOOP (repeat per batch)
   5. /book write book-1        → write 5 chapters

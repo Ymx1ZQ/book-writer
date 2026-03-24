@@ -5,15 +5,39 @@ Apply ALL pending fixes from any source: editorial review (REVIEW.md), proofread
 ## Invocation
 
 ```
-/book fix <book>
+/book fix <book>              — apply ALL pending fixes for that book
 /book fix <book> review       — only REVIEW.md fixes
 /book fix <book> proofread    — only PROOFREAD.md fixes
 /book fix <book> coherence    — only coherence-related milestones from DEVPLAN.md
+/book fix all                 — apply ALL pending fixes for every book, in sequence
+/book fix all review          — only REVIEW.md fixes for every book
+/book fix all proofread       — only PROOFREAD.md fixes for every book
+/book fix all coherence       — only coherence fixes for every book
+/book fix common              — apply ONLY coherence fixes on shared files (world/, characters/, plot/)
 ```
 
 ---
 
 ## Process
+
+### 0. Resolve Target
+
+**If target is `common`:**
+- Skip REVIEW.md and PROOFREAD.md entirely (they are per-book).
+- Scan DEVPLAN.md for coherence milestones that affect ONLY shared files (`world/`, `characters/`, `plot/`). Exclude any milestone whose changes are limited to `chapters/<book>/`.
+- Run Steps 1C, 2, 3, 4, 5, 6 on those milestones only. Skip Steps 1A, 1B, and Section 5 (Word Count Recovery).
+- Done.
+
+**If target is `all`:**
+1. First, run the `common` flow above (shared-file coherence fixes).
+2. Then, detect all books by scanning for `chapters/book-*/` directories.
+3. For each book found (in natural order: book-1, book-2, book-3, ...):
+   - Run the full per-book fix process below (Steps 1–6), respecting any filter (review/proofread/coherence) if specified.
+   - Announce the per-book session complete before moving to the next book.
+4. After all books are processed, announce a combined summary.
+
+**If target is a specific book (e.g., `book-1`):**
+- Proceed with Steps 1–6 below as normal.
 
 ### 1. Scan for Pending Fixes
 
@@ -129,8 +153,9 @@ If any chapter dropped below the minimum word count after cuts:
 
 ### 6. Session Complete
 
+**Per-book summary** (always shown, even when running `all`):
 ```
-📋 Book Fix — Session Complete
+📋 Book Fix — [book] — Session Complete
 
 Applied:
   Coherence: X/X milestones
@@ -142,6 +167,22 @@ State propagated: [which chapters]
 
 Remaining: X items
 Next: [what to do if items remain]
+```
+
+**Combined summary** (shown only for `all` and `common` modes, after all books):
+```
+📋 Book Fix — All — Combined Summary
+
+Common (shared files):
+  Coherence: X/X milestones
+  Files modified: [list]
+
+Per-book:
+  book-1: Coherence X/X | Editorial X/X | Proofreading X/X
+  book-2: Coherence X/X | Editorial X/X | Proofreading X/X
+  book-3: Coherence X/X | Editorial X/X | Proofreading X/X
+
+Total remaining: X items
 ```
 
 ---

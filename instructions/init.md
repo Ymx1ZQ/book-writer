@@ -29,7 +29,8 @@ Ask the user these questions (accept brief answers — we'll flesh things out in
 
 ```
 <project>/
-├── CLAUDE.md                    ← project instructions (created with basics)
+├── CLAUDE.md                    ← operational instructions (HOW to work)
+├── README.md                    ← project orientation (directory map)
 ├── DEVPLAN.md                   ← master development plan (empty)
 ├── world/                       ← worldbuilding
 │   ├── overview.md              ← story structure, themes
@@ -55,15 +56,11 @@ Ask the user these questions (accept brief answers — we'll flesh things out in
 │   ├── key-scenes.md            ← pillar scenes across all books
 │   └── cliffhanger-map.md       ← chapter endings by type
 └── chapters/
-    └── book-N/
+    └── book-N/                  ← one per book
         ├── outline.md           ← chapter-by-chapter outline
         ├── opening-strategy.md  ← emotional objectives for first 3 chapters
         ├── state.md             ← running state tracker
         └── DEVPLAN.md           ← chapter writing checklist
-    └── book-N/                  ← one per book
-        ├── outline.md           ← chapter-by-chapter outline
-        ├── state.md             ← running state tracker
-        └── DEVPLAN.md           ← chapter writing tracker
 ```
 
 ### 3. Generate Template Files
@@ -101,17 +98,108 @@ Each file is created with a header, a brief instruction comment, and empty secti
 
 ### 4. Generate CLAUDE.md
 
-Create a project CLAUDE.md with:
-- Project title and description
-- Directory structure reference
-- Language setting
-- Key writing rules (to be filled in `/book setup`)
-- How to write a chapter (points to `/book chapter`)
+**CRITICAL: CLAUDE.md is an OPERATIONAL file, not a narrative file.** It tells Claude HOW to work and WHERE to find things. It NEVER contains narrative content (plot summaries, character descriptions, tonal details, worldbuilding). All narrative content lives in the project files (`world/`, `characters/`, `plot/`). CLAUDE.md only POINTS to those files.
 
-### 5. Announce
+Generate CLAUDE.md with this structure:
+
+```markdown
+# [Project Title]
+
+> **This file contains operational instructions only.** All narrative content
+> (plot, characters, worldbuilding, tones, concepts) lives in the project files.
+> Never duplicate narrative details here — use pointers instead. CLAUDE.md tells
+> you HOW to work and WHERE to find things. The project files tell you WHAT the
+> project is.
+
+## Project Structure
+
+[Minimal directory tree — folders only, one-word role each. For the full tree, see README.md.]
+
+## Where to Find Things
+
+[Reference table mapping needs to files. Example:]
+
+| What you need | Where it lives |
+|---------------|---------------|
+| Tonal registers | `world/tones.md` — **read before every chapter** |
+| Pacing rules | `world/pacing-rules.md` |
+| Prose quality rules | `world/prose-rules.md` |
+| Character voice samples | `characters/notes/voice-samples.md` |
+| Full trilogy plot | `plot/overview.md` |
+| Cliffhanger map | `plot/cliffhanger-map.md` |
+[...etc, one row per key file]
+
+## Writing Language
+
+[Language setting from Step 1]
+
+## How to Write a Chapter
+
+Use the `/book chapter` skill. It handles everything:
+1. Reads the outline, context, and state
+2. Writes the draft
+3. Runs verification passes
+4. Revises if needed
+5. Updates state
+6. Marks complete
+
+For batch writing, use `/book write book-N`.
+
+## Files to Read Before Any Writing Task
+
+Always load these before writing:
+- The chapter's outline entry (from `chapters/book-N/outline.md`)
+- The relevant tonal register (from `world/tones.md`)
+- The POV character's foreground sheet
+- The cliffhanger type for this chapter (from `plot/cliffhanger-map.md`)
+- The current state file (from `chapters/book-N/state.md`)
+- `world/pacing-rules.md`
+- `world/prose-rules.md`
+- `world/writing-checklists.md`
+- `characters/notes/voice-samples.md`
+```
+
+**What CLAUDE.md must NEVER contain:**
+- Plot summaries or key concepts (those go in `world/overview.md`, `world/the-word.md`, etc.)
+- Tonal descriptions (those go in `world/tones.md`)
+- Character lists or descriptions (those go in `characters/`)
+- Chapter counts or structural details that change over time
+- Anything that duplicates content from project files
+
+### 5. Generate README.md
+
+**README.md is a minimal orientation file** for anyone opening the project folder for the first time. It contains:
+
+```markdown
+# [Project Title]
+
+[One-line description from Step 1]
+
+---
+
+## Project Structure
+
+[Full directory tree with every file and a one-line description per entry.
+This is the ONLY place the full tree lives. CLAUDE.md points here.]
+
+---
+
+## How to Work
+
+- `CLAUDE.md` — operational instructions (how to write, where to find things)
+- `DEVPLAN.md` — what needs to be done (milestones, fixes, progress)
+- `/book help` — all available commands
+```
+
+**What README.md must NEVER contain:**
+- Narrative content (themes, character rosters, plot summaries)
+- Development history or milestone counts (these go stale)
+- Anything that duplicates content from project files
+
+### 6. Announce
 
 ```
-📁 Project scaffolded: [title]
+Project scaffolded: [title]
 Books: N
 Levels: [list]
 Chapters/book: ~N
@@ -125,9 +213,26 @@ Next step: /book setup
 
 ---
 
+## The Separation Principle
+
+The project has three meta-files with distinct, non-overlapping roles:
+
+| File | Role | Contains | Never contains |
+|------|------|----------|----------------|
+| `CLAUDE.md` | **How to work** | Operational instructions, file pointers, writing process | Narrative content, plot, characters, tones, counts |
+| `README.md` | **Where things are** | Directory tree, one-line descriptions | Narrative content, development history, counts that change |
+| `DEVPLAN.md` | **What to do** | Milestones, fixes, progress tracking | Operational instructions, directory maps |
+
+This separation prevents stale data: when narrative details change (e.g., a level moves from deep-space to LEO), only the project file (`world/tones.md`) needs updating. CLAUDE.md and README.md don't break because they never contained the detail — they only pointed to it.
+
+---
+
 ## Rules
 
-- ❌ Never create content — only structure and templates. Content comes from `/book setup`.
+- ❌ Never create narrative content — only structure and templates. Content comes from `/book setup`.
 - ❌ Never assume genre specifics — templates are generic.
+- ❌ Never put narrative content in CLAUDE.md — it is operational only.
+- ❌ Never put development history or stale counts in README.md — it is structural only.
 - ✅ Create every directory and file, even if empty — the structure IS the project.
 - ✅ Use markdown comments `<!-- -->` in templates to guide the user.
+- ✅ CLAUDE.md points to project files. README.md shows the full tree. DEVPLAN.md tracks work.

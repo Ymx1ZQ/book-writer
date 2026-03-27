@@ -16,13 +16,14 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `init` | Scaffold a new book project (directories, empty templates) | `/book init` |
 | `setup` | Interactive wizard to populate project files (worldbuilding, characters, plot) | `/book setup` |
 | `coherence [scope]` | Find problems across project, write fix devplan | `/book coherence all` |
-| `fix <book>` | Apply ALL pending fixes (REVIEW.md + PROOFREAD.md + coherence devplan) | `/book fix book-1` |
-| `fix all` | Apply ALL pending fixes for every book, in sequence | `/book fix all` |
+| `fix <scope>` | Apply coherence fixes from DEVPLAN.md to project files | `/book fix all` |
 | `fix common` | Apply ONLY coherence fixes on shared files (world/, characters/, plot/) | `/book fix common` |
+| `revise <book>` | Apply editorial (REVIEW.md) + proofreading (PROOFREAD.md) fixes to chapter prose | `/book revise book-1` |
 | `write <book>` | Write chapters in batches of 5 | `/book write book-1` |
 | `chapter <book> <ch>` | Write a single chapter | `/book chapter book-1 ch03` |
 | `review <book> [ch]` | Editorial review → REVIEW.md | `/book review book-1` |
 | `proofread <book> [ch]` | Grammar/syntax/punctuation → PROOFREAD.md | `/book proofread book-1` |
+| `compact [scope]` | Remove bloat, enforce cross-refs, de-duplicate | `/book compact all` |
 | `continuity <from> <to>` | Cross-book continuity check | `/book continuity book-1 book-2` |
 
 ## The Pipeline
@@ -34,18 +35,18 @@ PROJECT SETUP
 
 PRE-WRITING
   3. /book coherence all       → find problems, write devplan
-  4. /book fix all             → apply all fixes across all books
-     /book fix common          → apply only shared-file coherence fixes
-     /book fix book-1          → apply fixes for a specific book
+  4. /book fix all             → apply coherence fixes to project files
+  5. /book compact all         → remove bloat, enforce cross-refs, de-duplicate
 
 WRITING LOOP (repeat per batch)
-  5. /book write book-1        → write 5 chapters
-  6. /book review book-1       → editorial review → REVIEW.md
-  7. /book proofread book-1    → proofreading → PROOFREAD.md
-  8. /book fix book-1          → apply all pending fixes
+  6. /book write book-1        → write 5 chapters
+  7. /book review book-1       → editorial review → REVIEW.md
+  8. /book proofread book-1    → line-level review → PROOFREAD.md
+  9. /book revise book-1       → apply review + proofread fixes to prose
 
 BETWEEN BOOKS
-  9. /book continuity book-1 book-2 → verify cross-book consistency
+  10. /book compact all         → post-cycle cleanup
+  11. /book continuity book-1 book-2 → verify cross-book consistency
 ```
 
 ## Execution
@@ -58,10 +59,12 @@ When a command is received:
    - `setup` → `instructions/setup.md`
    - `coherence` → `instructions/coherence-check.md`
    - `fix` → `instructions/fix.md`
+   - `revise` → `instructions/revise.md`
    - `write` → `instructions/writer.md`
    - `chapter` → `instructions/chapter-writer.md`
    - `review` → `instructions/reviewer.md`
    - `proofread` → `instructions/proof-reader.md`
+   - `compact` → `instructions/compact.md`
    - `continuity` → `instructions/continuity-check.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.

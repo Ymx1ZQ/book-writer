@@ -1,19 +1,13 @@
-# Book Fix — Unified Fix Executor
+# Book Fix — Coherence Fix Executor
 
-Apply ALL pending fixes from any source: editorial review (REVIEW.md), proofreading (PROOFREAD.md), and coherence fixes (DEVPLAN.md milestones).
+Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, characters/, plot/, outlines). Does NOT touch chapter prose — for that, use `/book revise`.
 
 ## Invocation
 
 ```
-/book fix <book>              — apply ALL pending fixes for that book
-/book fix <book> review       — only REVIEW.md fixes
-/book fix <book> proofread    — only PROOFREAD.md fixes
-/book fix <book> coherence    — only coherence-related milestones from DEVPLAN.md
-/book fix all                 — apply ALL pending fixes for every book, in sequence
-/book fix all review          — only REVIEW.md fixes for every book
-/book fix all proofread       — only PROOFREAD.md fixes for every book
-/book fix all coherence       — only coherence fixes for every book
-/book fix common              — apply ONLY coherence fixes on shared files (world/, characters/, plot/)
+/book fix <book>    — coherence milestones affecting that book's files
+/book fix all       — all coherence milestones (shared files first, then per-book)
+/book fix common    — only milestones affecting shared files (world/, characters/, plot/)
 ```
 
 ---
@@ -23,178 +17,101 @@ Apply ALL pending fixes from any source: editorial review (REVIEW.md), proofread
 ### 0. Resolve Target
 
 **If target is `common`:**
-- Skip REVIEW.md and PROOFREAD.md entirely (they are per-book).
 - Scan DEVPLAN.md for coherence milestones that affect ONLY shared files (`world/`, `characters/`, `plot/`). Exclude any milestone whose changes are limited to `chapters/<book>/`.
-- Run Steps 1C, 2, 3, 4, 5, 6 on those milestones only. Skip Steps 1A, 1B, and Section 5 (Word Count Recovery).
-- Done.
+- Run Steps 1, 2, 3, 4 on those milestones only.
 
 **If target is `all`:**
 1. First, run the `common` flow above (shared-file coherence fixes).
 2. Then, detect all books by scanning for `chapters/book-*/` directories.
 3. For each book found (in natural order: book-1, book-2, book-3, ...):
-   - Run the full per-book fix process below (Steps 1–6), respecting any filter (review/proofread/coherence) if specified.
+   - Run the full per-book fix process below (Steps 1–4).
    - Announce the per-book session complete before moving to the next book.
 4. After all books are processed, announce a combined summary.
 
 **If target is a specific book (e.g., `book-1`):**
-- Proceed with Steps 1–6 below as normal.
+- Process milestones affecting `chapters/<book>/` plus any shared-file milestones not yet applied.
 
-### 1. Scan for Pending Fixes
+### 1. Scan for Pending Milestones
 
-Check three sources:
-
-**A. REVIEW.md** — `chapters/<book>/REVIEW.md`
-Parse all unchecked `- [ ]` items. These are editorial fixes (show/tell, voice, structure, pacing). Organized by severity: Critical > High > Medium > Low > Cross-Chapter.
-
-**B. PROOFREAD.md** — `chapters/<book>/PROOFREAD.md`
-Parse all unchecked `- [ ]` items. These are line-level fixes (grammar, spelling, punctuation, repetition). Organized by chapter.
-
-**C. Coherence Devplan** — `DEVPLAN.md`
-Find the most recent "Coherence Fixes" phase. Parse unchecked `- [ ]` milestones that affect files in `chapters/<book>/`, `world/`, `characters/`, or `plot/`.
+Scan `DEVPLAN.md` for the most recent "Coherence Fixes" phase (or any phase with unchecked milestones). Parse all unchecked `- [ ]` items.
 
 **Announce:**
 ```
-📋 Book Fix — [book]
-Pending fixes:
-  Coherence (DEVPLAN.md): X milestones
-  Editorial (REVIEW.md): X items (C:X H:X M:X L:X CC:X)
-  Proofreading (PROOFREAD.md): X items
-  Total: X
+📋 Book Fix — [scope]
+Pending coherence milestones: X
+Files affected: [list]
 
-Processing order: Coherence → Editorial → Proofreading
+Processing in milestone order.
 ```
 
-If a filter was specified, only process that source.
+### 2. Apply Each Milestone
 
-### 2. Processing Order
-
-**Coherence fixes FIRST** — these may change structure, add beats, modify outlines. They can affect the text that editorial and proofreading fixes reference.
-
-**Editorial fixes SECOND** (by severity: Critical → High → Medium → Low → Cross-Chapter) — these change prose: cutting, rewriting, restructuring sentences and scenes.
-
-**Proofreading fixes LAST** — surface-level: grammar, spelling, punctuation. They operate on the final text.
-
-### 3. Apply Each Fix
-
-For each fix, regardless of source:
+For each unchecked milestone:
 
 #### Step A — Read Context
-
-- Read the file mentioned in the fix.
-- Locate the exact quote or section specified.
-- If the quote is NOT found (already fixed, or line numbers shifted): grep for nearby text, or announce "Quote not found — may already be fixed" and skip to verification.
+- Read every file mentioned in the milestone.
+- Locate the exact section or text specified.
+- If the target text is NOT found (already fixed, or content shifted): grep for nearby text, or announce "Target not found — may already be fixed" and skip.
 
 #### Step B — Apply the Fix
+Follow the milestone instruction exactly. Types:
+- **Edit** — Change text in the specified file and section.
+- **Add** — Insert content at the indicated location. Read surrounding context to ensure fit.
+- **Move** — Relocate content between files. Verify both source (removed) and destination (added).
+- **Delete** — Remove the specified content. Verify surrounding text still flows.
+- **Cross-ref** — Replace restated content with a pointer to the canonical source.
 
-Follow the fix instruction. Types:
+#### Step C — Verify
+1. **The original problem is gone.** Grep for the old text.
+2. **The surrounding content flows.** Read 5 lines before and after.
+3. **Cross-references point to existing targets.** If the fix added a `→ See [file] §[section]`, verify the target exists.
 
-- **Cut** — Delete the quoted passage. Read the surrounding lines to ensure the prose still flows after deletion. If removing a sentence creates an awkward transition, smooth the join (but add NOTHING thematic — only conjunctions, paragraph breaks, or minor rewordings of the adjacent sentence).
-- **Rewrite** — Replace the quoted passage with the suggested alternative. If the fix says "consider" or "e.g.", choose the best option and apply it. Stay within the POV character's vocabulary register (check `characters/notes/voice-samples.md`).
-- **Add** — Insert the specified content at the indicated location. Read the full context before and after to ensure the addition fits.
-- **Restructure** — Larger changes (moving sections, breaking apart scenes). Read the full scene before and after, then apply.
-- **Reduce frequency** — For cross-chapter items (e.g., "max 1 per chapter"). Read ALL affected chapters, identify every occurrence, keep the strongest one per chapter, vary or cut the rest.
-- **Evolve the motif** — For cross-chapter pattern items. The fix specifies how to change the pattern in later chapters. Apply the variation while preserving the motif's function.
-
-#### Step C — Verify the Fix
-
-After applying, verify:
-
-1. **The original problem is gone.** Grep for the old text — it should not appear.
-2. **Word count still meets minimum** (if editing a chapter file). If a cut dropped the chapter below the minimum word count, flag it: `⚠️ Ch. N now at XXXX words (below minimum). Needs expansion.` Do NOT expand automatically — flag it for the next writing session.
-3. **The surrounding prose flows.** Read 5 lines before and 5 lines after the edit. Fix orphaned transitions, dangling references, or broken paragraphs.
-4. **No new violations introduced.** The fix must not create new show/tell violations, break character voice registers, or introduce tic-caption errors.
-
-#### Step D — Propagate to State (if the fix changes chapter content)
-
-Check if the fix affects anything tracked in `chapters/<book>/state.md`:
-- **Character positions** — if a fix changes where a character is at chapter end
-- **Plot progress** — if a fix changes what happened in the chapter
-- **Micro-details planted** — if a fix removes or changes a planted detail
-- **Tic introductions** — if a fix changes how a tic is introduced
-- **Open threads** — if a fix closes or opens a narrative thread
-
-If YES: update the corresponding "After Chapter N" section in state.md.
-If NO: skip this step.
-
-#### Step E — Mark Complete
-
-Update the source file:
-- REVIEW.md: `- [x] ... ✅ Fixed. [State updated: yes/no]`
-- PROOFREAD.md: `- [x] ... ✅ Fixed.`
-- DEVPLAN.md: `- [x] ... ✅`
+#### Step D — Mark Complete
+Update DEVPLAN.md: `- [x] ... ✅`
 
 Announce:
 ```
-✅ Fixed: [brief description] (source: [review/proofread/coherence])
+✅ Fixed: [brief description]
    File: [path]
-   Word count: XXXX (OK / ⚠️ below minimum)
-   State propagated: [yes/no]
-   Remaining: X items
+   Remaining: X milestones
 ```
 
-### 4. Handle Cross-Chapter Fixes
+### 3. Session Complete
 
-Cross-chapter fixes (from REVIEW.md "Cross-Chapter" section) affect multiple files:
-
-1. Read ALL affected chapters listed in the fix.
-2. Grep for every occurrence of the pattern across all chapters.
-3. Apply the fix in each chapter, following the instruction (keep first occurrence, vary later ones, etc.).
-4. Verify each affected chapter individually.
-5. Mark complete with a note listing all files modified.
-
-### 5. Word Count Recovery
-
-If any chapter dropped below the minimum word count after cuts:
-
-1. Collect all flagged chapters.
-2. For each: identify the best location to add DIALOGUE (not description, not narration).
-3. Add 1-3 dialogue exchanges that are character-appropriate and advance the scene.
-4. Verify the chapter is back above minimum.
-
-### 6. Session Complete
-
-**Per-book summary** (always shown, even when running `all`):
 ```
-📋 Book Fix — [book] — Session Complete
+📋 Book Fix — [scope] — Complete
 
-Applied:
-  Coherence: X/X milestones
-  Editorial: X/X items
-  Proofreading: X/X items
-
-Chapters modified: [list with word counts]
-State propagated: [which chapters]
-
-Remaining: X items
-Next: [what to do if items remain]
+Applied: X/X milestones
+Files modified: [list]
+Remaining: X milestones
+Next: [what to do if milestones remain]
 ```
 
-**Combined summary** (shown only for `all` and `common` modes, after all books):
+**Combined summary** (for `all` and `common` modes):
 ```
 📋 Book Fix — All — Combined Summary
 
 Common (shared files):
-  Coherence: X/X milestones
+  Milestones: X/X
   Files modified: [list]
 
 Per-book:
-  book-1: Coherence X/X | Editorial X/X | Proofreading X/X
-  book-2: Coherence X/X | Editorial X/X | Proofreading X/X
-  book-3: Coherence X/X | Editorial X/X | Proofreading X/X
+  book-1: X/X milestones
+  book-2: X/X milestones
+  book-3: X/X milestones
 
-Total remaining: X items
+Total remaining: X milestones
 ```
 
 ---
 
 ## Rules
 
-- ❌ Never add thematic content while fixing. Fixes are surgery, not writing.
-- ❌ Never skip verification (word count + flow check) after each fix.
-- ❌ Never apply proofreading before editorial — the text may change.
+- ❌ Never touch chapter prose (ch01.md, ch02.md, etc.) — that is `/book revise` territory.
+- ❌ Never add thematic or narrative content. Fixes are surgery, not writing.
 - ❌ Never mark an item `[x]` without actually applying the fix.
-- ❌ Never rewrite MORE than the fix specifies. Minimal changes only.
-- ✅ Grep for exact quotes before editing — line numbers shift as fixes accumulate.
-- ✅ Process top-to-bottom within each source to minimize drift.
-- ✅ If a fix references text changed by a prior fix, re-locate and adapt.
+- ❌ Never rewrite MORE than the milestone specifies. Minimal changes only.
+- ✅ Grep for exact text before editing — content shifts as fixes accumulate.
+- ✅ Process milestones in order (blocking → warning → note).
 - ✅ If a fix would break continuity, flag it and skip rather than applying blindly.
+- ✅ Verify cross-reference targets exist before replacing content with a pointer.

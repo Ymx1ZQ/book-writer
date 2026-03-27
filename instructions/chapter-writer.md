@@ -116,8 +116,11 @@ Characters who speak: [list with # of exchanges]
 ## Usage Targets
 [Which character details or world elements will be SHOWN for the FIRST TIME in this chapter?
 Check the Usage Tracker in the POV character's file and in other appearing characters' files.
+Also check world-concept trackers (the-word.md, nothingness.md, micro-details.md, waiting.md).
 Pick 2-3 unchecked items to target. Example: "Noah's calluses noticed by Anyuk (first time),
-Anyuk's glasses described, moka pot ritual shown."]
+Anyuk's glasses described, moka pot ritual shown."
+After the chapter is written and verified, mark targeted items `[x]` with the Book/Chapter reference.
+NEVER mark `[x]` before the chapter is actually written in prose.]
 
 ## Cliffhanger
 Type: [QUESTION/THREAT/REVEAL/CUT/DREAD]
@@ -277,18 +280,23 @@ that has already been introduced. The gesture appears alone, without gloss or em
 - [list ending types used so far: F(count), G(count), H(count), I(count), J(count/2 max)]
 ```
 
-**After updating state, check Usage Trackers:**
-For each character detail or world element that appeared in this chapter for the first time, mark the corresponding checkbox in the character's file or world file:
-```
-- [x] Physical appearance described in scene (Book 1, Ch. 03)
-```
-This ensures every detail we defined eventually makes it into the prose.
-
 **If state is not updated, the chapter is NOT complete.**
 
 ---
 
-## Step 7: Mark Complete
+## Step 7: Outline Cleanup (MANDATORY — prevents bloat accumulation)
+
+After writing and verifying the chapter, clean up this chapter's entry in the outline:
+
+1. **Remove struck-through items** in this chapter's outline section. They were decisions — now resolved.
+2. **Extract `⚠️` blocks** to `chapters/<book>/writing-notes.md`. Replace with one-line cross-ref: `→ See writing-notes.md §ChNN-[topic]`.
+3. **Replace inline mechanism re-explanations** with cross-refs to the canonical source. If this chapter re-explains the Alignment Window, PLC channel, or any mechanism already documented in `world/`, replace with: `→ See [file] §[section]`.
+
+This step is incremental — 2 minutes per chapter. Skipping it causes the outline to grow ~200 words per chapter of dead weight.
+
+---
+
+## Step 8: Mark Complete
 
 Update `chapters/<book>/DEVPLAN.md`:
 ```

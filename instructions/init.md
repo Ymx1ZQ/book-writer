@@ -65,36 +65,102 @@ Ask the user these questions (accept brief answers — we'll flesh things out in
 
 ### 3. Generate Template Files
 
-Each file is created with a header, a brief instruction comment, and empty sections to fill. Example for a character template:
+Each file is created with a header, a brief instruction comment, and empty sections to fill.
+
+**Character template — foreground (protagonist/major):**
 
 ```markdown
 # [Character Name]
 
-<!-- Fill this file using /book setup or manually. -->
+<!-- Fill this file using /book setup or manually.
+     RULE: each piece of information lives in ONE section only.
+     If a flashback is in Flashback Beats, do NOT retell it in Backstory. Cross-ref instead.
+     Include a Usage Tracker section at the end — empty checkboxes for each character detail to be shown in prose. Items are marked [x] ONLY when the chapter is written and verified. -->
 
+## Identity
 **Role:** [protagonist / antagonist / mentor / etc.]
-**Appearance:** [physical description]
-**Personality:** [core traits, flaws, contradictions]
-**Stated Goals:** [what they say they want]
-**True Goals:** [what they actually want]
-**Ties:** [relationships to other characters]
+**Age/Origin:** [age at story start, background]
+**Appearance:** [physical description — ONE place, not repeated in subsections]
 **First Appearance:** [book, chapter area]
 
-### Backstory
-[Key events before the story begins]
+## Personality
+[Core traits, flaws, contradictions. Stated goals vs true goals. 1-2 paragraphs max.]
 
-### Worst Act
-[The worst thing this character does in the story]
+## Arc
+[Per-book trajectory. 1 short paragraph per book. What changes, what's at stake.]
 
-### Core Contradiction
-[The tension that makes them interesting]
+## Key Relationships
+[1 line per relationship. Name — role — dynamic.]
 
-## Usage Tracker
-- [ ] Physical appearance described in scene (Book __, Ch. __)
-- [ ] Involuntary gesture shown (Book __, Ch. __)
-- [ ] Speech under stress demonstrated (Book __, Ch. __)
-[etc.]
+## Flashback Beats
+[THE canonical location for all past scenes. Full rendered scenes, 300-500w each.
+ These are NOT retold in any other section. Other sections cross-ref here.]
+
+### Flashback 1 — [Name] (age N)
+[Full scene]
+
+### Flashback 2 — [Name] (age N)
+[Full scene]
+
+## Sensory Signature
+[3 sensory memories. Involuntary gestures. Physical tics. Unique detail.
+ Each item once — do not repeat in other sections.]
+
+## Voice
+[Speech patterns: stress, relaxed, lying. Words never used. 2-3 sample lines.]
+
+## Core
+**Worst Act:** [1 paragraph]
+**Inconfessable Desire:** [1 paragraph]
+**Core Contradiction:** [1 paragraph]
+
+## Narrator Boundaries
+[POV rules when writing this character's chapters. Max em-dashes, what the narrator
+ can/cannot analyze, metaphor register.]
 ```
+
+**Character template — midground (secondary):**
+
+```markdown
+# [Character Name]
+
+## Identity
+**Role:** | **Age/Origin:** | **Appearance:** | **First Appearance:**
+
+## Personality & Arc
+[Combined — 1-2 paragraphs. Traits, goals, what changes.]
+
+## Key Relationships
+[1 line per relationship.]
+
+## Flashback Beats
+[0-2 scenes, 200-300w each. Canonical location — not retold elsewhere.]
+
+## Sensory Signature
+[1-2 sensory details. 1 gesture. 1 tic.]
+
+## Voice
+[Speech pattern, 1-2 sample lines.]
+
+## Core
+**Worst Act / Core Contradiction:** [1 paragraph combining both.]
+```
+
+**Character template — background/functional:**
+
+```markdown
+# [Character Name]
+
+**Role:** | **Level:** | **Appears:** [book, chapters]
+
+[1-2 paragraphs covering everything: personality, function, 1 distinguishing detail.]
+```
+
+**Key template principles:**
+- Every character template includes a Usage Tracker section at the bottom. Items start as `- [ ]` and are marked `[x]` ONLY when that detail has been written in a chapter and verified. The tracker prevents omissions and repetitions across chapters.
+- No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
+- Foreground files: ~1500-2500 words. Midground: ~800-1500. Background: ~100-500.
+- Writing instructions (how to render the character in prose) go in Narrator Boundaries, NOT scattered through the file.
 
 ### 4. Generate CLAUDE.md
 
@@ -157,6 +223,41 @@ Always load these before writing:
 - `world/prose-rules.md`
 - `world/writing-checklists.md`
 - `characters/notes/voice-samples.md`
+
+## Information Architecture — Single Source of Truth
+
+Each concept has ONE canonical file. Other files cross-reference with `→ see [file] §[section]`, never restate.
+
+| Concept | Canonical file |
+|---------|---------------|
+| Chronological timeline | `world/timeline.md` |
+| Historical roots (2020s) | `world/timeline.md` |
+| ASI strategies per bloc | `world/level-0-reality/asis.md` |
+| Cross-level mechanisms (echoes, PLC, alignment window) | `world/temporal-echoes.md` |
+| The Game mechanics + master key | `world/level-0-reality/the-game.md` |
+| Corporate structure (Meridian) | `world/level-0-reality/meridian.md` |
+| Flashback scenes (per character) | `characters/<char>.md §Flashback Beats` |
+| Chapter-level plot detail | `chapters/book-N/outline.md` |
+| Book-level story structure | `plot/episode-N.md` |
+| Trilogy-level plot summary | `plot/overview.md` |
+
+**Rule**: when writing in a non-canonical file and about to explain a mechanism, write `→ see <file> §<section>` instead of re-explaining.
+
+## Plot Documentation Hierarchy
+
+| Level | File | Contains | Does NOT contain |
+|-------|------|----------|-----------------|
+| Trilogy | `plot/overview.md` | Structural summary, emotional bridges, themes | Chapter-level detail |
+| Book | `plot/episode-N.md` | Act structure, design decisions, proportions | Beat-by-beat detail, mechanism explanations |
+| Chapter | `chapters/book-N/outline.md` | Scene beats, tracking, cliffhangers | Mechanism re-explanations (use cross-refs) |
+
+Information lives at the LOWEST level where it's needed. Never duplicate between levels.
+
+## File Lifecycle
+
+- **Review/audit reports**: once corrections are applied to canonical files, move to `archive/`. Do not keep in active directories.
+- **Writing notes** (`chapters/book-N/writing-notes.md`): extracted from outline `⚠️` blocks. Live alongside the outline, not inline.
+- **Character files**: include Usage Trackers with empty checkboxes. Mark `[x]` only when the detail is written in a chapter and verified.
 ```
 
 **What CLAUDE.md must NEVER contain:**

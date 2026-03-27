@@ -10,9 +10,7 @@ Run a comprehensive coherence review across the project's worldbuilding, charact
 
 Scope options:
 - `all` — full project review (default)
-- `book-1` — Book 1 outline + relevant worldbuilding/characters
-- `book-2` — Book 2
-- `book-3` — Book 3
+- `book-N` — a single book's outline + relevant worldbuilding/characters. Discover available books by listing `chapters/book-*/outline.md`.
 - `characters` — character files only
 - `world` — worldbuilding files only
 
@@ -27,7 +25,7 @@ Read ALL files in the specified scope:
 - `characters/foreground/` — all foreground character sheets
 - `characters/midground/` — all midground sheets
 - `characters/notes/` — voice samples, flashback beats
-- `plot/` — all episode files, key-scenes, cliffhanger-map, chorus-poem-map, sauveterre-plant
+- `plot/` — all plot files (episode overviews, key-scenes, cliffhanger maps, tracking files)
 - `chapters/book-N/outline.md` — the relevant outline(s)
 - `chapters/book-N/opening-strategy.md` — if it exists
 
@@ -66,9 +64,9 @@ Analyze the relationship between the project.s narrative levels (read from `worl
 #### E. Worldbuilding & Technology Consistency
 Using `world/technology-comparison.md` as primary reference:
 - Does technology respect the established rules per level? (Check the project's `world/technology-comparison.md` or equivalent for the specific rules.)
-- Is there a **coherent evolution** between levels? (Reality 2045 → Dome sim of 2095 → Ark sim of orbital station)
+- Is there a **coherent evolution** between levels? (Check the project's worldbuilding files for the specific level progression.)
 - Flag technology that appears or disappears conveniently ("they hack the terminal" — do they have the skills/tools established for this?).
-- Flag any confusion between levels: a Dome chapter that describes Reality-style drones, or an Ark chapter with Dome-style silent surveillance.
+- Flag any confusion between levels: technology, aesthetics, or vocabulary from one level leaking into another.
 - Are technology aesthetics maintained consistently per level?
 
 #### F. Pacing & Cross-Level Balance
@@ -80,7 +78,7 @@ Using `world/technology-comparison.md` as primary reference:
 
 #### G. Infodump Detection
 - Flag any passage where worldbuilding or technology is explained in a **block of exposition** rather than through action, dialogue, or sensory experience.
-- Flag any dialogue that is really **exposition wearing quotation marks** ("As you know, the Algorithm monitors all Blue-tier workers...").
+- Flag any dialogue that is really **exposition wearing quotation marks** ("As you know, [worldbuilding detail the character already knows]...").
 - Check the first 3 chapters especially: do they show the world through the character's experience, or do they stop to explain it?
 - The rule: if removing a paragraph of description doesn't break the scene's action, the paragraph is probably an infodump.
 
@@ -98,11 +96,25 @@ Using `world/technology-comparison.md` as primary reference:
 - "Where would a reader on a train put the book down?" — Flag those moments.
 
 #### J. Chekhov's Inventory
+
+##### Multi-book awareness
+
+When scope is a single book, this check MUST still load the outlines of ALL books (`chapters/book-*/outline.md`) plus all files in `plot/`. The scoped book is the **focus** — you audit its plants in detail — but payoffs can land in ANY book of the series.
+
+Classification rules:
+- A plant in Book N with payoff in Book N → normal plant/payoff. Check it.
+- A plant in Book N with payoff in a later book → **cross-book plant**. Tag as `✅ CROSS-BOOK: planted B{N}, payoff B{M}`. NOT an orphan.
+- A plant in Book N with NO payoff in ANY book → **orphan**. Flag it.
+- A payoff in Book N with NO plant in any earlier book → **missing plant / retroactive plant**. Flag it.
+
+##### Inventory categories
+
 A complete inventory of introduced elements and their payoff status:
-- **Plants:** Things introduced early that pay off later (E. Sauveterre, the five notes, the notebook, specific character details). Is every plant paid off? Is any payoff missing its plant?
-- **Promises:** Things the narrative promises to the reader (a mystery, a threat, a character's growth). Is every promise kept?
-- **Orphans:** Things introduced and abandoned — characters, objects, questions, subplots.
-- **Retroactive plants:** Things that appear in Book 2-3 that SHOULD have been planted in Book 1 but weren't.
+- **Plants:** Things introduced early that pay off later (a name dropped in passing, recurring objects, specific character details). Is every plant paid off within the series? Is any payoff missing its plant?
+- **Cross-book plants:** Plants whose payoff lands in a later book. List each with its source book and payoff book. These are NOT orphans — they are working as intended. Only flag if the payoff is missing from ALL books.
+- **Promises:** Things the narrative promises to the reader (a mystery, a threat, a character's growth). Is every promise kept by the end of the series?
+- **Orphans:** Things introduced and abandoned — characters, objects, questions, subplots — with no payoff in ANY book.
+- **Retroactive plants:** Things that appear in a later book that SHOULD have been planted in an earlier book but weren't.
 
 ### 3. Output — Report to User
 

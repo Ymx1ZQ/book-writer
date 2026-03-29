@@ -124,8 +124,8 @@ A complete inventory of introduced elements and their payoff status:
 
 **World file trackers (table format — Book/Ch/Detail/Status):**
 - Verify all world files in `world/level-*-<name>/` directories have a `## Usage Tracker` section. Flag missing trackers as WARNING.
-- For each tracker item with `planned` status, verify the target chapter's `context:` field includes this file. If not, flag as WARNING: "tracker item mapped to chapter but file not in context tag."
-- Flag any chapter with a context tag pointing to a world file that has NO tracker items mapped to that chapter (unnecessary loading, wastes agent context).
+- For tracker items in files OUTSIDE level directories (e.g., `world/temporal-echoes.md`, `world/nothingness.md`): verify the target chapter's `context:` field includes this file. If not, flag as WARNING: "tracker item mapped to chapter but file not in context tag." Files inside `world/level-*-<name>/` directories are loaded selectively by the chapter writer based on tracker items — they do NOT need context tags.
+- Flag any chapter with a context tag pointing to a file that has NO tracker items mapped to that chapter (unnecessary loading, wastes agent context). Exclude always-loaded files (tones.md, prose-rules.md, etc.) from this check.
 - Flag any world file where >50% of elements have no chapter assigned (`—` status) as NOTE: "worldbuilding without placement plan."
 
 **Character file trackers (same table format):**

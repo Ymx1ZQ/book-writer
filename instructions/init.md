@@ -75,7 +75,7 @@ Each file is created with a header, a brief instruction comment, and empty secti
 <!-- Fill this file using /book setup or manually.
      RULE: each piece of information lives in ONE section only.
      If a flashback is in Flashback Beats, do NOT retell it in Backstory. Cross-ref instead.
-     Include a Usage Tracker section at the end — empty checkboxes for each character detail to be shown in prose. Items are marked [x] ONLY when the chapter is written and verified. -->
+     Include a Usage Tracker section at the end — a table mapping each character detail to a specific Book/Chapter with Detail (scene/accent) and Status (planned/written). -->
 
 ## Identity
 **Role:** [protagonist / antagonist / mentor / etc.]
@@ -271,7 +271,7 @@ Information lives at the LOWEST level where it's needed. Never duplicate between
 
 - **Review/audit reports**: once corrections are applied to canonical files, move to `archive/`. Do not keep in active directories.
 - **Writing notes** (`chapters/book-N/writing-notes.md`): extracted from outline `⚠️` blocks. Live alongside the outline, not inline.
-- **Character files**: include Usage Trackers with empty checkboxes. Mark `[x]` only when the detail is written in a chapter and verified.
+- **Character files**: include Usage Trackers in table format (Book/Ch/Detail/Status). Status changes from `planned` to `written` only when the detail is rendered in a chapter draft.
 ```
 
 **What CLAUDE.md must NEVER contain:**

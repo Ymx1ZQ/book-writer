@@ -68,6 +68,8 @@ Starting with: [first empty section]
 
 **Write** into the level's `context.md`. Push for SENSORY SPECIFICS — not "advanced technology" but "what does the interface look like? what sound does it make? what does it feel like to touch?"
 
+**Anti-duplication rule:** Before writing a concept into a level context file, check if the concept already exists in another world file. If it does, write a cross-ref (`→ see [file] §[section]`) instead of re-explaining. The canonical location for each concept is defined in CLAUDE.md §Information Architecture.
+
 ### 4. Technology Details (world/level-N-*/technology.md)
 
 **For each level, ask:**
@@ -77,6 +79,8 @@ Starting with: [first empty section]
 - "How does this level's technology DIFFER from the others?"
 
 **Write** into `technology.md`. If there are multiple levels, create a comparison table in `world/technology-comparison.md` (or equivalent) to ensure the levels are distinguishable.
+
+**Anti-duplication rule:** Sensory details (what it feels like, sounds like) go in `micro-details.md`. Technical specs (how it works, parameters) go in `technology.md`. Context files get cross-refs to both, never duplicate.
 
 ### 5. Characters — Foreground (characters/foreground/*.md)
 
@@ -90,9 +94,11 @@ Starting with: [first empty section]
 - "What's their backstory? What happened before the story starts?"
 - "What's their arc? How do they change?"
 
-**Write** into the character file. For each character, also add entries to `characters/notes/voice-samples.md`.
+**Write** into the character file. For each character, also add entries to `characters/notes/voice-samples.md`. Add narrator POV rules to `characters/notes/narrator-boundaries.md` (one section per POV character).
 
 **Push for specificity:** Not "she's brave" but "she once held a door open for twenty minutes while everyone else ran." Not "he's angry" but "he drums five beats on the armrest when he's thinking and his jaw locks when someone offers help."
+
+**Anti-duplication rule:** Each concept in a character file lives in ONE section. If a flashback scene appears in §Flashback Beats, other sections use `→ See §Flashback N` instead of retelling. Narrator Boundaries go in `characters/notes/narrator-boundaries.md`, not inline in the character file.
 
 ### 6. Characters — Supporting (midground, functional, background)
 

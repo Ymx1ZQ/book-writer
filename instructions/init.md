@@ -115,8 +115,9 @@ Each file is created with a header, a brief instruction comment, and empty secti
 **Core Contradiction:** [1 paragraph]
 
 ## Narrator Boundaries
-[POV rules when writing this character's chapters. Max em-dashes, what the narrator
- can/cannot analyze, metaphor register.]
+<!-- Narrator Boundaries are stored in characters/notes/narrator-boundaries.md, not here.
+     This section is a placeholder — populate the consolidated file instead. -->
+→ See characters/notes/narrator-boundaries.md §[Character]
 ```
 
 **Character template — midground (secondary):**
@@ -158,9 +159,12 @@ Each file is created with a header, a brief instruction comment, and empty secti
 
 **Key template principles:**
 - Every character template includes a Usage Tracker section at the bottom. Items start as `- [ ]` and are marked `[x]` ONLY when that detail has been written in a chapter and verified. The tracker prevents omissions and repetitions across chapters.
+- World thematic files (e.g., concept files, daily-life files, mechanism files) and plot tracking files (e.g., key-scenes, countdown clocks, motif maps) also include a `## Usage Tracker` section with the same format. One pattern everywhere: `- [ ] [item] (Book __, Ch. __)`.
+- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set.
 - No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
+- Each concept has ONE canonical file. When generating level context files, technology files, and thematic files, check for overlap. If two files would describe the same mechanism, pick one as canonical and cross-ref from the other.
 - Foreground files: ~1500-2500 words. Midground: ~800-1500. Background: ~100-500.
-- Writing instructions (how to render the character in prose) go in Narrator Boundaries, NOT scattered through the file.
+- Writing instructions (how to render the character in prose) go in `characters/notes/narrator-boundaries.md`, NOT inline in character files.
 
 ### 4. Generate CLAUDE.md
 

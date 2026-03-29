@@ -25,6 +25,7 @@ Read the project's files. Paths are relative to the project root.
 - `world/writing-checklists.md` — sensory enforcement (read the section for this chapter's level)
 - `world/prose-rules.md` — prose quality rules (CRITICAL — read every time)
 - `characters/notes/voice-samples.md` — voice profiles
+- `characters/notes/narrator-boundaries.md` — POV narrator rules (em-dash limits, vocabulary restrictions, metaphor register)
 - `plot/cliffhanger-map.md` — cliffhanger type for this chapter
 
 **Load based on level:**
@@ -34,14 +35,10 @@ Identify this chapter's narrative level from the outline. Then load ALL context/
 - The POV character's sheet from `characters/foreground/` or `characters/midground/`
 - Sheets for other characters appearing in this chapter
 
-**Load if relevant** (check the outline for indicators):
-- Any `plot/` files referenced in the chapter outline (e.g., mythology fragments, poem/chorus maps, plant design files)
-- `characters/notes/flashback-beats.md` — if the outline specifies a flashback beat
-- Any `world/` thematic files referenced (e.g., thematic concept files, technical foundation docs)
-- `world/temporal-echoes.md` — if a temporal echo between levels occurs in this chapter
-- `world/waiting.md` — if significant longing/waiting
-- `plot/key-scenes.md` — if this chapter contains an iconic moment
-- `plot/sauveterre-plant.md` — if the E. Sauveterre alias appears
+**Load from `context:` tag (MANDATORY):**
+Read the `context:` field from this chapter's header in the outline. Load every file listed there in addition to the always-loaded set. These are the conditional context files for this chapter — determined during outline planning, not at the writer's discretion. If a file in the context tag does not exist, stop and report.
+
+Also load any `plot/` files explicitly referenced in the chapter's scene beats (e.g., mythology fragments) that are not already in the `context:` tag.
 
 Announce: *"📖 Ch. N: [title] — [Level] / [POV] / [Tone] / Cliffhanger: [type]"*
 
@@ -79,7 +76,7 @@ Bullshit Detector (2): For each scene — why does the character do this? Would 
 ## Opening Type: [in medias res / dialogue / sensory / statement / time skip]
 Previous chapter opened with: [type] — this MUST differ.
 
-## Scene Breakdown
+## Scene Breakdown (max 80 words per scene — use cross-refs for mechanisms)
 - Scene 1: [beat] → action: [what happens physically], dialogue: [X exchanges between WHO], world: [checklist item] (~XXX words)
 - Scene 2: ...
 - Scene 3: ...
@@ -115,10 +112,10 @@ Characters who speak: [list with # of exchanges]
 
 ## Usage Targets
 [Which character details or world elements will be SHOWN for the FIRST TIME in this chapter?
-Check the Usage Tracker in the POV character's file and in other appearing characters' files.
-Also check world-concept trackers (the-word.md, nothingness.md, micro-details.md, waiting.md).
+Check the `## Usage Tracker` section in ALL loaded files — character files AND context-tagged
+world/plot files. Every file with a Usage Tracker is fair game.
 Pick 2-3 unchecked items to target. Example: "Noah's calluses noticed by Anyuk (first time),
-Anyuk's glasses described, moka pot ritual shown."
+Anyuk's glasses described, moka pot ritual shown, temporal echo Ch.10→Ch.11 door."
 After the chapter is written and verified, mark targeted items `[x]` with the Book/Chapter reference.
 NEVER mark `[x]` before the chapter is actually written in prose.]
 
@@ -247,6 +244,17 @@ If any pass fails: revise and re-check. Max 2 revision cycles.
 
 ---
 
+## Step 5.5: Update Usage Trackers (MANDATORY)
+
+Open every file loaded in Step 1 that has a `## Usage Tracker` section (character files + context-tagged world/plot files). For each item that was SHOWN in the draft prose, mark `[x]` with the Book and Chapter reference. Example: `- [x] Temporal echo Ch.10→Ch.11 door (Book 1, Ch. 11)`.
+
+**Rules:**
+- NEVER mark `[x]` for items not rendered in prose — the detail must be visible in the chapter text.
+- If you targeted an item in the plan (Step 2, Usage Targets) but it didn't make it into the draft, leave it `[ ]`.
+- Character trackers AND context-file trackers follow the same process — no exceptions.
+
+---
+
 ## Step 6: Update State (MANDATORY)
 
 Update `chapters/<book>/state.md`:
@@ -291,6 +299,8 @@ After writing and verifying the chapter, clean up this chapter's entry in the ou
 1. **Remove struck-through items** in this chapter's outline section. They were decisions — now resolved.
 2. **Extract `⚠️` blocks** to `chapters/<book>/writing-notes.md`. Replace with one-line cross-ref: `→ See writing-notes.md §ChNN-[topic]`.
 3. **Replace inline mechanism re-explanations** with cross-refs to the canonical source. If this chapter re-explains the Alignment Window, PLC channel, or any mechanism already documented in `world/`, replace with: `→ See [file] §[section]`.
+4. **Compress beat descriptions** — no single beat over 100 words. Replace authorial reasoning ("the reader should feel...", "on reread...") with one-line directives or move to writing-notes.md.
+5. **Remove process wrappers** — delete "Note:", "MANDATORY:", "drafting note:", "author note:" prefixes from corrected content. The outline should read as if the content was always there.
 
 This step is incremental — 2 minutes per chapter. Skipping it causes the outline to grow ~200 words per chapter of dead weight.
 

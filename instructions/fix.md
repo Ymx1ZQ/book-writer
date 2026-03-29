@@ -111,7 +111,10 @@ Total remaining: X milestones
 - ❌ Never add thematic or narrative content. Fixes are surgery, not writing.
 - ❌ Never mark an item `[x]` without actually applying the fix.
 - ❌ Never rewrite MORE than the milestone specifies. Minimal changes only.
+- ❌ Never embed milestone IDs in outline or project file text. Do not add `(M123)`, `(M123 — RESOLVED)`, `(M123, note)`, or any milestone reference into the content being written. Milestone tracking lives in DEVPLAN.md only.
 - ✅ Grep for exact text before editing — content shifts as fixes accumulate.
 - ✅ Process milestones in order (blocking → warning → note).
 - ✅ If a fix would break continuity, flag it and skip rather than applying blindly.
 - ✅ Verify cross-reference targets exist before replacing content with a pointer.
+- ✅ After applying a fix to an outline, remove all process language. The outline should read as if the fix was always there — no 'Note:', 'MANDATORY:', 'drafting note:', 'author note:' wrappers. If the fix added a mechanism explanation, check whether a cross-ref to the canonical world file would suffice.
+- ✅ After all milestones in a session, scan modified outline files for: (a) mechanism paragraphs >2 sentences (→ replace with cross-ref), (b) authorial reasoning blocks (→ move to writing-notes.md), (c) correction metadata (→ delete). This prevents fix residue from accumulating.

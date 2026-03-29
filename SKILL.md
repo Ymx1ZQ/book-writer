@@ -68,6 +68,10 @@ When a command is received:
    - `continuity` → `instructions/continuity-check.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
+5. **After the instruction completes**, commit all changes:
+   - Stage all modified and new files: `git add -A`
+   - Commit with message: `book <command> <args>: <one-line summary of what was done>`
+   - Do NOT push (the caller decides when to push).
 
 ## Genre Agnosticism
 

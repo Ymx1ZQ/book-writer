@@ -116,6 +116,11 @@ A complete inventory of introduced elements and their payoff status:
 - **Orphans:** Things introduced and abandoned — characters, objects, questions, subplots — with no payoff in ANY book.
 - **Retroactive plants:** Things that appear in a later book that SHOULD have been planted in an earlier book but weren't.
 
+#### K. Context Tag & Usage Tracker Audit
+- For each chapter in scope, verify a `context:` field exists in the chapter header. If a chapter mentions a temporal echo, flashback, thematic concept, or countdown beat but lacks the corresponding file in its `context:` tag, flag as WARNING.
+- For each file listed in any chapter's `context:` tags, verify it has a `## Usage Tracker` section. If a file contains discrete consumable details but lacks a tracker, flag as WARNING: "context file without tracker."
+- Verify all character files in scope have a `## Usage Tracker` section.
+
 ### 3. Output — Report to User
 
 Display issues to the user in order of severity:
@@ -168,6 +173,7 @@ Fixes ordered by severity, then by file.
 - Each milestone's checkbox must contain enough context to execute the fix WITHOUT re-reading the full report.
 - Include the file path, the section to modify, and the specific change to make.
 - The devplan is appended to the existing `DEVPLAN.md`, never overwriting previous phases.
+- Fix instructions for outline files MUST specify minimal content. Do NOT add mechanism explanations — use cross-ref to the canonical world file. Fixes that add more than 2 sentences to an outline entry must justify why a cross-ref is insufficient.
 - After writing, announce: *"Coherence devplan written: X milestones. Run `/book fix <book>` to apply fixes."*
 
 ### 5. Summary

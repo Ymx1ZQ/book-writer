@@ -29,7 +29,7 @@ Read the project's files. Paths are relative to the project root.
 - `plot/cliffhanger-map.md` — cliffhanger type for this chapter
 
 **Load based on level:**
-Identify this chapter's narrative level from the outline. Then load ALL context/technology files in the corresponding `world/level-*-<name>/` directory. Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
+Identify this chapter's narrative level from the outline. Then load files from the corresponding `world/level-*-<name>/` directory SELECTIVELY: list the files in the directory, then load only those whose `## Usage Tracker` contains items mapped to THIS chapter (matching Book and Ch). Skip files with no tracker items for this chapter — they waste context. Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
 
 **Load based on POV character:**
 - The POV character's sheet from `characters/foreground/` or `characters/midground/`
@@ -111,13 +111,19 @@ Characters who speak: [list with # of exchanges]
 [Where the world intrudes on a human moment.]
 
 ## Usage Targets
-[Which character details or world elements will be SHOWN for the FIRST TIME in this chapter?
-Check the `## Usage Tracker` section in ALL loaded files — character files AND context-tagged
-world/plot files. Every file with a Usage Tracker is fair game.
-Pick 2-3 unchecked items to target. Example: "Noah's calluses noticed by Anyuk (first time),
-Anyuk's glasses described, moka pot ritual shown, temporal echo Ch.10→Ch.11 door."
-After the chapter is written and verified, mark targeted items `[x]` with the Book/Chapter reference.
-NEVER mark `[x]` before the chapter is actually written in prose.]
+[Which character details or world elements will be SHOWN in this chapter?
+
+Check `## Usage Tracker` tables in ALL loaded files — character files, world files, plot files.
+Filter rows where Book AND Ch match THIS chapter. Those are the elements PRE-PLANNED for this
+chapter — target ALL of them (they are `scene` or `accent` as specified in the Detail column).
+If a `scene` item doesn't fit naturally, flag it — don't force it.
+
+Example: "Noah's calluses noticed by Anyuk (fabia.md → B3 Ch.17, scene, planned),
+XR as dominant entertainment (society.md → B1 Ch.01, accent, planned),
+drone taxis texture (society.md → B1 Ch.01, accent, planned)."
+
+After the chapter is written and verified, change Status from `planned` to `written`.
+NEVER update status before the chapter is actually written in prose.]
 
 ## Cliffhanger
 Type: [QUESTION/THREAT/REVEAL/CUT/DREAD]
@@ -246,12 +252,13 @@ If any pass fails: revise and re-check. Max 2 revision cycles.
 
 ## Step 5.5: Update Usage Trackers (MANDATORY)
 
-Open every file loaded in Step 1 that has a `## Usage Tracker` section (character files + context-tagged world/plot files). For each item that was SHOWN in the draft prose, mark `[x]` with the Book and Chapter reference. Example: `- [x] Temporal echo Ch.10→Ch.11 door (Book 1, Ch. 11)`.
+Open every file loaded in Step 1 that has a `## Usage Tracker` section.
+
+For each tracker item matching THIS chapter (same Book and Ch) that was SHOWN in the draft prose, change Status from `planned` to `written`. If an item didn't make it into the draft, leave it as `planned`. Do NOT change items in other chapters' rows.
 
 **Rules:**
-- NEVER mark `[x]` for items not rendered in prose — the detail must be visible in the chapter text.
-- If you targeted an item in the plan (Step 2, Usage Targets) but it didn't make it into the draft, leave it `[ ]`.
-- Character trackers AND context-file trackers follow the same process — no exceptions.
+- NEVER update status for items not rendered in prose — the detail must be visible in the chapter text.
+- Status reflects what's actually in the draft, not what was planned.
 
 ---
 

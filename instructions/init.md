@@ -158,9 +158,19 @@ Each file is created with a header, a brief instruction comment, and empty secti
 ```
 
 **Key template principles:**
-- Every character template includes a Usage Tracker section at the bottom. Items start as `- [ ]` and are marked `[x]` ONLY when that detail has been written in a chapter and verified. The tracker prevents omissions and repetitions across chapters.
-- World thematic files (e.g., concept files, daily-life files, mechanism files) and plot tracking files (e.g., key-scenes, countdown clocks, motif maps) also include a `## Usage Tracker` section with the same format. One pattern everywhere: `- [ ] [item] (Book __, Ch. __)`.
-- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set.
+- **All files with discrete elements** (character files, world files, plot tracking files) include a `## Usage Tracker` section with the same TABLE format mapping elements to specific chapters:
+
+  | Element | Book | Ch | Detail | Status |
+  |---------|------|----|--------|--------|
+  | [description] | B1 | 07 | scene/accent | —/planned/written |
+
+  - `scene` = rendered beat · `accent` = one-two sentence texture
+  - `—` = no chapter assigned · `planned` = chapter assigned · `written` = in draft
+  - The tracker IS the placement plan — no need to duplicate in chapter outlines
+  - One format everywhere: character files, world files, plot files. No exceptions.
+  - Keep files under ~150 lines of content before the tracker. If larger, split by topic so the chapter writer loads only what's relevant
+
+- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Only add a file to `context:` if it has tracker items mapped to that chapter.
 - No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
 - Each concept has ONE canonical file. When generating level context files, technology files, and thematic files, check for overlap. If two files would describe the same mechanism, pick one as canonical and cross-ref from the other.
 - Foreground files: ~1500-2500 words. Midground: ~800-1500. Background: ~100-500.

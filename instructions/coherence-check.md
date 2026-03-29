@@ -117,9 +117,20 @@ A complete inventory of introduced elements and their payoff status:
 - **Retroactive plants:** Things that appear in a later book that SHOULD have been planted in an earlier book but weren't.
 
 #### K. Context Tag & Usage Tracker Audit
+
+**Context tags:**
 - For each chapter in scope, verify a `context:` field exists in the chapter header. If a chapter mentions a temporal echo, flashback, thematic concept, or countdown beat but lacks the corresponding file in its `context:` tag, flag as WARNING.
 - For each file listed in any chapter's `context:` tags, verify it has a `## Usage Tracker` section. If a file contains discrete consumable details but lacks a tracker, flag as WARNING: "context file without tracker."
-- Verify all character files in scope have a `## Usage Tracker` section.
+
+**World file trackers (table format — Book/Ch/Detail/Status):**
+- Verify all world files in `world/level-*-<name>/` directories have a `## Usage Tracker` section. Flag missing trackers as WARNING.
+- For each tracker item with `planned` status, verify the target chapter's `context:` field includes this file. If not, flag as WARNING: "tracker item mapped to chapter but file not in context tag."
+- Flag any chapter with a context tag pointing to a world file that has NO tracker items mapped to that chapter (unnecessary loading, wastes agent context).
+- Flag any world file where >50% of elements have no chapter assigned (`—` status) as NOTE: "worldbuilding without placement plan."
+
+**Character file trackers (same table format):**
+- Verify all character files in scope have a `## Usage Tracker` section with the standard table format (Book/Ch/Detail/Status).
+- Flag character files still using the old checkbox format as NOTE: "character tracker needs migration to table format."
 
 ### 3. Output — Report to User
 

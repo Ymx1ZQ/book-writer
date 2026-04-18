@@ -18,7 +18,7 @@ Read the project's files. Paths are relative to the project root.
 
 **Always load:**
 - `CLAUDE.md` — project instructions, language, structure overview
-- `chapters/<book>/outline.md` — find the specific chapter entry with all beats, tags, notes
+- `chapters/<book>/outline.md` — load ONLY the specific chapter entry. Use a targeted read: locate the chapter's header (e.g., `## Ch. NN` or `### Ch. NN`) and read from there to the next chapter's header. Do NOT load the entire outline file. If the outline is split into per-chapter files (`chapters/<book>/ch<NN>.md`), read only that file.
 - `chapters/<book>/state.md` — the ENTIRE most recent "After Chapter N" section
 - `world/tones.md` — tonal register for this chapter's level
 - `world/pacing-rules.md` — pacing and tension rules
@@ -27,6 +27,8 @@ Read the project's files. Paths are relative to the project root.
 - `characters/notes/voice-samples.md` — voice profiles
 - `characters/notes/narrator-boundaries.md` — POV narrator rules (em-dash limits, vocabulary restrictions, metaphor register)
 - `plot/cliffhanger-map.md` — cliffhanger type for this chapter
+
+**Batch session optimization:** If running inside `/book write` (a batch session), `world/tones.md`, `world/prose-rules.md`, `world/pacing-rules.md`, and `world/writing-checklists.md` were loaded at session start and remain in context. Do NOT re-read them — they have not changed. Re-read them only when running `/book chapter` as a standalone command in a fresh session where they are not yet in context.
 
 **Load based on level:**
 Identify this chapter's narrative level from the outline. Then load files from the corresponding `world/level-*-<name>/` directory SELECTIVELY: list the files in the directory, then load only those whose `## Usage Tracker` contains items mapped to THIS chapter (matching Book and Ch). Skip files with no tracker items for this chapter — they waste context. Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
@@ -40,13 +42,26 @@ Read the `context:` field from this chapter's header in the outline. Load every 
 
 Also load any `plot/` files explicitly referenced in the chapter's scene beats (e.g., mythology fragments) that are not already in the `context:` tag.
 
+**Load if they exist (optional — reader architecture support):**
+- `plot/prestige-inventory.md` — plants and payoffs; check if this chapter has a plant or payoff assigned
+- `plot/motif-tracking.md` — which motif is foregrounded in this chapter
+- `plot/reader-journey.md` — what the reader knows/believes/feels at this point
+- `plot/echo-choreography.md` — cross-level echo assignments for this chapter
+
+**Load if they exist AND chapter is tagged [RAPID CROSS-CUT] or is a climax chapter:**
+- `plot/climax-choreography.md` — beat-by-beat simultaneity design for the climax sequence
+- `plot/mechanical-set-pieces.md` — rule-driven spectacle scenes
+- `plot/ticking-clocks-physical.md` — physical countdown indicators for this chapter
+
+If none of these files exist, skip — the skill works without them. If they exist, they inform the Reader Architecture section and the Simultaneity section of the plan.
+
 Announce: *"📖 Ch. N: [title] — [Level] / [POV] / [Tone] / Cliffhanger: [type]"*
 
 ---
 
 ## Step 2: Plan (MANDATORY WRITTEN ARTIFACT)
 
-Create a plan file at `chapters/<book>/ch<NN>-plan.md`. Answer the 26 reasoning questions in your thinking first, then write the plan.
+Create a plan file at `chapters/<book>/ch<NN>-plan.md`. Answer the 30 reasoning questions in your thinking first, then write the plan.
 
 **Reasoning questions (answer in thinking):**
 
@@ -65,6 +80,8 @@ Technical (2): Technology described? Correct terminology?
 Anti-AI (2): What patterns to avoid? What sensory anchors?
 
 World Pressure (2): 5+ checklist items by name. Where does the world press on characters?
+
+Reader Architecture (4): What does the reader believe RIGHT NOW — both true and false? Which false belief am I reinforcing (good) or accidentally correcting (bad, too early)? What detail am I planting that pays off later? What will a re-reader notice in this chapter that a first-time reader will miss?
 
 Bullshit Detector (2): For each scene — why does the character do this? Would a reader ask "but why?" If a scene has no clear character motivation, rewrite the beat. If something only makes sense because the worldbuilding doc says so (but the reader hasn't read that doc), it will confuse — add context or cut it.
 
@@ -124,6 +141,20 @@ drone taxis texture (society.md → B1 Ch.01, accent, planned)."
 
 After the chapter is written and verified, change Status from `planned` to `written`.
 NEVER update status before the chapter is actually written in prose.]
+
+## Reader Architecture
+Reader's false beliefs at this point: [list what the reader thinks is true but isn't]
+Reinforcing: [which false belief this chapter strengthens — or "N/A, no active misdirection"]
+Planting: [detail that pays off in Ch. __ / Book __. If `plot/prestige-inventory.md` exists, check it]
+Re-read reward: [one detail that means something different once the reader knows ___]
+Foregrounded motif: [one primary motif for this chapter. If `plot/motif-tracking.md` exists, check it]
+
+## Simultaneity Choreography (ONLY for [RAPID CROSS-CUT] or climax chapters — skip otherwise)
+Causal chain: [Action in Level A → consequence in Level B → enables action in Level C]
+Physical countdown indicator: [what the reader tracks across every cut — a number, temperature, sound, light]
+Rhythm plan: [starting section length → peak compression → resolution expansion]
+Elapsed story-time: [total real-time duration of the cross-cut sequence]
+[If `plot/climax-choreography.md` exists, cross-reference the beat map for this chapter]
 
 ## Cliffhanger
 Type: [QUESTION/THREAT/REVEAL/CUT/DREAD]
@@ -191,6 +222,13 @@ Before checking word count, re-read the chapter and apply these cuts:
 5. **Ending type:** Check the final paragraph. Is it a character standing/sitting still, processing? If yes, check the plan's ending type. If type J (contemplative) and 2 have already been used in this book, REWRITE the ending to use a different type (F, G, H, or I).
 6. **Aphorisms in narration:** Find sentences that could appear on a book jacket without context. Cut or bury inside a longer thought. Max 1 in narration. Aphorisms in dialogue are acceptable ONLY if the character.s voice profile specifies they speak that way.
 7. **Vocabulary check:** Read voice-samples.md Vocabulary Evolution section. Does the narration use words/constructions the POV character doesn't have access to at this chapter range? If yes, rewrite in the character's available register.
+8. **Metaphor check (Rule 1 + Rule 9):** grep narration (not dialogue) for `like a`, `as if`, `as though`, `was a [abstract noun]`. Each hit is a potential metaphor. Rewrite as physical/concrete image (synecdoche, metonymy, precise detail, negative space). Target: **0** metaphors in narration. Dialogue metaphors permitted only if the character's voice-sample profile specifies (e.g., Mira in manifestos, Anyuk in proverbs).
+9. **Adverbial dialogue tags (Rule 15):** count variant tags replacing `said`. EN: `muttered, whispered, exclaimed, retorted, gasped, snapped, hissed, breathed`. IT: `mormorò, sussurrò, esclamò, ribatté, ansimò, sibilò`. If the chapter's total variant-tag count is >2, rewrite the weakest half as action beats (e.g., `He set the mug down. "I know."`).
+10. **Chapter opening check (Rule 21):** read the first 150 words. Must contain a concrete image + tension (question, wrongness, decision). If the first paragraph is summary, orientation, or stative verb (`Noah was X`, `It was Y`, `The Z did W as usual`), rewrite the opening into an in-medias-res image.
+11. **Chapter closing check (Rule 22):** read the final paragraph. Must be ≤2 sentences and resolve as single image or single line. If it is a summary paragraph or contemplative wrap-up >2 sentences, cut to the most resonant single line. Never end with narrator-delivered significance.
+12. **Transition phrases (Rule 13):** grep for banned transitions — `later that day, a few hours later, after that, eventually, meanwhile, più tardi, dopo, in seguito, frattanto, eventualmente`. Each hit = replace with white-space scene break + in-medias-res opening of the next scene.
+13. **Object permanence (Rule 16):** verify at least one prior-introduced object is touched/used/noticed, OR at least one new plant-object is introduced for later. Check `plot/prestige-inventory.md` if it exists and `chapters/<book>/state.md` §Micro-details Planted. If neither, add one sentence of object interaction in the strongest scene.
+14. **Silence beat (Rule 20):** if this chapter contains a dramatic peak (revelation, betrayal, death, crossing, body blow), verify at least one silent beat exists — a white-space break or a single short sentence isolated between longer paragraphs. If the peak chapter has no silent beat, insert one after the peak's physical moment.
 
 ---
 
@@ -210,12 +248,16 @@ wc -w chapters/<book>/ch<NN>.md
 
 ## Step 5: Verify (9 passes — MANDATORY)
 
-Launch an Agent. **If you skip verification, the chapter is NOT complete.**
+**Run verification passes inline — do NOT launch a separate Agent.** All reference files are already in context from Step 1. An Agent would re-read them from scratch and double the token cost.
 
-The agent reads the chapter, the plan file, and relevant reference files. **The agent MUST also read:**
+**Exception:** only launch an Agent if running in a context where Step 1 files have been cleared (e.g., a fresh session resumed mid-chapter). In that case, tell the agent explicitly which files are already loaded and which it must read. The agent MUST read:
+- The chapter file (`chapters/<book>/ch<NN>.md`)
+- The plan file (`chapters/<book>/ch<NN>-plan.md`)
 - `world/technology-comparison.md` — for Pass 9 (level-identification check)
-- `world/temporal-echoes.md` — if a temporal echo is noted in the plan file
+- `world/temporal-echoes.md` — ONLY if a temporal echo is noted in the plan file
 - `characters/notes/voice-samples.md` — for Pass 2 and Pass 9 voice check
+
+**Do NOT re-read** (already in context from Step 1): `tones.md`, `prose-rules.md`, `pacing-rules.md`, `writing-checklists.md`, `narrator-boundaries.md`, the POV character sheet, the outline entry, `cliffhanger-map.md`, `state.md`.
 
 **Pass 1 — Plot:** Outline beats present? Cliffhanger correct? State contradictions?
 **Pass 2 — Character:** Voice matches profile? Knowledge consistent? No forbidden knowledge?
@@ -237,6 +279,18 @@ The agent reads the chapter, the plan file, and relevant reference files. **The 
 - ≥2 non-thematic details (things that are just things)? (If not = FAIL)
 - Ending type J (contemplative) when 2 already used in book? (If yes = **FAIL**)
 - Vocabulary outside POV character's chapter-range register? (If yes = **FAIL** — check voice-samples.md Vocabulary Evolution)
+- **Metaphors in narration?** (**>0 = FAIL** — zero tolerance. Use synecdoche, metonymy, precise image, negative space. Rule 1 + Rule 9)
+- **Variant dialogue tags (non-"said") count?** (**>2 = FAIL** — replace with action beats. Rule 15)
+- **Chapter opening has concrete image + tension within first 150 words?** (If not = **FAIL**. Rule 21 — stricter than the 500-word inciting-tension rule)
+- **Chapter closing is ≤2-sentence image or single line?** (Summary paragraph or contemplative wrap-up >2 sentences = **FAIL**. Rule 22)
+- **Banned transition phrases present?** (`later that day / a few hours later / after that / eventually / meanwhile / più tardi / dopo / in seguito / frattanto / eventualmente`. **>0 = FAIL** — use white-space scene break + in-medias-res. Rule 13)
+- **Object permanence:** prior-introduced object touched/used/noticed OR new plant-object introduced? (Neither present = **NOTE** — consider adding in revision. Rule 16)
+- **Silence beat after dramatic peak?** (Peak chapter with zero silent beats = **FAIL**. Rule 20)
+- **Dialogue from desire, not information?** (Any "as you know" construction OR character-A-tells-character-B what both already know = **FAIL**. Rule 14)
+- **Sentence length progression in climax chapter?** (If this is a climax chapter and avg sentence length does not decrease ≥30% from opening to closing = **FAIL**. Rule 18)
+- **Echo, not repetition:** any motif phrase returning from a prior chapter carries semantic shift? (If identical semantic meaning on return = **FAIL**. Rule 19)
+- **Reader plant (dramatic irony):** at least one detail the POV character notices but does not process, that the reader can? (If none = **NOTE** — add in revision if feasible. Rule 23)
+- **Consequence, not explanation:** any narrator paragraph explaining HOW a mechanism works (not the character discovering it through action)? (If yes = **FAIL** — move to diegetic artifact or cut. Rule 24)
 
 **Pass 9 — Reader Perspective (MANDATORY — added Phase 25):** The agent answers these questions as a reader who has NOT read the worldbuilding docs:
 - "Does this chapter make sense to someone who only knows what previous chapters established?" (If not = FAIL — identify what's confusing)
@@ -245,6 +299,15 @@ The agent reads the chapter, the plan file, and relevant reference files. **The 
 - "Does anything not make logical sense? Would a reader ask 'but why?'" (If yes = FAIL — the bullshit detector caught something)
 - "Are the character's emotions visible in their BODY, not just narrated?" (If not = FAIL — show the implant fight, the tremor, the jaw lock, the sweat)
 - "Can the reader tell which level (the project.s narrative levels) they're in from any random paragraph, without character names?" (If not = FAIL — technology/sound/light fingerprint is missing. Check `world/technology-comparison.md`)
+- "Is the reader's attention being directed correctly — toward the mystery, away from unrevealed information?" (If a detail accidentally reveals something the reader shouldn't know yet = FAIL)
+- "Is there at least one detail that will mean something different on re-read?" (If not, consider adding one — this is what separates good from great)
+- "Does this chapter maintain or reinforce any false belief the reader currently holds?" (Check the plan's Reader Architecture section — if the chapter accidentally corrects a false belief too early = FAIL)
+
+**Pass 10 — Simultaneity & Spectacle (ONLY for [RAPID CROSS-CUT] or climax chapters — skip otherwise):**
+- "Does each cross-cut section end with an action that the NEXT section (different level) visibly responds to?" (If cuts are parallel but not causal = FAIL — they're juxtaposition, not choreography)
+- "Is the physical countdown indicator present in every cross-cut section?" (If the reader loses track of the ticking clock = FAIL)
+- "Does the prose rhythm accelerate as the sequence progresses?" (If section lengths stay uniform = FAIL — compression creates urgency)
+- "Can the reader reconstruct the causal chain? (A triggered B which enabled C)" (If the chain is unclear = FAIL)
 
 If any pass fails: revise and re-check. Max 2 revision cycles.
 
@@ -308,6 +371,9 @@ After writing and verifying the chapter, clean up this chapter's entry in the ou
 3. **Replace inline mechanism re-explanations** with cross-refs to the canonical source. If this chapter re-explains the Alignment Window, PLC channel, or any mechanism already documented in `world/`, replace with: `→ See [file] §[section]`.
 4. **Compress beat descriptions** — no single beat over 100 words. Replace authorial reasoning ("the reader should feel...", "on reread...") with one-line directives or move to writing-notes.md.
 5. **Remove process wrappers** — delete "Note:", "MANDATORY:", "drafting note:", "author note:" prefixes from corrected content. The outline should read as if the content was always there.
+
+6. **Consolidate cross-references** — if this chapter's outline entry has ≥3 `→ See` references, collect them into a single `**Refs:**` line at the end of the chapter entry.
+7. **Density check** — run `wc -w` on this chapter's outline entry (header to next header). If >250 words (normal) or >100 words (rapid): compress further.
 
 This step is incremental — 2 minutes per chapter. Skipping it causes the outline to grow ~200 words per chapter of dead weight.
 

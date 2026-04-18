@@ -27,9 +27,10 @@ The style guide is defined in the project.s `CLAUDE.md` (language, tense) and ch
 Read these files:
 - `CLAUDE.md` — confirms "American English" as the language standard
 - `characters/notes/voice-samples.md` — for proper noun spellings and character-specific vocabulary boundaries
+- `world/prose-rules.md` — for line-level style grep patterns (P9)
 - The target chapter file(s)
 
-### 2. Run 8 Proofreading Checks
+### 2. Run 9 Proofreading Checks
 
 For each chapter, scan every line and report issues with **exact quotes and line numbers**.
 
@@ -109,10 +110,22 @@ The project.s language is defined in `CLAUDE.md`. If American English, flag:
 #### P8. Dialogue Formatting
 
 - Each new speaker gets a new paragraph.
-- Dialogue tags: "said" is invisible and preferred. Flag overuse of creative tags ("he exclaimed," "she breathed," "he intoned") — max 1 per chapter.
+- Dialogue tags: "said" is invisible and preferred. Flag overuse of variant tags ("he exclaimed," "she breathed," "he intoned," "mormorò," "sussurrò") — max 2 per chapter per `prose-rules.md §Rule 15`. Count all variants and report the total; if >2, identify the weakest to convert to action beats.
 - Action beats between dialogue: ensure they're attached to the correct speaker's paragraph.
 - No dialogue tag needed when the speaker is clear from context or an action beat identifies them.
 - Interior monologue: italics for direct thought only if used (the project style generally renders thought as indirect — "She wondered whether..." not *Was this right?*). Flag inconsistency.
+
+#### P9. Style-Rule Line Patterns (`prose-rules.md` Rules 13-24)
+
+Line-level greps for banned or capped patterns from the codified style. These are pattern-matches, not judgment calls — flag every hit.
+
+- **Metaphor indicators in narration** (Rule 1 + Rule 9 clause): grep for `like a`, `as if`, `as though`, `was a [abstract noun such as prison/tomb/shadow/dream]`. Any hit in narration (not dialogue) is a flag. Quote the line and propose a rewrite as concrete image, synecdoche, or metonymy.
+- **Banned transition phrases** (Rule 13): grep for `later that day`, `a few hours later`, `after that`, `eventually`, `meanwhile`, `più tardi`, `dopo`, `in seguito`, `frattanto`, `eventualmente`. Every hit = flag. Fix: replace with scene break (white space) + in-medias-res opening.
+- **Stative chapter openers** (Rule 21): read the first sentence. If it matches pattern `[Name] was [adjective]`, `It was [time/place/weather]`, or `The [thing] did [action] as usual`, flag as banned opener. Fix: propose an in-medias-res alternative — concrete image + tension.
+- **Summary chapter closing** (Rule 22): count sentences in the final paragraph. If >2, flag as closing-summary violation. Fix: identify the strongest single line and propose cutting the rest.
+- **Stative `to be` verb overuse**: grep for `was`, `were`, `is`, `are` as main verbs in narration (not dialogue, not passive-voice necessary constructions). If >1 in 3 consecutive sentences of action, flag for verb-strengthening (Rule 9 extension — though not a hard fail, weak verbs collapse scenes).
+
+**Output for P9:** each hit gets a line number, quoted passage, and the rule number violated. If the fix requires rewriting more than the minimal pattern (e.g., an opener rewrite needs a new image), note: "rewrite proposed in REVIEW.md scope, not PROOFREAD.md" and defer to the reviewer.
 
 ---
 
@@ -132,6 +145,7 @@ For each chapter:
 - Word repetition: X issues
 - Sentence rhythm: X issues
 - Dialogue formatting: X issues
+- Style-rule line patterns (metaphors/transitions/openers/closers): X issues
 - **Total: X issues**
 
 ### Issues (by line)

@@ -170,6 +170,58 @@ Contemplative endings used so far in this book: X/2
 
 ---
 
+## Step 2.5: Pre-Drafting Anchor Checks (MANDATORY)
+
+Before drafting a single sentence, scan the plan for elements that REQUIRE a worldbuilding anchor. The chapter writer MUST NOT invent fact-with-system-implications when a canonical anchor is missing — invented "flavor numbers" silently corrupt the worldbuilding and force expensive retrofits later. STOP rather than invent.
+
+### 2.5.a — Level-aware economic-anchor pre-check (HARD `MUST`)
+
+If the plan contains ANY of these triggers in a scene, the corresponding anchor file MUST be loaded and the scene's monetary detail MUST come from there:
+
+**Trigger keywords** (match in plan beat descriptions):
+`price`, `wage`, `cost`, `balance`, `salary`, `rent`, `fee`, `fine`, `tip`, `ration`, `memory credit`, `kilo+price pairing` (`<digit>/kg`, `per kilo`, `the kilo`), `monetary unit (€/euros/CBDC/GPU-HE) near digits`, `allocation request`, `compliance score gating`.
+
+**Anchor file by level:**
+
+| Level | Anchor file |
+|---|---|
+| Reality (L0) | `world/level-0-reality/economy.md` §Consumer Anchors (or `consumer-anchors.md` if split) |
+| Ark (L1) | `world/level-1-ark/daily-life.md` §Economy |
+| Dome (L2) | `world/level-2-dome/bureaucracy.md` §Allocation Mathematics + `context.md` §Economy and Distribution |
+| Cross-level (memory credits) | `world/economy-cross-level.md` §Memory Credits — Canonical Definition |
+
+**If no appropriate anchor exists,** STOP. Do not draft the scene. Announce: *"⛔ Pre-drafting anchor check failed: scene <name> requires monetary detail; no canonical anchor in <expected file>. Stopping. The user must add a worldbuilding-anchor milestone to the project's DEVPLAN before this chapter can be drafted."* Save the plan; exit.
+
+### 2.5.b — Broader no-invent rule (system-implying details) (HARD `MUST`)
+
+The same STOP rule applies to ANY fact that implies a system. Trigger keywords (in plan or expected prose):
+
+`tier <digit>`, `score`, `Hz` near digits, `MHz` near digits, `% offer`, `% loyalty`, `compliance check at <time>`, `corridor 0\d\d`, `latency`, `bandwidth`, `LED <state>` with hardware-vintage capability claim, `firmware`, `handshake`, `signature` (sonic/digital), drone-altitude class, attestation tier, filtration alert tier.
+
+For each match, verify a canonical worldbuilding file defines the system. If not, STOP and request a worldbuilding-anchor milestone. The writer MUST NOT pick a plausible-looking number to fill the gap.
+
+### 2.5.c — Cross-substrate sensory echo check (MUST)
+
+If the plan involves a sensory anchor (a number, a frequency, a specific object) that ALSO appears canonically at a DIFFERENT narrative level, verify whether the echo is intentional. Read `world/temporal-echoes.md` §Cross-Substrate Sensory Resonances (if present). If the echo is canonical, USE the canonical signature exactly. If the echo is not yet documented and the writer cannot determine intent, STOP and ask for a one-line decision in `world/temporal-echoes.md` before drafting. Examples to flag: any 440 Hz reference (already canonical in Ark per Phase 111 M3); any "Phrygian quarter-tone bent-third" signature; any object that recurred in another book's chapter.
+
+### 2.5.d — Outline-deviation contract (MUST)
+
+If the plan during Step 2 deviates from the chapter outline (cuts a scene, splits a scene across chapters, merges scenes, drops a planted detail), the writer MUST:
+
+1. Update `chapters/<book>/outline.md` to reflect the new structure (move plant tags, update beat sections, mark moved beats with `[moved to chXX]` annotations).
+2. Append a one-line entry to `chapters/<book>/outline-deviation.md` (CREATE if missing, append-only):
+   ```
+   Ch.NN (YYYY-MM-DD): <scene name> moved/cut/merged because <reason>. Plants shifted: <list, with new chapter destinations>. Open debt: <list of plants now without a planned chapter>.
+   ```
+3. If any plant lost its planned chapter and has no new destination, FLAG this in the writer's announcement: *"⚠️ Plant orphaned: <plant>. Will be unassigned until reassigned in a future writer call."*
+
+**Silent cuts are forbidden.** Step 7 (Outline Cleanup) verifies the contract was respected.
+
+Announce upon completion of Step 2.5:
+*"✅ Pre-drafting anchor checks passed. Proceeding to write."*
+
+---
+
 ## Step 3: Write the Chapter
 
 Write to `chapters/<book>/ch<NN>.md`.
@@ -229,6 +281,13 @@ Before checking word count, re-read the chapter and apply these cuts:
 12. **Transition phrases (Rule 13):** grep for banned transitions — `later that day, a few hours later, after that, eventually, meanwhile, più tardi, dopo, in seguito, frattanto, eventualmente`. Each hit = replace with white-space scene break + in-medias-res opening of the next scene.
 13. **Object permanence (Rule 16):** verify at least one prior-introduced object is touched/used/noticed, OR at least one new plant-object is introduced for later. Check `plot/prestige-inventory.md` if it exists and `chapters/<book>/state.md` §Micro-details Planted. If neither, add one sentence of object interaction in the strongest scene.
 14. **Silence beat (Rule 20):** if this chapter contains a dramatic peak (revelation, betrayal, death, crossing, body blow), verify at least one silent beat exists — a white-space break or a single short sentence isolated between longer paragraphs. If the peak chapter has no silent beat, insert one after the peak's physical moment.
+15. **Forbidden interior-labeling formulas (HARD):** grep the narration (NOT dialogue) for these patterns. Each match is a candidate for cut or rewrite — express interior states through physical action, gesture, or sensory tightening, NOT through narrator labels of feeling-words.
+    - `the closest thing to <emotion> [he|she|they] had had in (days|weeks|years|months)` — ALWAYS cut. The preceding image is doing the work; the chiosa betrays it.
+    - `a kind of <abstract noun>` (e.g., "a kind of pleasure", "a kind of relief") — rewrite as the concrete physical correlate or cut.
+    - `almost <verb>` / `almost felt like` — interior hedging. Rewrite as the gesture itself or its interruption.
+    - `started to <verb>` ... `[before|and] stopped` (when used as interior gesture-labeling rather than exterior fact) — rewrite as the gesture or its bare interruption, no narrator commentary.
+    - `<character> felt <X>` immediately followed by an explanation of what `<X>` is — collapse to the physical signal alone.
+    Target: **0** matches in narration. Aphorism-style interior labels are forbidden regardless of the count cap in check #6 — that cap covers narrator wisdom; this check covers narrator emotion-labeling, a distinct failure mode.
 
 ---
 
@@ -375,7 +434,12 @@ After writing and verifying the chapter, clean up this chapter's entry in the ou
 6. **Consolidate cross-references** — if this chapter's outline entry has ≥3 `→ See` references, collect them into a single `**Refs:**` line at the end of the chapter entry.
 7. **Density check** — run `wc -w` on this chapter's outline entry (header to next header). If >250 words (normal) or >100 words (rapid): compress further.
 
-This step is incremental — 2 minutes per chapter. Skipping it causes the outline to grow ~200 words per chapter of dead weight.
+8. **Outline-deviation contract verification** — verify Step 2.5.d was respected:
+   - Compare the chapter draft against the original outline entry: every scene from the outline must be either present in the draft, OR documented as moved/cut in `chapters/<book>/outline-deviation.md`.
+   - If a scene is missing from the draft AND has no entry in `outline-deviation.md`: this is a SILENT CUT — write the contract entry now, retroactively, and announce the violation: *"⚠️ Silent cut detected: <scene>. Documenting retroactively in outline-deviation.md."* Then list any plant orphaned by the cut so the next writer call can pick it up.
+   - If `outline-deviation.md` does not exist and no deviations occurred, do not create the file (it is append-only and only exists when there is a deviation to log).
+
+This step is incremental — 2 minutes per chapter. Skipping it causes the outline to grow ~200 words per chapter of dead weight, and silent cuts to accumulate undetected.
 
 ---
 

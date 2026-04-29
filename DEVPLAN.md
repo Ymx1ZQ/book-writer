@@ -95,7 +95,7 @@ Phase 3 does not implement project-content milestones — those are filed in eac
 - [ ] ANCHOR-NEEDED entries are NOT applied; instead, surface them in the revise summary as "deferred to worldbuilding (see SMELL.md ANCHOR-NEEDED block)" and stop there. They become input to the project's DEVPLAN.
 - [ ] ACCEPT entries are noted in the summary but not acted on.
 
-### M4: Harden `instructions/chapter-writer.md` — pre-drafting `MUST` rules
+### M4: Harden `instructions/chapter-writer.md` — pre-drafting `MUST` rules ✅
 
 **File:** `instructions/chapter-writer.md` (REVISIONE — add a new Pre-Drafting Anchor Checks section).
 

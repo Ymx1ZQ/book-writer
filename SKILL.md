@@ -25,6 +25,8 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `proofread <book> [ch]` | Grammar/syntax/punctuation → PROOFREAD.md | `/book proofread book-1` |
 | `compact [scope]` | Remove bloat, enforce cross-refs, de-duplicate | `/book compact all` |
 | `continuity <from> <to>` | Cross-book continuity check | `/book continuity book-1 book-2` |
+| `pdf <book> [ch]` | Render a chapter or a whole book to PDF | `/book pdf book-1 ch01` |
+| `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 
 ## The Pipeline
 
@@ -66,6 +68,8 @@ When a command is received:
    - `proofread` → `instructions/proof-reader.md`
    - `compact` → `instructions/compact.md`
    - `continuity` → `instructions/continuity-check.md`
+   - `pdf` → `instructions/pdf.md`
+   - `epub` → `instructions/epub.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit all changes:

@@ -1,0 +1,68 @@
+@page {
+  size: A5;
+  margin: 22mm 20mm 24mm 20mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: 9pt;
+    color: #555;
+  }
+}
+@page titlepage {
+  @bottom-center { content: none; }
+}
+
+html { font-family: "Georgia", "Times New Roman", serif; }
+body {
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #111;
+  text-align: justify;
+  hyphens: auto;
+}
+
+h1 {
+  font-size: 18pt;
+  font-weight: normal;
+  text-align: center;
+  margin: 0 0 2.2em 0;
+  letter-spacing: 0.04em;
+}
+
+p { margin: 0; text-indent: 1.4em; orphans: 3; widows: 3; }
+h1 + p { text-indent: 0; }
+h1 + p::first-letter {
+  font-size: 2.4em;
+  line-height: 1;
+  font-weight: 600;
+  padding-right: 0.05em;
+}
+
+em { font-style: italic; }
+
+hr { border: none; text-align: center; margin: 1.4em 0; }
+hr::after {
+  content: "* * *";
+  letter-spacing: 0.6em;
+  color: #555;
+}
+
+.chapter-break { page-break-after: always; }
+
+.titlepage {
+  page: titlepage;
+  text-align: center;
+  margin-top: 40%;
+}
+.titlepage .title {
+  font-size: 28pt;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.titlepage .subtitle {
+  margin-top: 1em;
+  font-size: 12pt;
+  color: #555;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

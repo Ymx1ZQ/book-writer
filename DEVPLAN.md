@@ -27,7 +27,9 @@ Tooling milestones for the `/book` skill. Project-content milestones live in eac
 
 ---
 
-## Phase 3 — Writer Guardrails + Smell-Test Layer (2026-04-29) — DESIGN
+## Phase 3 — Writer Guardrails + Smell-Test Layer (2026-04-29) — IN PROGRESS (IDD fallback)
+
+> **Execution mode:** IDD, not TDD. Phase 3 deliverables are markdown LLM-instruction files (`sniff.md`, edits to `chapter-writer.md` / `coherence-check.md` / `revise.md` / `SKILL.md`). The skill repo has no test runner, and grep-tests for markdown content would be cargo-cult TDD (the "test" would be a near-duplicate of the content being written). Per `~/.claude/skills/devplan/TDD.md` §1, falling back to IDD for these milestones with the reasoning logged here.
 
 Surfaced from analysis of the first written Ch.01 (ground-truth project). The chapter exposed a class of recurring failure: the writer agent fills worldbuilding silence with **plausible-but-uncanonicalized invention** (€2/kg sardines in 2045 Marseille; "filtration alert tier two" with no canonical tier system; "drone corridor 042" with no schema; "beat off by 0.3" technobabble). Coherence-check catches internal contradictions. Reviewer catches craft. Proofreader catches surface. **Nothing in the current pipeline catches "would a skeptical, informed reader call BS on this?"** — what we're calling the *smell test*.
 
@@ -39,7 +41,7 @@ This phase adds three layers:
 
 Phase 3 does not implement project-content milestones — those are filed in each book project's DEVPLAN as anchor-fill milestones surfaced by the sniff output.
 
-### M1: New `instructions/sniff.md` — adversarial skeptical-reader pass
+### M1: New `instructions/sniff.md` — adversarial skeptical-reader pass ✅
 
 **File:** `instructions/sniff.md` (NEW).
 

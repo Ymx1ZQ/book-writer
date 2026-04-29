@@ -86,7 +86,7 @@ Phase 3 does not implement project-content milestones — those are filed in eac
    10. /book revise book-1       → apply SMELL + REVIEW + PROOFREAD fixes to prose
   ```
 
-### M3: Extend `instructions/revise.md` to consume SMELL.md INLINE items
+### M3: Extend `instructions/revise.md` to consume SMELL.md INLINE items ✅
 
 **File:** `instructions/revise.md` (REVISIONE).
 

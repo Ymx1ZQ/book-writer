@@ -1,11 +1,12 @@
 # Book Revise — Prose Fix Executor
 
-Apply pending editorial (REVIEW.md) and proofreading (PROOFREAD.md) fixes to written chapter prose. Does NOT touch project architecture — for that, use `/book fix`.
+Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PROOFREAD.md) fixes to written chapter prose. Does NOT touch project architecture — for that, use `/book fix`.
 
 ## Invocation
 
 ```
 /book revise <book>              — apply all pending prose fixes for that book
+/book revise <book> sniff        — only SMELL.md INLINE fixes
 /book revise <book> review       — only REVIEW.md fixes
 /book revise <book> proofread    — only PROOFREAD.md fixes
 /book revise all                 — apply all pending prose fixes for every book
@@ -17,30 +18,40 @@ Apply pending editorial (REVIEW.md) and proofreading (PROOFREAD.md) fixes to wri
 
 ### 1. Scan for Pending Fixes
 
-Check two sources:
+Check three sources:
 
-**A. REVIEW.md** — `chapters/<book>/REVIEW.md`
+**A. SMELL.md** — `chapters/<book>/SMELL.md`
+Parse all entries. Each entry has a **Classification** field with one of: `INLINE`, `ANCHOR-NEEDED`, `ACCEPT`.
+- **INLINE** items are revisable in prose — process them like editorial fixes (look for the entry's `Suggested action` block which contains the proposed rewrite).
+- **ANCHOR-NEEDED** items are NOT applied here. They mark a worldbuilding gap that must be filled in the project DEVPLAN before the chapter can ship. Surface them in the session summary; do not edit prose.
+- **ACCEPT** items are noted; no action.
+
+**B. REVIEW.md** — `chapters/<book>/REVIEW.md`
 Parse all unchecked `- [ ]` items. These are editorial fixes (show/tell, voice, structure, pacing). Organized by severity: Critical > High > Medium > Low > Cross-Chapter.
 
-**B. PROOFREAD.md** — `chapters/<book>/PROOFREAD.md`
+**C. PROOFREAD.md** — `chapters/<book>/PROOFREAD.md`
 Parse all unchecked `- [ ]` items. These are line-level fixes (grammar, spelling, punctuation, repetition). Organized by chapter.
 
 **Announce:**
 ```
 📋 Book Revise — [book]
 Pending fixes:
+  Smell-test (SMELL.md): X INLINE / Y ANCHOR-NEEDED / Z ACCEPT
   Editorial (REVIEW.md): X items (C:X H:X M:X L:X CC:X)
   Proofreading (PROOFREAD.md): X items
-  Total: X
+  Total INLINE+EDITORIAL+PROOFREAD: X
 
-Processing order: Editorial → Proofreading
+Processing order: Smell-test INLINE → Editorial → Proofreading
+ANCHOR-NEEDED items will be reported at session end (NOT applied).
 ```
 
-If a filter was specified (review/proofread), only process that source.
+If a filter was specified (sniff/review/proofread), only process that source.
 
 ### 2. Processing Order
 
-**Editorial fixes FIRST** (by severity: Critical → High → Medium → Low → Cross-Chapter) — these change prose: cutting, rewriting, restructuring sentences and scenes.
+**Smell-test INLINE fixes FIRST.** Plausibility gaffes invalidate downstream craft work — fixing "two euros sardines" before polishing the dialogue around it avoids wasted effort. Each INLINE entry contains a quote (the offending passage) and a `Suggested action` (the proposed rewrite). Apply per entry.
+
+**Editorial fixes SECOND** (by severity: Critical → High → Medium → Low → Cross-Chapter) — these change prose: cutting, rewriting, restructuring sentences and scenes.
 
 **Proofreading fixes LAST** — surface-level: grammar, spelling, punctuation. They operate on the final text.
 
@@ -88,6 +99,7 @@ If NO: skip this step.
 #### Step E — Mark Complete
 
 Update the source file:
+- SMELL.md: append `**Status:** ✅ Fixed (INLINE applied)` under the entry. ANCHOR-NEEDED entries get `**Status:** ⏸ Deferred to project DEVPLAN`. ACCEPT entries get `**Status:** ✓ Accepted (no action)`.
 - REVIEW.md: `- [x] ... ✅ Fixed. [State updated: yes/no]`
 - PROOFREAD.md: `- [x] ... ✅ Fixed.`
 
@@ -125,14 +137,23 @@ If any chapter dropped below the minimum word count after cuts:
 📋 Book Revise — [book] — Complete
 
 Applied:
+  Smell-test INLINE: X/X items
   Editorial: X/X items
   Proofreading: X/X items
+
+Deferred to project DEVPLAN (ANCHOR-NEEDED, NOT applied):
+  [list each ANCHOR-NEEDED entry with its suggested DEVPLAN milestone language,
+   so the user can paste them straight into the project's DEVPLAN.md]
+
+Accepted (no action):
+  [list ACCEPT entries with the evidence that supported the deliberate choice]
 
 Chapters modified: [list with word counts]
 State propagated: [which chapters]
 
 Remaining: X items
-Next: [what to do if items remain]
+Next: [what to do if items remain — typically "triage ANCHOR-NEEDED into project
+       DEVPLAN, then re-run /book sniff after the worldbuilding lands"]
 ```
 
 ---
@@ -143,6 +164,7 @@ Next: [what to do if items remain]
 - ❌ Never add thematic content while revising. Fixes are surgery, not writing.
 - ❌ Never skip verification (word count + flow check) after each fix.
 - ❌ Never apply proofreading before editorial — the text may change.
+- ❌ Never auto-apply ANCHOR-NEEDED entries from SMELL.md — those are worldbuilding gaps, not prose problems. They surface to the project DEVPLAN for the user to triage.
 - ❌ Never mark an item `[x]` without actually applying the fix.
 - ❌ Never rewrite MORE than the fix specifies. Minimal changes only.
 - ✅ Grep for exact quotes before editing — line numbers shift as fixes accumulate.

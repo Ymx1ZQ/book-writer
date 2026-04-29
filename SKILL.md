@@ -27,6 +27,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `continuity <from> <to>` | Cross-book continuity check | `/book continuity book-1 book-2` |
 | `pdf <book> [ch]` | Render a chapter or a whole book to PDF | `/book pdf book-1 ch01` |
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
+| `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
 
 ## The Pipeline
 
@@ -42,13 +43,14 @@ PRE-WRITING
 
 WRITING LOOP (repeat per batch)
   6. /book write book-1        → write 5 chapters
-  7. /book review book-1       → editorial review → REVIEW.md
-  8. /book proofread book-1    → line-level review → PROOFREAD.md
-  9. /book revise book-1       → apply review + proofread fixes to prose
+  7. /book sniff book-1        → adversarial skeptical-reader → SMELL.md
+  8. /book review book-1       → editorial review → REVIEW.md
+  9. /book proofread book-1    → line-level review → PROOFREAD.md
+ 10. /book revise book-1       → apply SMELL + REVIEW + PROOFREAD fixes to prose
 
 BETWEEN BOOKS
-  10. /book compact all         → post-cycle cleanup
-  11. /book continuity book-1 book-2 → verify cross-book consistency
+ 11. /book compact all         → post-cycle cleanup
+ 12. /book continuity book-1 book-2 → verify cross-book consistency
 ```
 
 ## Execution
@@ -70,6 +72,7 @@ When a command is received:
    - `continuity` → `instructions/continuity-check.md`
    - `pdf` → `instructions/pdf.md`
    - `epub` → `instructions/epub.md`
+   - `sniff` → `instructions/sniff.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit all changes:

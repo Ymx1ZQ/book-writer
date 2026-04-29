@@ -70,7 +70,7 @@ Phase 3 does not implement project-content milestones — those are filed in eac
 - [ ] Write a short calibration note: the agent must err toward *more* objections, not fewer. False positives are cheap (the user dismisses); false negatives let bad prose ship.
 - [ ] After producing `SMELL.md`, the skill prints a one-line summary: `wrote SMELL.md — N objections (X INLINE, Y ANCHOR-NEEDED, Z ACCEPT)`.
 
-### M2: Wire the dispatcher
+### M2: Wire the dispatcher ✅
 
 **File:** `SKILL.md` (REVISIONE).
 

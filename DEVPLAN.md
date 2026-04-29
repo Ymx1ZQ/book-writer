@@ -110,7 +110,7 @@ Phase 3 does not implement project-content milestones — those are filed in eac
   Express interior states through physical action, gesture, or sensory tightening. The agent reviews its own draft for these patterns at self-edit and rewrites or deletes.
 - [ ] **4d — Outline-to-chapter coverage contract.** If the writer cuts, splits, or reorders outlined scenes during drafting, it MUST: (i) update `chapters/book-N/outline.md` to reflect the new split (move plant tags, update beat-section structure); (ii) write a one-line entry to `chapters/book-N/outline-deviation.md` (NEW file, append-only): `Ch.NN: <scene> moved/cut/merged because <reason>. Plants shifted: <list>.`; (iii) flag any plants that lost their planned chapter so the next write call surfaces them. No silent cuts.
 
-### M5: Harden `instructions/coherence-check.md` — six new check classes
+### M5: Harden `instructions/coherence-check.md` — six new check classes ✅
 
 **File:** `instructions/coherence-check.md` (REVISIONE).
 

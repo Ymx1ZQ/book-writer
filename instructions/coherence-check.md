@@ -42,12 +42,18 @@ Scope options:
 | I — Reader Experience | `plot/reader-journey.md` (if exists), re-use outlines |
 | J — Chekhov | `plot/prestige-inventory.md` (if exists), `plot/motif-tracking.md` (if exists), ALL outlines across all books |
 | K — Context Tags & Trackers | All `world/level-*-<name>/` files (if not already loaded), all files referenced in `context:` tags across outlines |
+| L — Economic-Anchor Audit | Level-appropriate anchor files: Reality → `world/level-0-reality/economy.md` (+ `consumer-anchors.md` if present); Ark → `world/level-1-ark/daily-life.md`; Dome → `world/level-2-dome/bureaucracy.md` + `context.md`; cross-level → `world/economy-cross-level.md` (if present). Load chapter drafts (`chapters/book-N/ch*.md`). |
+| M — System-Implying-Number Audit | Re-use level files already loaded for L and E; load `world/level-0-reality/surveillance.md`, `world/level-0-reality/agent-capabilities.md`, `world/the-authors-method.md` if present; load chapter drafts. |
+| N — Interior-Labeling Detector | Chapter drafts only (re-use those loaded for G); reference `world/prose-rules.md` if not already loaded. |
+| O — Outline-to-Draft Coverage | Outlines already loaded for the scope; chapter drafts (re-use); `chapters/book-N/outline-deviation.md` if present. |
+| P — Cross-Substrate Sensory-Echo | `world/temporal-echoes.md` already loaded for A; chapter drafts (re-use). |
+| Q — Redundancy-with-Adjacent-Text | Chapter drafts only (re-use). |
 
 **For scope `characters`:** load only rows D and skip all others.
-**For scope `world`:** load only rows A, E, H and skip character/outline checks.
-**For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J.
+**For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
+**For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q only run if chapter drafts exist for the scope.
 
-### 2. Check Categories (10 checks)
+### 2. Check Categories (17 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
 
@@ -149,6 +155,108 @@ A complete inventory of introduced elements and their payoff status:
 **Character file trackers (same table format):**
 - Verify all character files in scope have a `## Usage Tracker` section with the standard table format (Book/Ch/Detail/Status).
 - Flag character files still using the old checkbox format as NOTE: "character tracker needs migration to table format."
+
+#### L. Economic-Anchor Audit (BLOCKING for unanchored monetary detail)
+
+**Load:** the level-appropriate anchor file for each chapter draft in scope (Reality → `world/level-0-reality/economy.md` and `consumer-anchors.md` if present; Ark → `world/level-1-ark/daily-life.md` §Economy; Dome → `world/level-2-dome/bureaucracy.md` §Allocation Mathematics + `context.md` §Economy and Distribution; cross-level → `world/economy-cross-level.md` if present).
+
+**Scan each chapter draft (`chapters/<book>/ch*.md`)** for monetary/transactional/allocation details using these patterns:
+
+- `€\d` (euro symbol followed by digits)
+- `\beuros?\b` (the word "euro" or "euros")
+- `\bCBDC\b` near digits (within ~10 chars)
+- `\bGPU-HE\b` near digits
+- `\bkilo\b` / `\b/kg\b` / `\bper kilo\b` in a price context
+- `\bbalance\b` near a numeric (CBDC balance reference)
+- `\bration\b` near a numeric (Dome rationing or Ark surplus mention)
+- `\bcompliance score\b` (Dome score reference)
+- `\bmemory credit\b` near a numeric (cross-level)
+- `\benzyme cloth\b` near a numeric (Ark unit-of-value reference)
+- `W-RAR-03` (Dome resource allocation form)
+
+**For each match:** verify the figure traces to the level-appropriate anchor file. The figure must be either: (a) a direct anchor citation (the value matches a published number in the anchor file), or (b) within the documented range/scarcity-premium band stated by the anchor.
+
+**Flag:**
+- Match without traceable anchor → **BLOCKING**: "unanchored monetary detail at <file>:<line>: \"<quote>\". Required anchor: <file> §<section>."
+- Match contradicting the anchor (price outside documented range with no in-text scarcity-premium justification) → **BLOCKING**: "monetary detail contradicts canonical anchor (<value> vs <range>)."
+- If the level-appropriate anchor file does NOT exist at all, flag as **BLOCKING** at the project level: "level <N> has chapter drafts with monetary detail but no Consumer Anchors / Allocation Mathematics section. Add the anchor before the chapter can ship."
+
+#### M. System-Implying-Number Audit (BLOCKING for invented systems)
+
+**Scan each chapter draft** for specific numbers/terms that imply a system. Pattern set:
+
+- `tier <digit>` (e.g., "filtration alert tier two")
+- `\bscore\b` near digits (compliance, attestation, etc.)
+- `<digit> Hz` outside canonical anchors
+- `<digit> MHz`
+- `% offer` / `% loyalty` / `% discount` (loyalty program numbers)
+- `compliance check at <time>` (specific time-of-day procedural reference)
+- `corridor 0\d\d` (drone corridor numbering schema)
+- `\blatency\b` / `\bbandwidth\b` near specific values
+- `LED` with a hardware-vintage capability claim (e.g., "wired in series with the capture circuit")
+- `\bfirmware\b` / `\bhandshake\b` claims about specific hardware behavior
+- `\bsignature\b` (sonic, digital, side-channel) with a specific descriptor
+- drone-altitude class / attestation tier / filtration alert tier references with a specific value
+
+**For each match:** verify a canonical worldbuilding file documents the system implied. If the chapter says "filtration alert tier two", a tier system MUST exist in `ecology.md` or similar. If the chapter says "drone corridor 042", a corridor numbering schema MUST exist in `surveillance.md` or similar.
+
+**Flag:**
+- Match without a documented system → **BLOCKING**: "system-implying detail at <file>:<line>: \"<quote>\" — implies a <system-name> not documented in canon. Either canonicalize the system in <expected file> or remove the false specificity (replace with non-specific phrasing)."
+- Match contradicting a documented system → **BLOCKING**: "value contradicts canonical <system-name>."
+
+#### N. Interior-Labeling Detector (NOTE — soft, advisory)
+
+**Scan each chapter draft narration (NOT dialogue)** for forbidden interior-labeling formulas. Use chapter Step 3.5 check #15 as the spec; coherence-check is the second-line catch in case the writer's self-edit missed one.
+
+Patterns:
+- `the closest thing to <emotion>` (with `had had in <time>` or similar narrator-chiosa context)
+- `a kind of <abstract noun>`
+- `almost <verb>` / `almost felt like`
+- `started to <verb> ... [before|and] stopped` as interior gesture-labeling
+- `<character> felt <X>` followed by an explanation sentence
+
+**Flag every match as NOTE:** "interior labeling at <file>:<line>: \"<quote>\". Suggested rewrite: collapse to physical signal alone (Rule 9, narrator-emotion-labeling)."
+
+NOT BLOCKING — these are advisory; the user/reviser decides per match.
+
+#### O. Outline-to-Draft Coverage (WARNING; BLOCKING if undocumented)
+
+**Load** `chapters/<book>/outline.md` and any `chapters/<book>/outline-deviation.md` (created by chapter-writer Step 2.5.d when scenes are cut/split/merged).
+
+**For each chapter draft in scope:**
+- Read the outline entry for the chapter (use the per-chapter targeted load — locate `## Ch. NN` header, read to next chapter header).
+- Enumerate the outlined scenes (each `### N.` or numbered beat block).
+- For each outlined scene, verify a corresponding section/passage exists in the draft. Heuristic: the scene's distinctive props, character names, location, or beat-summary keywords must appear in the draft text. A draft missing 30%+ of an outlined scene's distinctive markers is "missing".
+
+**Flag:**
+- Outlined scene missing from draft AND documented in `outline-deviation.md` → **WARNING**: "scene <name> moved/cut per outline-deviation.md — verify the deviation entry's plant-shift list is complete."
+- Outlined scene missing from draft AND NOT documented in `outline-deviation.md` → **BLOCKING**: "SILENT CUT: outlined scene <name> is absent from the draft and has no entry in outline-deviation.md. Either restore the scene, or document the deviation retroactively (chapter-writer Step 7.8)."
+
+#### P. Cross-Substrate Sensory-Echo Audit (WARNING — confirm intent)
+
+**Load** `world/temporal-echoes.md` (specifically the §Cross-Substrate Sensory Resonances section, if present — added in Phase 112 M5h of the ground-truth project; equivalent in other projects).
+
+**Maintain a registry** of canonical cross-substrate sensory anchors documented there. Examples (Ground Truth project): 440 Hz hum (canonical Ark per Phase 111 M3); Phrygian quarter-tone bent-third (sonic side-channel signature per Phase 112 M5e if landed).
+
+**For each chapter draft:**
+- Scan for sensory specifics that match a registered canonical anchor (number/object/signature).
+- For each match, verify the echo is documented as intentional in `temporal-echoes.md §Cross-Substrate Sensory Resonances`.
+
+**Flag:**
+- Match documented as intentional → no flag (this is a planted echo working correctly).
+- Match NOT documented → **WARNING**: "potential cross-substrate sensory echo at <file>:<line>: \"<quote>\". Same value/object as <canonical anchor> at <other-level>. Confirm intent in `temporal-echoes.md` (intentional resonance OR unintentional collision — change one of the two if accidental)."
+
+NOT BLOCKING — forces the question to be answered, doesn't require a fix.
+
+#### Q. Redundancy-with-Adjacent-Text (NOTE)
+
+**Heuristic check:** for each chapter draft, scan for paragraphs that repeat specific information given in the immediately preceding paragraph or system-message line. Common pattern: a Game/system-text line says "YOUR MOTHER MADE COUSCOUS LAST WEEK" and the next paragraph describes that exact couscous evening (cumin, lamb, kitchen counter) — the reader gets the same datum twice.
+
+**Detection:** within a 3-paragraph window, if paragraph N+1 contains specific concrete details (named ingredient, named location, named object, named action) that are explicitly stated in paragraph N, AND paragraph N is a system-text / dialogue / revelation moment, flag.
+
+**Flag every match as NOTE:** "redundancy with adjacent text at <file>:<para>: \"<quote>\". The reader receives this datum twice — consider deferring or varying the second beat (or trusting the reader to fill in)."
+
+NOT BLOCKING — judgment call, sometimes deliberate (echo, theme reinforcement).
 
 ### 3. Output — Report to User
 

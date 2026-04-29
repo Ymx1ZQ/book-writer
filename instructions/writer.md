@@ -36,6 +36,8 @@ Before writing any chapter:
    c. Write a 100-word voice test (NOT saved, just for calibration): a paragraph in the POV character's voice describing something mundane. If it sounds right, proceed. If not, re-read voice samples and try again.
    The risk between sessions is voice drift — characters start sounding alike. Calibration is the vaccine.
 
+**Batch context note:** The files loaded in steps 2 and 4 above (`state.md`, `tones.md`, `prose-rules.md`, `writing-checklists.md`) remain in context for the entire batch. When chapter-writer runs for each chapter, it will skip re-reading these files (see its "Batch session optimization" note in Step 1). This saves ~4 file reads per chapter × 5 chapters = 20 redundant reads per batch.
+
 ---
 
 ## Chapter Loop
@@ -106,7 +108,7 @@ When all chapters are done:
 
 ```bash
 mkdir -p output
-echo "# The Game — Book N: [Title]" > output/book-N-draft.md
+echo "# [Project Title] — Book N: [Title]" > output/book-N-draft.md
 echo "**Draft assembled: $(date)**" >> output/book-N-draft.md
 echo "---" >> output/book-N-draft.md
 for f in chapters/book-N/ch*.md; do

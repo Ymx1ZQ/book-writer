@@ -90,7 +90,47 @@ For each `plot/episode-N-*.md`:
 
 **C. Replace restated mechanisms with cross-refs.** If the episode file explains the Alignment Window, temporal echoes, or PLC channel, replace with: `→ See temporal-echoes.md`.
 
-### 5. Report
+### 5. Prose Compression (all files in scope)
+
+For every file in scope (world/, characters/, plot/), apply token-reducing compression to narrative prose WITHOUT losing any information. This step does what an editor does: says the same thing in fewer words.
+
+**What to compress:**
+
+**A. Introductory framing.** Delete section-opening sentences that are meta-descriptions rather than content. Patterns: "This section covers...", "Below is...", "The following describes...", "Here we outline...", "Purpose:", "This file exists to...". The section header IS the framing — start with content.
+
+**B. Multi-paragraph explanations.** If a concept is explained in 3+ sentences where 1-2 would convey the same information, compress. The chapter-writer needs the FACT, not the explanation of why the fact matters. Keep sensory details and specific numbers — cut interpretive prose.
+
+**C. Prose that restates table data.** If a table shows element/book/chapter/status, and the prose above says "Element X appears in Chapter Y", the prose is redundant. Delete it. Keep prose ONLY when it adds sensory/tonal information the table cannot capture (atmosphere, texture, feeling).
+
+**D. Nolan constraint boxes.** Find all standalone constraint blocks (`Nolan constraint:`, `MANDATORY:`, `⚠️ STRUCTURAL NOTE:` blocks that aren't `⚠️ WRITING NOTE`). If the constraint is ≤1 sentence, integrate as inline parenthetical in the relevant prose. If >1 sentence, compress to 1 sentence and integrate. Delete the standalone block.
+
+**E. Scattered cross-references.** For each file with ≥3 inline `→ See` references: collect all into a `## References` section at file end. Keep only first-mention inline references within sections. This prevents ref scatter across fix/compact cycles.
+
+**F. Character trait verbosity.** In character files: each trait, flaw, or relationship should be ≤2 sentences. If a trait explanation runs 5+ sentences, compress to the essential: what the trait IS, what it CAUSES, and one concrete example. Remove narrative elaboration.
+
+**G. Redundant section content.** Within the same file, find concepts stated 2+ times in different sections. Keep the richest version, replace others with `→ See §[section]` within the file.
+
+**NEVER compress:**
+
+- Usage Tracker tables (every row preserved exactly)
+- `context:` tags in outlines
+- Structural fields (`**Level:**`, `**POV:**`, `**Tone:**`, `**Cliffhanger:**`, `**Opening Type:**`)
+- `## Ch. NN` headers
+- Pipeline-critical files: `prose-rules.md`, `narrator-boundaries.md`, `voice-samples.md`, `writing-checklists.md`, `tones.md`, `pacing-rules.md`, `cliffhanger-map.md`
+- State file section structure
+- Specific numbers, names, sensory details, technical specs
+- Sample dialogue lines in character files or voice-samples
+
+**Verification after each file:**
+1. `grep -c '|' <file>` — tracker row count must match pre-compression count
+2. No `context:` tags altered (if outline file)
+3. Spot-check: pick 3 facts from the original — verify they're still present
+
+**Scope control:** Process files via agents in parallel batches of ≤10. For each file: read full → identify compressible prose → rewrite compressed → verify tracker integrity. Do NOT re-read pipeline-critical files listed above — they are exempt.
+
+---
+
+### 6. Report
 
 ```
 📋 Book Compact — [scope] — Complete
@@ -117,7 +157,15 @@ Episode hierarchy:
   Process artifacts removed: X
   Mechanisms replaced with cross-refs: X
 
-Estimated token reduction: ~X words
+Prose compression:
+  Files compressed: X
+  Framing preambles removed: X
+  Nolan boxes integrated: X
+  Cross-refs consolidated to footers: X files
+  Tracker integrity: all verified ✅
+  Word count before/after: X → Y (~Z% reduction)
+
+Total estimated token reduction: ~X words
 ```
 
 ---

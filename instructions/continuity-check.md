@@ -17,8 +17,8 @@ Arguments: `<completed-book>` `<next-book>` (e.g., `book-1 book-2` or `book-2 bo
 ### 1. Load Files
 
 **From completed book:**
-- `chapters/<completed-book>/state.md` — the LAST "After Chapter XX" section (final state)
-- `chapters/<completed-book>/outline.md` — for reference on what was established
+- `chapters/<completed-book>/state.md` — the LAST "After Chapter XX" section (final state). This is the PRIMARY source for checks A, B, C, D, F, G — it captures character positions, open threads, ticking clocks, world state, tic introductions, and micro-details planted.
+- `chapters/<completed-book>/outline.md` — load ONLY if `state.md`'s "Micro-details Planted" section is sparse for check E (plants). If loaded, use a targeted read focused on plant-tracking entries — do not load the full file.
 
 **From next book:**
 - `chapters/<next-book>/outline.md` — the full outline

@@ -33,7 +33,9 @@ Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, charac
 
 ### 1. Scan for Pending Milestones
 
-Scan `DEVPLAN.md` for the most recent "Coherence Fixes" phase (or any phase with unchecked milestones). Parse all unchecked `- [ ]` items.
+Read `DEVPLAN.md` from the bottom — the most recent phase is always appended at the end. Read the last 500 lines first; if the most recent phase with unchecked milestones is not found there, expand upward in 500-line increments. Do NOT read the full file from the top.
+
+Scan for the most recent "Coherence Fixes" phase (or any phase with unchecked milestones). Parse all unchecked `- [ ]` items.
 
 **Announce:**
 ```
@@ -111,10 +113,13 @@ Total remaining: X milestones
 - ❌ Never add thematic or narrative content. Fixes are surgery, not writing.
 - ❌ Never mark an item `[x]` without actually applying the fix.
 - ❌ Never rewrite MORE than the milestone specifies. Minimal changes only.
-- ❌ Never embed milestone IDs in outline or project file text. Do not add `(M123)`, `(M123 — RESOLVED)`, `(M123, note)`, or any milestone reference into the content being written. Milestone tracking lives in DEVPLAN.md only.
+- ❌ Never embed milestone IDs in outline or project file text. Milestone tracking lives in DEVPLAN.md only.
+- ❌ Never create standalone ⚠️ blocks, "Nolan constraint:" boxes, or "MANDATORY:" wrappers. Write constraints as single-sentence parentheticals.
 - ✅ Grep for exact text before editing — content shifts as fixes accumulate.
 - ✅ Process milestones in order (blocking → warning → note).
 - ✅ If a fix would break continuity, flag it and skip rather than applying blindly.
 - ✅ Verify cross-reference targets exist before replacing content with a pointer.
-- ✅ After applying a fix to an outline, remove all process language. The outline should read as if the fix was always there — no 'Note:', 'MANDATORY:', 'drafting note:', 'author note:' wrappers. If the fix added a mechanism explanation, check whether a cross-ref to the canonical world file would suffice.
-- ✅ After all milestones in a session, scan modified outline files for: (a) mechanism paragraphs >2 sentences (→ replace with cross-ref), (b) authorial reasoning blocks (→ move to writing-notes.md), (c) correction metadata (→ delete). This prevents fix residue from accumulating.
+- ✅ **Word budget gate (per-milestone):** After applying any fix that adds content, run `wc -w <file>`. If over budget (see init.md template principles), compress or convert to cross-ref.
+- ✅ **Per-milestone residue check:** After each milestone, verify: (a) no mechanism paragraphs >2 sentences added (→ cross-ref), (b) no authorial reasoning added outside writing-notes.md (→ move), (c) no inline `→ See` refs when footer section exists (→ move to footer), (d) no prose restating tracker content (→ delete).
+- ✅ After applying a fix to an outline, remove all process language — no "Note:", "MANDATORY:", "drafting note:" wrappers.
+- ✅ **Post-session auto-compact:** After all milestones, run compact Step 1A (milestone ID stripping) and Step 1E (density check) on all modified files.

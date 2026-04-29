@@ -18,16 +18,34 @@ Scope options:
 
 ## Process
 
-### 1. Load Files
+### 1. Load Files (deferred — load per check category, not all upfront)
 
-Read ALL files in the specified scope:
-- `world/` — all context, technology, comparison, temporal-echoes files
-- `characters/foreground/` — all foreground character sheets
-- `characters/midground/` — all midground sheets
-- `characters/notes/` — voice samples, flashback beats
-- `plot/` — all plot files (episode overviews, key-scenes, cliffhanger maps, tracking files)
-- `chapters/book-N/outline.md` — the relevant outline(s)
+**Do NOT load everything at once.** Load only the files each check category actually needs, just before running that category. This keeps context lean and avoids reading dozens of files that are irrelevant to specific checks.
+
+**Load upfront (needed for orientation across all checks):**
+- `world/overview.md` — narrative levels, central themes, structural rules
+- `chapters/book-N/outline.md` — the relevant outline(s) for scope
 - `chapters/book-N/opening-strategy.md` — if it exists
+
+**Load per category (just before running each check):**
+
+| Check | Load at this point |
+|---|---|
+| A — Cross-Level Architecture | `world/temporal-echoes.md`, `world/simulation-rules.md` (if exists) |
+| B — Plot Holes | `plot/` files: episode overviews, key-scenes, cliffhanger-map |
+| C — Causal Flow & Knowledge | `plot/` files (if not already loaded), `plot/information-asymmetry.md` (if exists) |
+| D — Character Consistency | `characters/foreground/` all sheets, `characters/midground/` all sheets, `characters/notes/` |
+| E — Technology | `world/technology-comparison.md`, all `world/level-*-<name>/` files relevant to scope |
+| F — Pacing | `world/pacing-rules.md`, re-use outlines already loaded |
+| G — Infodump | Re-use outlines; load chapter drafts only if they exist (`chapters/book-N/ch*.md`, excluding plan files) |
+| H — Thematic | Re-use `world/overview.md` already loaded |
+| I — Reader Experience | `plot/reader-journey.md` (if exists), re-use outlines |
+| J — Chekhov | `plot/prestige-inventory.md` (if exists), `plot/motif-tracking.md` (if exists), ALL outlines across all books |
+| K — Context Tags & Trackers | All `world/level-*-<name>/` files (if not already loaded), all files referenced in `context:` tags across outlines |
+
+**For scope `characters`:** load only rows D and skip all others.
+**For scope `world`:** load only rows A, E, H and skip character/outline checks.
+**For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J.
 
 ### 2. Check Categories (10 checks)
 
@@ -184,7 +202,16 @@ Fixes ordered by severity, then by file.
 - Each milestone's checkbox must contain enough context to execute the fix WITHOUT re-reading the full report.
 - Include the file path, the section to modify, and the specific change to make.
 - The devplan is appended to the existing `DEVPLAN.md`, never overwriting previous phases.
-- Fix instructions for outline files MUST specify minimal content. Do NOT add mechanism explanations — use cross-ref to the canonical world file. Fixes that add more than 2 sentences to an outline entry must justify why a cross-ref is insufficient.
+- Fix instructions for outline files: MAX 1 sentence of new content. Anything longer → cross-ref. No exceptions.
+- Fix instructions that add content to project files MUST specify the EXACT text — max 2 sentences per addition. If more needed, justify why a cross-ref is insufficient.
+- Fixes MUST NOT add mechanism explanations to outlines — use `→ See [canonical-file] §[section]`.
+- Fixes MUST NOT add authorial reasoning ("the reader should...", "on reread...") to any file except writing-notes.md.
+- Fixes MUST NOT add Nolan-constraint boxes, "MANDATORY" blocks, or meta-commentary wrappers. Write constraints as single-sentence parentheticals.
+- Fixes MUST NOT add introductory framing to sections. No "This section covers..." preambles.
+- Fixes that add cross-references: add to the file's `## References` footer section, not inline.
+- Every fix that adds content must include: "Verify file stays within word budget (see init.md)."
+- Classify each fix as SUBTRACTIVE (removes/corrects) or ADDITIVE (adds content). Max 10 additive fixes per phase. If more needed, split phases with `/book compact` between them.
+- Total additions per phase: max 500 words across all fixes. Compress or defer if exceeded.
 - After writing, announce: *"Coherence devplan written: X milestones. Run `/book fix <book>` to apply fixes."*
 
 ### 5. Summary

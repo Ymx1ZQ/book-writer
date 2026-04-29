@@ -22,6 +22,13 @@ You are NOT an author. You are an editor and architect who listens and builds.
 
 ## Process
 
+### Global Writing Rules
+
+- Prose and trackers serve DIFFERENT purposes. Prose captures tone, atmosphere, sensory texture. Trackers capture placement (element, chapter, status). NEVER write prose that restates tracker content.
+- Every world file starts lean — every extra word costs tokens when the chapter-writer loads it. If it can be a table, make it a table.
+- Never write section preambles ("This section covers..."). Start with content.
+- After writing each file, run `wc -w` and check against word budgets (see init.md template principles).
+
 ### 0. Read Existing State
 
 Before starting, scan the project directory:
@@ -96,7 +103,7 @@ Starting with: [first empty section]
 
 **Write** into the character file. For each character, also add entries to `characters/notes/voice-samples.md`. Add narrator POV rules to `characters/notes/narrator-boundaries.md` (one section per POV character).
 
-**Push for specificity:** Not "she's brave" but "she once held a door open for twenty minutes while everyone else ran." Not "he's angry" but "he drums five beats on the armrest when he's thinking and his jaw locks when someone offers help."
+**Prose discipline:** Each prose section: max 2-3 sentences. The chapter-writer needs the ESSENCE, not a biography. Details land in the tracker, not in prose. After writing, run `wc -w <file>` and check against word budgets (see init.md template principles). If over budget, compress before moving on.
 
 **Anti-duplication rule:** Each concept in a character file lives in ONE section. If a flashback scene appears in §Flashback Beats, other sections use `→ See §Flashback N` instead of retelling. Narrator Boundaries go in `characters/notes/narrator-boundaries.md`, not inline in the character file.
 

@@ -173,7 +173,24 @@ Each file is created with a header, a brief instruction comment, and empty secti
 - Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Only add a file to `context:` if it has tracker items mapped to that chapter.
 - No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
 - Each concept has ONE canonical file. When generating level context files, technology files, and thematic files, check for overlap. If two files would describe the same mechanism, pick one as canonical and cross-ref from the other.
-- Foreground files: ~1500-2500 words. Midground: ~800-1500. Background: ~100-500.
+- **Word budgets (prose excluding tracker tables):**
+
+  | File type | Max prose words | What counts |
+  |-----------|----------------|-------------|
+  | Foreground character | ≤1200 | All prose sections combined |
+  | Midground character | ≤600 | All prose sections combined |
+  | Background character | ≤200 | Everything |
+  | World concept file | ≤800 | Prose above the tracker |
+  | World level context | ≤600 | Prose above the tracker |
+  | World level technology | ≤500 | Prose above the tracker |
+  | Plot tracking file | ≤600 | Prose above/between tables |
+  | Episode file | ≤400 | Everything |
+  | Outline chapter entry | ≤250 normal / ≤100 rapid | Beat descriptions + context tags |
+
+- Every trait/flaw/relationship in a character file: MAX 2 sentences. Longer = under-distilled.
+- Prose describes what tables/trackers CANNOT capture (tone, atmosphere, sensory texture). Never restate tabular data in prose.
+- Cross-references: collect all `→ See` refs in a `## References` section at file end. Inline cross-refs only at first mention.
+- Never write section preambles ("This section covers..."). The header IS the framing.
 - Writing instructions (how to render the character in prose) go in `characters/notes/narrator-boundaries.md`, NOT inline in character files.
 
 ### 4. Generate CLAUDE.md

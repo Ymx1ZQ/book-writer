@@ -126,3 +126,56 @@ Phase 3 does not implement project-content milestones — those are filed in eac
 **Phase 3 totals:** 5 milestones, all in this skill repo. Phase 3 produces a check (sniff) and rules (chapter-writer, coherence-check) that surface project-content gaps; the gaps themselves go to each book project's DEVPLAN.
 
 **Out of scope:** the smell-test does NOT auto-fix worldbuilding gaps — it just surfaces them. The user/agent triages.
+
+---
+
+## Phase 4 — Context-symmetry Guardrails (2026-04-30) — IDD
+
+Surfaced from the ground-truth project's Phase 113 M4 / Phase 114 investigation. Pre-Phase-114, B1 Ch.01 carried 28 files in `**context:**`; manual audit showed only 16 were genuinely beat-referenced, 12 were orphan accumulation, and 3 newly-canonical files (post-Phase-112) were absent. The previous mitigation was a malformed rule on Ch.01 only ("MAX 3 files actively drawn from in prose"); abandoned in Phase 114 as a band-aid for bloat.
+
+This phase encodes the symmetry principle skill-side so future drift is caught at write-time and at coherence-time, not via manual audit:
+
+- **Symmetry rule (project-side, in each book's outline.md §Context Tags):** every file in `**context:**` has at least one beat that references it; every beat that needs a file lists that file. When beats mutate, `**context:**` mutates.
+- **Skill-side enforcement (this phase):** the chapter-writer agent checks symmetry before drafting; the coherence-check agent flags asymmetries on existing outlines as WARNING.
+
+**Execution mode:** IDD (instruction-file deliverables, same justification as Phase 3 §32 — no test runner; grep-tests over markdown rules would be cargo-cult).
+
+### M1: chapter-writer pre-draft Context Symmetry Check
+
+**File:** `instructions/chapter-writer.md` (REVISIONE — append a new Pre-Drafting Context Symmetry Check section after the existing Pre-Drafting Anchor Checks).
+
+- [ ] **1a — Beat-side scan (missing files).** Before drafting, the agent parses the chapter outline beats up to the next chapter header, extracting:
+  - Explicit references: every `→ see <path>` and every `<path>` mentioned by name.
+  - Implicit references: every named character (cross-ref `characters/**.md`), every named location (cross-ref `level-N-*/locations*.md` or `level-0-reality/architecture.md`), every named system / mechanism / technical anchor (cross-ref `world/**.md`).
+  Compares the union against the chapter's `**context:**` list (excluding always-loaded set declared in the outline header). Files referenced in beats but missing from `**context:**` → STOP. Output the list of missing files and request user confirmation to add (or auto-add if user has pre-authorized).
+- [ ] **1b — Context-side scan (orphan files).** For every file in `**context:**` (excluding always-loaded), the agent verifies at least one beat reference exists per 1a. Files with no beat reference → flag as "orphan candidate" in pre-draft summary. NOT blocking — orphans are advisory, since some files may be load-bearing for consistency-only checks (in which case the agent should propose moving them to always-loaded). User confirms before drafting proceeds.
+- [ ] **1c — Post-draft audit.** After drafting, the agent generates `chapters/book-N/chNN-context-audit.md` (gitignored, ephemeral): each file in `**context:**` mapped to the beat / line-range where it was actually used in prose, plus any file used in prose but not in `**context:**`. Compares against the planned context list and outputs a one-line drift summary: `context drift: -<file> (planned, unused), +<file> (used, unplanned)`. Drift entries feed back into the symmetry check for the next chapter.
+- [ ] **1d — Always-loaded set awareness.** The agent loads the outline header's always-loaded reference paragraph (typically `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, foreground character files) and excludes those from both the "missing" and "orphan" checks. Always-loaded references are out of scope for per-chapter symmetry.
+
+### M2: coherence-check — context-symmetry as WARNING (5g + 5h)
+
+**File:** `instructions/coherence-check.md` (REVISIONE — append two new check classes after existing 5f Redundancy-with-adjacent-text NOTE).
+
+- [ ] **5g — Context-list orphan WARNING.** For every chapter in the relevant outline, parse `**context:**` and check that each listed file (excluding always-loaded set declared in the outline header) has at least one beat reference (explicit `→ see` OR a named entity that semantically requires the file's content). Files with zero references → WARNING "context-list orphan: file `<path>` listed in context for `Ch.NN` but no beat references it. Remove or move to always-loaded if consistency-only."
+- [ ] **5h — Missing-context WARNING.** For every explicit `→ see <path>` reference and every named character / location / system / technical anchor in beats, verify the corresponding canonical file is in the chapter's `**context:**` (or in always-loaded). Missing → WARNING "context-gap: beat in `Ch.NN` references `<entity>` (canonical to `<file>`) but file not in `**context:**`. Add or justify."
+- [ ] Both checks are WARNING-level (not BLOCKING) because: (i) the heuristic for "named entity → canonical file" is fuzzy and false positives are non-trivial; (ii) project-side review is the right place to adjudicate. BLOCKING would over-fire.
+
+### M3: Outline-mutation hook in 4d
+
+**File:** `instructions/chapter-writer.md` (REVISIONE — extend existing Phase 3 M4 4d Outline-to-chapter coverage contract).
+
+- [ ] **4d.iv — Context-list update on outline mutation.** When the writer cuts/splits/reorders scenes per 4d (i)-(iii), the writer ALSO updates the affected chapter's `**context:**` field — removing files that lose their justifying beat (per 1b), adding files newly required (per 1a). The outline-deviation entry must include a `Context: -<file>, +<file>` line summarizing the diff so the change is auditable in `outline-deviation.md`.
+- [ ] If a beat moves to a different chapter (Phase 113 example: Ch.01 Beat 2a body-maintenance moved to Ch.04), the source chapter loses the corresponding files (e.g., `medicine-and-body.md`) and the destination chapter gains them. Both `**context:**` fields update; both diffs go to `outline-deviation.md`.
+
+### M4: SKILL.md routing + dispatcher hint
+
+**File:** `SKILL.md` (REVISIONE — small touch).
+
+- [ ] Add a one-line note in the Pipeline section: *"Pre-draft context symmetry: chapter-writer agent enforces beat↔context symmetry before drafting (Phase 4 M1). Coherence-check flags drift on already-written chapters (Phase 4 M2 5g/5h)."*
+- [ ] No new subcommand — symmetry checks live inside existing chapter-writer + coherence-check, not as a standalone command.
+
+---
+
+**Phase 4 totals:** 4 milestones, all instruction-file edits. No new tooling. No new subcommand. Tightens the existing chapter-writer + coherence-check + revise pipeline so context-list drift is caught at the two natural enforcement points: write-time (chapter-writer pre-check, blocking on missing files) and audit-time (coherence-check, WARNING on orphans + gaps).
+
+**Out of scope:** auto-fixing the trilogy's existing context-list drift — that's project-side work in `ground-truth/DEVPLAN.md` Phase 114 M3 (sub-agent-driven trilogy audit, applied per-chapter).

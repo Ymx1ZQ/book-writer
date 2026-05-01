@@ -53,6 +53,8 @@ BETWEEN BOOKS
  12. /book continuity book-1 book-2 → verify cross-book consistency
 ```
 
+**Pre-draft context symmetry:** the chapter-writer agent enforces beat↔context symmetry before drafting (chapter-writer Step 2.6 — STOP on missing files, advisory on orphans). `coherence-check` flags drift on already-written outlines as WARNING (classes R + S). No standalone subcommand: the symmetry check lives inside `chapter-writer` (write-time) and `coherence-check` (audit-time).
+
 ## Execution
 
 When a command is received:

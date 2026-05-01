@@ -53,7 +53,7 @@ Scope options:
 **For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
 **For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q only run if chapter drafts exist for the scope.
 
-### 2. Check Categories (17 checks)
+### 2. Check Categories (19 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
 
@@ -257,6 +257,31 @@ NOT BLOCKING — forces the question to be answered, doesn't require a fix.
 **Flag every match as NOTE:** "redundancy with adjacent text at <file>:<para>: \"<quote>\". The reader receives this datum twice — consider deferring or varying the second beat (or trusting the reader to fill in)."
 
 NOT BLOCKING — judgment call, sometimes deliberate (echo, theme reinforcement).
+
+#### R. Context-list Orphan (WARNING)
+
+**Symmetry rule (project side):** every file listed in a chapter's `**context:**` field has at least one beat reference (explicit `→ see <file>` OR a named entity / system / location / mechanism that semantically requires the file's content); every beat that needs a file lists that file. When beats mutate, `**context:**` mutates.
+
+**Heuristic check (this class):** for every chapter in the active outline, parse the chapter's `**context:**` field. For each file listed (excluding the always-loaded set declared in the outline header `### Context Tags` paragraph), verify at least one beat reference exists. A beat reference is:
+
+- An explicit `→ see <file>` or bare `<file>` mentioned in beats.
+- An implicit reference: a named character (cross-ref `characters/**.md`); a named location (cross-ref `world/level-N-*/locations*.md` or `world/level-0-reality/architecture.md`); a named system / mechanism / technical anchor (cross-ref `world/**.md`); a named ration unit, compliance score, anomaly code, frequency, or hardware artifact whose canonical home is the listed file.
+
+**Flag every file with zero beat references as WARNING:** "context-list orphan at `chapters/<book>/outline.md` Ch.NN: file `<path>` listed in `**context:**` but no beat references it. Remove from per-chapter context, OR promote to always-loaded if consistency-only, OR add a beat reference."
+
+**Why WARNING (not BLOCKING):** the heuristic for "named entity → canonical file" is fuzzy (synonyms, common words); a fully strict rule would over-fire. Project-side review adjudicates.
+
+#### S. Missing-context (WARNING)
+
+**Heuristic check:** the inverse of R. For every chapter in the active outline, parse beats. For every explicit `→ see <path>` reference and every named entity / system / location / mechanism / anchor that traces to a canonical file, verify the corresponding file is in the chapter's `**context:**` (or in the always-loaded set declared in the outline header).
+
+**Flag every beat reference whose canonical file is NOT in `**context:**` (and NOT always-loaded) as WARNING:** "context-gap at `chapters/<book>/outline.md` Ch.NN: beat references `<entity>` (canonical to `<file>`) but file not in `**context:**`. Add the file, OR promote `<entity>` to always-loaded, OR justify the omission."
+
+**Why WARNING (not BLOCKING):** same fuzziness reason as R. The chapter-writer agent's pre-draft Step 2.6.a runs the same scan as a HARD `MUST` for chapters about to be drafted; coherence-check runs the same scan over the static outline as a routine audit, which is the right place for WARNING-level over-flagging because the user can dismiss false positives in batch.
+
+#### Load files for R + S
+
+Same heuristic source: the active outline's `### Context Tags` header (always-loaded list); the per-chapter `**context:**` fields; the beat blocks following each chapter heading. No additional canon files needed beyond what's already loaded for L–Q.
 
 ### 3. Output — Report to User
 

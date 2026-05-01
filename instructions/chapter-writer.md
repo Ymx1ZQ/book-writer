@@ -211,14 +211,57 @@ If the plan during Step 2 deviates from the chapter outline (cuts a scene, split
 1. Update `chapters/<book>/outline.md` to reflect the new structure (move plant tags, update beat sections, mark moved beats with `[moved to chXX]` annotations).
 2. Append a one-line entry to `chapters/<book>/outline-deviation.md` (CREATE if missing, append-only):
    ```
-   Ch.NN (YYYY-MM-DD): <scene name> moved/cut/merged because <reason>. Plants shifted: <list, with new chapter destinations>. Open debt: <list of plants now without a planned chapter>.
+   Ch.NN (YYYY-MM-DD): <scene name> moved/cut/merged because <reason>. Plants shifted: <list, with new chapter destinations>. Open debt: <list of plants now without a planned chapter>. Context: -<file>, +<file>.
    ```
 3. If any plant lost its planned chapter and has no new destination, FLAG this in the writer's announcement: *"⚠️ Plant orphaned: <plant>. Will be unassigned until reassigned in a future writer call."*
+4. **Update the affected chapter's `**context:**` field** to keep beat↔context symmetry (per Step 2.6): remove files that lose their justifying beat after the cut/move (orphans per 2.6.b); add files newly required by the surviving or relocated beats (gaps per 2.6.a). If a beat moved to a different chapter, the source chapter loses the corresponding files and the destination chapter gains them — both `**context:**` fields update; both diffs go into the deviation entry's `Context:` field.
 
 **Silent cuts are forbidden.** Step 7 (Outline Cleanup) verifies the contract was respected.
 
 Announce upon completion of Step 2.5:
 *"✅ Pre-drafting anchor checks passed. Proceeding to write."*
+
+---
+
+## Step 2.6: Pre-Drafting Context Symmetry Check (MANDATORY)
+
+The chapter's `**context:**` list (in the outline) and its scene beats must stay symmetric: every file in `context:` must justify itself with at least one beat reference; every beat that needs a file must list that file. Drift in either direction is an invention surface (orphan = wasted context window; gap = the writer fills silence with plausible-but-uncanonicalized invention). This check runs after Step 2.5 and before Step 3.
+
+### 2.6.a — Beat-side scan (missing files) (HARD `MUST`)
+
+Parse the chapter outline beats up to the next chapter header. Extract:
+
+- **Explicit references**: every `→ see <path>` and every bare `<path>` mentioned in beats.
+- **Implicit references**: every named character (cross-ref `characters/**.md`); every named location (cross-ref `world/level-N-*/locations*.md` or `world/level-0-reality/architecture.md`); every named system, mechanism, or technical anchor (cross-ref `world/**.md`); every named ration unit, compliance score, anomaly code, frequency, or hardware artifact that traces to a canonical file.
+
+Compare the union against the chapter's `**context:**` list, **minus** the always-loaded set declared in the outline header. Files referenced in beats but missing from `**context:**` → STOP. Output the list of missing files and request user confirmation to add (or auto-add if the writer call explicitly pre-authorized context-list edits).
+
+### 2.6.b — Context-side scan (orphan candidates)
+
+For every file in `**context:**` (excluding always-loaded), verify at least one beat reference exists per 2.6.a. Files with zero references → flag as "orphan candidate" in the pre-draft summary. NOT blocking — orphans are advisory, since some files may be load-bearing for consistency-only checks. The agent proposes one of:
+
+- **Remove** (file adds no value to this chapter), OR
+- **Promote to always-loaded** (file is universally needed across the book), OR
+- **Keep + document** (file IS load-bearing for consistency, despite no explicit beat — agent must justify in the pre-draft summary).
+
+User confirms before drafting proceeds. Drafting MAY proceed with documented orphans.
+
+### 2.6.c — Post-draft audit
+
+After Step 5 (Verify), the agent generates `chapters/<book>/ch<NN>-context-audit.md` (ephemeral; project should gitignore via `chapters/*/ch*-context-audit.md` pattern). For each file in `**context:**`, the audit maps the file to the beat / line-range where it was actually used in prose. The audit also lists any file used in prose but not in `**context:**` (drift). One-line summary at the top of the file:
+
+```
+context drift: -N file(s) planned-but-unused (<list>); +M file(s) used-but-unplanned (<list>).
+```
+
+Drift entries feed back into the symmetry check for the next chapter — used-but-unplanned files become candidates for next chapter's `**context:**`; planned-but-unused files become orphan candidates.
+
+### 2.6.d — Always-loaded set awareness
+
+Read the outline header's "Always-loaded reference" paragraph (typically lists `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, plus trilogy-wide foreground character files and any book-specific promotions). Exclude every file in this paragraph from BOTH the missing (2.6.a) and orphan (2.6.b) checks. Always-loaded references are out of scope for per-chapter symmetry — they are loaded by default and need no per-chapter justification.
+
+Announce upon completion of Step 2.6:
+*"✅ Pre-drafting context symmetry check passed. Proceeding to write."*
 
 ---
 

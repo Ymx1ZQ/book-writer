@@ -1,4 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "markdown",
+#     "ebooklib",
+#     "pyyaml",
+# ]
+# ///
 """Render book chapters from Markdown to EPUB.
 
 Usage:
@@ -15,6 +23,7 @@ import uuid
 from pathlib import Path
 
 import markdown
+import yaml
 from ebooklib import epub
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -48,15 +57,6 @@ def load_meta(book_dir: Path) -> dict:
     meta_path = book_dir / "meta.yaml"
     if not meta_path.is_file():
         return meta
-    try:
-        import yaml
-    except ImportError:
-        print(
-            "warning: PyYAML not installed; ignoring meta.yaml. "
-            "Install with: pip install --user pyyaml",
-            file=sys.stderr,
-        )
-        return meta
     data = yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
     for k in ("title", "author", "identifier", "language"):
         if k in data and data[k]:
@@ -84,7 +84,7 @@ def add_default_css(book: epub.EpubBook) -> epub.EpubItem:
         uid="style",
         file_name="style.css",
         media_type="text/css",
-        content=DEFAULT_CSS.read_text(encoding="utf-8"),
+        content=DEFAULT_CSS.read_bytes(),
     )
     book.add_item(css_item)
     return css_item
@@ -99,8 +99,30 @@ def make_chapter_item(filename: str, title: str, html_body: str) -> epub.EpubHtm
         f"<head><title>{title}</title>"
         "<link rel='stylesheet' type='text/css' href='style.css'/>"
         f"</head><body>{html_body}</body></html>"
-    )
+    ).encode("utf-8")
     return chap
+
+
+def make_nav(items: list, title: str) -> epub.EpubNav:
+    nav = epub.EpubNav(uid="nav", file_name="nav.xhtml")
+    nav_li = "\n".join(
+        f'<li><a href="{item.file_name}">{item.title}</a></li>'
+        for item in items
+    )
+    nav.content = (
+        "<?xml version='1.0' encoding='utf-8'?>"
+        "<!DOCTYPE html>"
+        "<html xmlns='http://www.w3.org/1999/xhtml' "
+        "xmlns:epub='http://www.idpf.org/2007/ops'>"
+        f"<head><title>{title}</title></head>"
+        "<body>"
+        "<nav epub:type='toc' id='toc'>"
+        f"<h1>{title}</h1>"
+        f"<ol>{nav_li}</ol>"
+        "</nav>"
+        "</body></html>"
+    ).encode("utf-8")
+    return nav
 
 
 def render_single(book_dir: Path, ch: str, out: Path) -> Path:
@@ -123,7 +145,7 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
     book.add_item(chap)
     book.toc = (chap,)
     book.add_item(epub.EpubNcx())
-    book.add_item(epub.EpubNav())
+    book.add_item(make_nav([chap], title))
     book.spine = ["nav", chap]
 
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -156,7 +178,7 @@ def render_book(book_dir: Path, out: Path) -> Path:
 
     book.toc = tuple(items)
     book.add_item(epub.EpubNcx())
-    book.add_item(epub.EpubNav())
+    book.add_item(make_nav(items, title))
     book.spine = ["nav"] + items
 
     out.parent.mkdir(parents=True, exist_ok=True)

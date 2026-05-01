@@ -74,23 +74,19 @@ DEST="$HOME/.claude/skills/book"
 
 MISSING=()
 command -v python3 >/dev/null 2>&1 || MISSING+=("python3")
-
-if command -v python3 >/dev/null 2>&1; then
-    python3 -c "import markdown" 2>/dev/null || MISSING+=("python: markdown    (needed for /book pdf and /book epub)")
-    python3 -c "import weasyprint" 2>/dev/null || MISSING+=("python: weasyprint  (needed for /book pdf)")
-    python3 -c "import ebooklib" 2>/dev/null || MISSING+=("python: ebooklib    (needed for /book epub)")
-    python3 -c "import yaml" 2>/dev/null || MISSING+=("python: pyyaml      (optional, for meta.yaml in /book epub)")
-fi
+command -v uv >/dev/null 2>&1 || MISSING+=("uv  (https://docs.astral.sh/uv/getting-started/installation/ — needed for /book pdf and /book epub)")
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     echo ""
-    echo "Warning — missing dependencies on \$PATH or in the active Python:"
+    echo "Warning — missing dependencies on \$PATH:"
     for m in "${MISSING[@]}"; do
         echo "  - $m"
     done
     echo ""
     echo "Core /book commands (init, setup, write, review, ...) work without these."
-    echo "Only /book pdf and /book epub need the Python packages above."
+    echo "Only /book pdf and /book epub need uv; Python deps (markdown, weasyprint,"
+    echo "ebooklib, pyyaml) are auto-resolved by uv at first run via PEP 723 inline"
+    echo "script metadata."
     if [ "$FORCE" != true ]; then
         echo ""
         printf "Continue installing? [y/N] "

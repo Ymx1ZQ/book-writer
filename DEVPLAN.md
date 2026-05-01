@@ -16,14 +16,14 @@ Tooling milestones for the `/book` skill. Project-content milestones live in eac
 
 ---
 
-## Phase 2 — EPUB Export (2026-04-29) — DONE (smoke test deferred pending `ebooklib` install)
+## Phase 2 — EPUB Export (2026-04-29) — DONE
 
 `/book epub <book> [chNN]` — mirror of `/book pdf` for the digital Kindle pipeline. Engine: `ebooklib` (pure-Python, MIT, no native deps). Output → `chapters/<book>/epub/`. Optional `chapters/<book>/meta.yaml` overrides title/author/identifier/language; defaults: title from `outline.md`, author "Unknown Author", deterministic UUID, lang "en".
 
 - [x] M1: `scripts/build_epub.py` + `scripts/epub.css` (reflow-friendly em-based, no page-sizes, drop-cap, `* * *` scene break).
 - [x] M2: `instructions/epub.md`.
 - [x] M3: SKILL.md commands-table row + routing.
-- [ ] M4: smoke test — blocked by missing `ebooklib` in active Python (PEP 668 system Python). User to choose install path: `pip install --user --break-system-packages ebooklib` OR a dedicated venv with shebang updates. Not blocking the rest of the work.
+- [x] M4: smoke test — **closed by Phase 5 M5/M6 (2026-05-01)**. uv self-bootstrap resolved the PEP 668 issue; smoke test surfaced two pre-existing bugs (empty EpubNav content, chapter content set as str instead of bytes), both fixed in Phase 5 M6. EPUBs now valid in both single-chapter and whole-book modes.
 
 ---
 
@@ -181,3 +181,94 @@ Implementation note: the original DEVPLAN proposed numeric class names (5g/5h), 
 **Phase 4 totals:** 4 milestones, all instruction-file edits. No new tooling. No new subcommand. Tightens the existing chapter-writer + coherence-check + revise pipeline so context-list drift is caught at the two natural enforcement points: write-time (chapter-writer pre-check, blocking on missing files) and audit-time (coherence-check, WARNING on orphans + gaps).
 
 **Out of scope:** auto-fixing the trilogy's existing context-list drift — that's project-side work in `ground-truth/DEVPLAN.md` Phase 114 M3 (sub-agent-driven trilogy audit, applied per-chapter).
+
+---
+
+## Phase 5 — uv-managed export scripts (2026-05-01) — IN PROGRESS
+
+Phase 1 (PDF) shipped expecting `weasyprint` + `markdown` to be on the system Python; Phase 2 (EPUB) added `ebooklib` + `pyyaml`. On modern Linux distros (PEP 668), `pip install --user` is blocked without `--break-system-packages`, and the install.sh dependency-check just emits a warning and leaves the user to figure it out. Phase 2 M4 (smoke test) has been blocked on this since 2026-04-29.
+
+This phase migrates both export scripts to **PEP 723 inline script metadata** with a `uv run --script` shebang. Each script declares its own dependencies in a header block; `uv` resolves them into an ephemeral cached venv on first run and reuses it on subsequent runs. No persistent venv to manage, no machine-specific paths, no pip-vs-system-python contention. install.sh's dependency check collapses to a single `command -v uv` probe.
+
+### M1: `scripts/build_pdf.py` — PEP 723 header + uv shebang ✅
+
+**File:** `scripts/build_pdf.py` (REVISIONE — first 10 lines).
+
+- [x] Replace shebang `#!/usr/bin/env python3` with `#!/usr/bin/env -S uv run --script`.
+- [x] Insert PEP 723 metadata block immediately after shebang:
+  ```python
+  # /// script
+  # requires-python = ">=3.11"
+  # dependencies = [
+  #     "markdown",
+  #     "weasyprint>=60",
+  # ]
+  # ///
+  ```
+- [x] No code changes. Imports stay as-is.
+
+### M2: `scripts/build_epub.py` — PEP 723 header + uv shebang ✅
+
+**File:** `scripts/build_epub.py` (REVISIONE — first 10 lines).
+
+- [x] Replace shebang `#!/usr/bin/env python3` with `#!/usr/bin/env -S uv run --script`.
+- [x] Insert PEP 723 metadata block:
+  ```python
+  # /// script
+  # requires-python = ">=3.11"
+  # dependencies = [
+  #     "markdown",
+  #     "ebooklib",
+  #     "pyyaml",
+  # ]
+  # ///
+  ```
+- [x] Promote `pyyaml` from optional (`try: import yaml`) to required — it's <100 KB and the conditional-import logic adds noise. Update the body if it has a try/except guard.
+
+### M3: `install.sh` — collapse dependency checks to `uv` probe ✅
+
+**File:** `install.sh` (REVISIONE — replace the MISSING[] block).
+
+- [x] Drop the per-module `python3 -c "import X"` checks for `markdown`, `weasyprint`, `ebooklib`, `pyyaml`.
+- [x] Replace with: `command -v uv >/dev/null 2>&1 || MISSING+=("uv (https://docs.astral.sh/uv/getting-started/installation/) — needed for /book pdf and /book epub")`.
+- [x] Keep the `python3` check (still needed as fallback / sanity).
+- [x] Update the warning text: "Only /book pdf and /book epub need uv; deps are auto-resolved at first run."
+
+### M4: `instructions/pdf.md` + `instructions/epub.md` — drop `python3` prefix ✅
+
+**Files:** `instructions/pdf.md`, `instructions/epub.md` (REVISIONE — invocation lines).
+
+- [x] Replace `python3 ~/.claude/skills/book/scripts/build_pdf.py <args>` with `~/.claude/skills/book/scripts/build_pdf.py <args>` (script self-bootstraps via uv shebang).
+- [x] Same for `build_epub.py`.
+- [x] Add a one-line note: "First invocation triggers uv to resolve dependencies (cached after); subsequent runs are instant."
+
+### M5: Smoke tests (closes Phase 2 M4) ✅
+
+**Targets:** synthetic minimal markdown (book-1 has no drafted chapters yet — Ch.01 reset by Phase 112 M1).
+
+- [x] Built temp test book at `/tmp/tmp.*/book-1/` with `outline.md` + `ch01.md` (~150 words).
+- [x] PDF single-chapter test: `~/.claude/skills/book/scripts/build_pdf.py /tmp/.../book-1 --chapter ch01` → `wrote .../pdf/ch01.pdf`. uv resolved 14 packages on first run. ✅
+- [x] EPUB single-chapter: surfaced **two pre-existing Phase 2 bugs** (see M6). Fix landed in M6, then re-tested → `wrote .../epub/ch01.epub` (1965 bytes, 7 internal files: mimetype + container.xml + content.opf + style.css + ch01.xhtml + toc.ncx + nav.xhtml). ✅
+- [x] EPUB whole-book: `~/.claude/skills/book/scripts/build_epub.py /tmp/.../book-1` → `wrote .../epub/book-1.epub`. ✅
+- [x] uv cache reuse verified — second invocation does not re-download (env reused at `~/.cache/uv/environments-v2/`).
+- [x] **Closes Phase 2 M4** (smoke test deferred since 2026-04-29 because of `ebooklib` PEP 668 install issue, now solved by uv self-bootstrap).
+
+### M6: Fix EpubNav empty-content + chapter-content-as-str bugs (closes Phase 2 M4 properly) ✅
+
+**File:** `scripts/build_epub.py` (REVISIONE).
+
+Surfaced by the M5 smoke test — these are **pre-existing Phase 2 bugs** that nobody had ever triggered because nobody had ever run the script (M4 deferred since 2026-04-29).
+
+**Bug 1 — `EpubNav()` empty content.** ebooklib's auto-nav-gen runs at `write()` time, but the `_get_nav` call inside `_write_items` happens before that auto-gen populates content. Modern lxml rejects an empty document body with `lxml.etree.ParserError: Document is empty`. The error was non-fatal (epub still got written), but the resulting nav was missing.
+
+**Bug 2 — `chap.content` set as `str`.** `EpubHtml.content` requires `bytes`. When given a `str`, ebooklib wrote a 0-byte chapter file. Same for the CSS item.
+
+- [x] **Fix 1:** Add `make_nav(items, title) -> epub.EpubNav` helper that builds explicit nav XHTML with TOC ol/li, sets `nav.content` as bytes. Replace `book.add_item(epub.EpubNav())` (both single-chapter and whole-book code paths) with `book.add_item(make_nav([chap], title))` / `make_nav(items, title)`.
+- [x] **Fix 2:** Add `.encode("utf-8")` to `chap.content` assignment in `make_chapter_item`. Switch CSS load from `read_text(encoding="utf-8")` to `read_bytes()`.
+- [x] Re-tested — both single-chapter and whole-book modes now emit valid EPUBs with populated chapter XHTML and nav.
+
+---
+
+**Phase 5 totals:** 6 milestones. Migrates Phase 1 + Phase 2 scripts to PEP 723 / uv self-bootstrap; surfaces and fixes two pre-existing EPUB bugs along the way. Removes the install.sh PEP 668 footgun. Closes Phase 2 M4 (smoke test, blocked since 2026-04-29).
+
+**Out of scope:** generic uv migration of any future Python tooling — handle case-by-case as scripts are added. The pattern (PEP 723 + `uv run --script` shebang) is now the project's default for standalone Python scripts in this skill.

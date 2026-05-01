@@ -21,14 +21,14 @@ The `epub/` subdirectory is created automatically. The user's project should add
 ## Steps
 
 1. Verify `chapters/<book>/` exists in the project working directory. If missing, stop and tell the user.
-2. Run the build script:
+2. Run the build script (self-bootstraps Python deps via `uv` shebang — first invocation resolves them and caches the env; subsequent runs are instant):
    ```
-   python3 ~/.claude/skills/book/scripts/build_epub.py <project_root>/chapters/<book> [--chapter chNN]
+   ~/.claude/skills/book/scripts/build_epub.py <project_root>/chapters/<book> [--chapter chNN]
    ```
 3. The script prints `wrote <path>` on success — surface that path to the user.
-4. If the script fails with `ModuleNotFoundError` for `ebooklib` or `markdown`, surface the install hint and stop:
+4. If invocation fails with `command not found: uv` (or equivalent), surface the install hint and stop:
    ```
-   pip install --user ebooklib markdown
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
    Do NOT attempt to install dependencies automatically.
 
@@ -49,7 +49,7 @@ All keys are optional. Defaults:
 - `identifier` → deterministic `urn:uuid:...` derived from the book directory path (stable across re-renders, KDP-friendly)
 - `language` → `"en"`
 
-If `meta.yaml` exists but PyYAML isn't installed, the script warns and falls back to defaults — install with `pip install --user pyyaml`.
+PyYAML is now a required dependency (declared in the script's PEP 723 header), so `meta.yaml` Just Works once `uv` is on the PATH.
 
 ## Notes
 

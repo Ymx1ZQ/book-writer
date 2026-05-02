@@ -13,6 +13,8 @@ Run an informed-but-skeptical reader over the latest chapter draft. Catch what c
 
 Sniff is the **plausibility / nose-wrinkle** layer. It assumes the reader is informed, skeptical, and not romantic about the work. It catches the patterns a writer agent typically falls into when worldbuilding is silent: filling gaps with plausible-but-uncanonicalized invention, modern unconscious bias, technobabble without referent, unearned capabilities, convenient coincidences.
 
+**Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. ANCHOR-NEEDED milestones written to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
+
 ## Usage
 
 ```

@@ -9,6 +9,8 @@ Run a comprehensive coherence review across the project's worldbuilding, charact
 
 A single finding may produce paired entries in BOTH channels when the contradiction needs canon AND prose updates (the orchestration scripts run `fix` and `revise` in sequence so both close in the same cycle). The two-channel routing is what closes the loop on chapter-prose findings — without it, prose-target milestones written to DEVPLAN would never be applied (`/book fix` does not touch chapter prose by design).
 
+**Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. Coherence findings routed to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
+
 ## Invocation
 
 ```

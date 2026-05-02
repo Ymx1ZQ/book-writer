@@ -8,6 +8,8 @@ Verify continuity between books before starting the next one. Run this AFTER com
 - Target in `chapters/<book-N>/ch*.md` or `chapters/<book-N+1>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`) using the same format `sniff.md` uses, with `Source: continuity` tag inside the entry.
 - Findings that need both canon AND prose changes → **paired entries** in both channels.
 
+**Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. Continuity findings routed to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
+
 ## Invocation
 
 ```

@@ -2,6 +2,8 @@
 
 Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, characters/, plot/, outlines). Does NOT touch chapter prose — for that, use `/book revise`.
 
+**Milestone format:** see `instructions/milestone-format.md`. `/book fix` parses only `- [ ]` items inside coherence/sniff/continuity milestones — operational items in plain-bullet form are ignored by design (they are not pipeline-executable).
+
 ## Invocation
 
 ```

@@ -4,6 +4,8 @@ Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PR
 
 **Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, OR `continuity` (each entry tags its origin via a `Source:` field). All three sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
 
+**Milestone format:** see `instructions/milestone-format.md`. `/book revise` parses only `- [ ]` items in REVIEW.md and PROOFREAD.md (and SMELL.md INLINE entries). Operational items in plain-bullet form are ignored.
+
 ## Invocation
 
 ```

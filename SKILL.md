@@ -82,6 +82,15 @@ When a command is received:
    - Commit with message: `book <command> <args>: <one-line summary of what was done>`
    - Do NOT push (the caller decides when to push).
 
+## Milestone Format
+
+`DEVPLAN.md` milestones use two formats depending on what closes them:
+
+- **Executable items** (consumable by `/book fix`, `/book revise`, `/book write`, or direct agent edits) use checkbox `- [ ]`.
+- **Operational items** (orchestration script runs, manual tests, deferred verifications, runbook steps) use plain bullet `- ` without checkbox.
+
+Reason: `run-coherence-cycle.sh` and `run-write-cycle.sh` count `^- \[ \]` as unresolved findings. Operational items in checkbox form accumulate as a constant offset that trips the stuck-issue guardrail spuriously. See `instructions/milestone-format.md` for the full doctrine, examples, and the override of any global "every task = checkbox" rule.
+
 ## Genre Agnosticism
 
 This skill contains NO genre-specific content. All genre, tone, style, and structural rules come from the project's own files:

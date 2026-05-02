@@ -2,6 +2,8 @@
 
 Write a single chapter. This is the SINGLE SOURCE OF TRUTH for how chapters are written — `/book write` delegates here for each chapter.
 
+**Milestone format:** see `instructions/milestone-format.md`. ANCHOR-NEEDED-RETRY escalation milestones written to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
+
 ## Invocation
 
 ```

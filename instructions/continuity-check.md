@@ -2,6 +2,12 @@
 
 Verify continuity between books before starting the next one. Run this AFTER completing Book N and BEFORE writing Book N+1.
 
+**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed to one of two channels per `world/canon-hierarchy.md`:
+
+- Target in `world/`, `plot/`, `characters/`, `outline.md`, `state.md`, `voice-samples.md`, `flashback-beats.md`, `chorus-poem-map.md`, `sauveterre-plant.md`, `temporal-echoes.md`, character sheets → **DEVPLAN milestone** (consumed by `/book fix`).
+- Target in `chapters/<book-N>/ch*.md` or `chapters/<book-N+1>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`) using the same format `sniff.md` uses, with `Source: continuity` tag inside the entry.
+- Findings that need both canon AND prose changes → **paired entries** in both channels.
+
 ## Invocation
 
 ```
@@ -74,49 +80,56 @@ Check `voice-samples.md` for each POV character:
 
 ### 3. Output — Report
 
+Each finding is annotated with its routing destination — `[→ DEVPLAN]`, `[→ SMELL.md ch.NN]`, or `[→ paired]`.
+
 ```
 ## Continuity Check: [Book N] → [Book N+1]
 
 ### Character Positions
 ✅ [character] — consistent: [end state] → [start state]
-⚠️ [character] — GAP: ended at [X], outline starts at [Y]. Fix: [suggestion]
+⚠️ [character] — GAP: ended at [X], outline starts at [Y]. Fix: [suggestion] [→ routing]
 
 ### Open Threads
 ✅ [thread] — addressed in Ch. NN of next book
-⚠️ [thread] — NOT FOUND in next book outline. Fix: [suggestion]
+⚠️ [thread] — NOT FOUND in next book outline. Fix: [suggestion] [→ routing]
 
 ### Ticking Clocks
 ✅ [clock] — picked up in Ch. NN
-⚠️ [clock] — MISSING. Fix: [suggestion]
+⚠️ [clock] — MISSING. Fix: [suggestion] [→ routing]
 
 ### Vocabulary Evolution
 ✅ [character] — correct range transition
-⚠️ [character] — range mismatch. Fix: [suggestion]
+⚠️ [character] — range mismatch. Fix: [suggestion] [→ routing]
 
 ### Plants & Payoffs
 ✅ [plant] — payoff scheduled in Ch. NN
-⚠️ [plant] — NO PAYOFF found. Fix: [suggestion]
+⚠️ [plant] — NO PAYOFF found. Fix: [suggestion] [→ routing]
 
 ### Tic Continuity
 ✅ All tics carry forward correctly
-⚠️ [tic] — re-explained in Ch. NN (should be caption-free). Fix: remove caption.
+⚠️ [tic] — re-explained in Ch. NN (should be caption-free). Fix: remove caption. [→ SMELL.md ch.NN]
 
 ### World State
 ✅ Consistent
-⚠️ [mismatch]. Fix: [suggestion]
+⚠️ [mismatch]. Fix: [suggestion] [→ routing]
 ```
 
-### 4. Write Corrections Devplan (if issues found)
+**Routing examples:**
+- "Character X ended Book 1 in state Y, but Book 2 outline opens in state Z" — outline change → DEVPLAN.
+- "Tic re-explained in B2 ch.03 prose" — prose change → SMELL.md for ch.03.
+- "Plant placed in B1 ch.12, payoff missing from B2 outline AND from B2 prose" — paired (DEVPLAN: add payoff to outline; SMELL.md ch.NN: write payoff into prose at the chosen chapter).
 
-Same pattern as `/book coherence`: append a Phase to `DEVPLAN.md` with milestones for each fix.
+### 4. Write Corrections (if issues found)
+
+Same pattern as `/book coherence`: route each correction by target file. Canon-side findings → append a Phase to `DEVPLAN.md` with milestones. Prose-side findings → append entries to the affected chapter's `chapters/<book>/SMELL.md` with `Source: continuity` tag. Cross-link to `world/canon-hierarchy.md` for tier-respecting decisions when canon files disagree.
 
 ### 5. Summary
 
 ```
 Continuity Check Complete: [Book N] → [Book N+1]
-Issues: X warnings
+Issues: X warnings (Y → DEVPLAN, Z → SMELL.md, W → paired)
 All critical positions: [consistent / X gaps found]
-Next step: [fix issues / proceed to writing]
+Next step: /book fix book-N+1 (canon) → /book revise book-N+1 (prose) → /book fix book-N → /book revise book-N
 ```
 
 ---

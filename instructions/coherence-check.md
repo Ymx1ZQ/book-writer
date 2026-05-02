@@ -2,6 +2,13 @@
 
 Run a comprehensive coherence review across the project's worldbuilding, characters, and outlines. Combines the "reader who asks obvious questions" with the rigor of a professional script doctor. Genre, tone, and structural rules are read from the project's own files — this instruction is genre-agnostic.
 
+**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed to one of two channels per `world/canon-hierarchy.md`:
+
+- Target in `world/`, `plot/`, `characters/`, `chapters/<book>/outline.md`, `chapters/<book>/state.md`, or `chapters/<book>/writing-notes.md` → **DEVPLAN milestone** (consumed by `/book fix`).
+- Target in `chapters/<book>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`).
+
+A single finding may produce paired entries in BOTH channels when the contradiction needs canon AND prose updates (the orchestration scripts run `fix` and `revise` in sequence so both close in the same cycle). The two-channel routing is what closes the loop on chapter-prose findings — without it, prose-target milestones written to DEVPLAN would never be applied (`/book fix` does not touch chapter prose by design).
+
 ## Invocation
 
 ```
@@ -177,9 +184,9 @@ A complete inventory of introduced elements and their payoff status:
 **For each match:** verify the figure traces to the level-appropriate anchor file. The figure must be either: (a) a direct anchor citation (the value matches a published number in the anchor file), or (b) within the documented range/scarcity-premium band stated by the anchor.
 
 **Flag:**
-- Match without traceable anchor → **BLOCKING**: "unanchored monetary detail at <file>:<line>: \"<quote>\". Required anchor: <file> §<section>."
-- Match contradicting the anchor (price outside documented range with no in-text scarcity-premium justification) → **BLOCKING**: "monetary detail contradicts canonical anchor (<value> vs <range>)."
-- If the level-appropriate anchor file does NOT exist at all, flag as **BLOCKING** at the project level: "level <N> has chapter drafts with monetary detail but no Consumer Anchors / Allocation Mathematics section. Add the anchor before the chapter can ship."
+- Match without traceable anchor → **BLOCKING**: "unanchored monetary detail at <file>:<line>: \"<quote>\". Required anchor: <file> §<section>." **Route to:** if the prose value can be aligned to the anchor file by editing the anchor (the prose is already canonical-shaped) → DEVPLAN milestone targeting the anchor file. If the prose value must change to match the anchor → SMELL.md entry on the chapter, with INLINE classification and a Suggested action that quotes the anchor's value. If both must change (anchor missing AND prose un-grounded) → paired entries in BOTH channels.
+- Match contradicting the anchor (price outside documented range with no in-text scarcity-premium justification) → **BLOCKING**: "monetary detail contradicts canonical anchor (<value> vs <range>)." **Route to:** apply canon-hierarchy: anchor file is higher-tier than prose, so prose changes → SMELL.md entry on the chapter (INLINE).
+- If the level-appropriate anchor file does NOT exist at all, flag as **BLOCKING** at the project level: "level <N> has chapter drafts with monetary detail but no Consumer Anchors / Allocation Mathematics section. Add the anchor before the chapter can ship." **Route to:** DEVPLAN milestone (creates the anchor file or section).
 
 #### M. System-Implying-Number Audit (BLOCKING for invented systems)
 
@@ -201,8 +208,8 @@ A complete inventory of introduced elements and their payoff status:
 **For each match:** verify a canonical worldbuilding file documents the system implied. If the chapter says "filtration alert tier two", a tier system MUST exist in `ecology.md` or similar. If the chapter says "drone corridor 042", a corridor numbering schema MUST exist in `surveillance.md` or similar.
 
 **Flag:**
-- Match without a documented system → **BLOCKING**: "system-implying detail at <file>:<line>: \"<quote>\" — implies a <system-name> not documented in canon. Either canonicalize the system in <expected file> or remove the false specificity (replace with non-specific phrasing)."
-- Match contradicting a documented system → **BLOCKING**: "value contradicts canonical <system-name>."
+- Match without a documented system → **BLOCKING**: "system-implying detail at <file>:<line>: \"<quote>\" — implies a <system-name> not documented in canon. Either canonicalize the system in <expected file> or remove the false specificity (replace with non-specific phrasing)." **Route to:** DEVPLAN milestone proposing the system definition (canon creation per `canon-hierarchy.md` anchor-creation policy — propose a value derived from adjacent anchors and timeline trajectory, with a `Reasoning:` block).
+- Match contradicting a documented system → **BLOCKING**: "value contradicts canonical <system-name>." **Route to:** SMELL.md entry on the chapter (INLINE) — prose is lower-tier than the system definition, so prose changes.
 
 #### N. Interior-Labeling Detector (NOTE — soft, advisory)
 
@@ -215,9 +222,9 @@ Patterns:
 - `started to <verb> ... [before|and] stopped` as interior gesture-labeling
 - `<character> felt <X>` followed by an explanation sentence
 
-**Flag every match as NOTE:** "interior labeling at <file>:<line>: \"<quote>\". Suggested rewrite: collapse to physical signal alone (Rule 9, narrator-emotion-labeling)."
+**Flag every match as NOTE:** "interior labeling at <file>:<line>: \"<quote>\". Suggested rewrite: collapse to physical signal alone (Rule 9, narrator-emotion-labeling)." **Route to:** SMELL.md entry on the chapter (INLINE). All N findings are prose-target.
 
-NOT BLOCKING — these are advisory; the user/reviser decides per match.
+NOT BLOCKING — these are advisory; revise applies them but flagged with `Severity: NOTE` so a downstream pass can deprioritize if needed.
 
 #### O. Outline-to-Draft Coverage (WARNING; BLOCKING if undocumented)
 
@@ -229,8 +236,8 @@ NOT BLOCKING — these are advisory; the user/reviser decides per match.
 - For each outlined scene, verify a corresponding section/passage exists in the draft. Heuristic: the scene's distinctive props, character names, location, or beat-summary keywords must appear in the draft text. A draft missing 30%+ of an outlined scene's distinctive markers is "missing".
 
 **Flag:**
-- Outlined scene missing from draft AND documented in `outline-deviation.md` → **WARNING**: "scene <name> moved/cut per outline-deviation.md — verify the deviation entry's plant-shift list is complete."
-- Outlined scene missing from draft AND NOT documented in `outline-deviation.md` → **BLOCKING**: "SILENT CUT: outlined scene <name> is absent from the draft and has no entry in outline-deviation.md. Either restore the scene, or document the deviation retroactively (chapter-writer Step 7.8)."
+- Outlined scene missing from draft AND documented in `outline-deviation.md` → **WARNING**: "scene <name> moved/cut per outline-deviation.md — verify the deviation entry's plant-shift list is complete." **Route to:** DEVPLAN milestone (verify `outline-deviation.md` plant-shift list).
+- Outlined scene missing from draft AND NOT documented in `outline-deviation.md` → **BLOCKING**: "SILENT CUT: outlined scene <name> is absent from the draft and has no entry in outline-deviation.md." **Route to:** PAIRED entries — (a) SMELL.md entry on the chapter classified ANCHOR-NEEDED with the suggestion "restore the scene to the draft per outline" (the prose-side restore), AND (b) DEVPLAN milestone "document the deviation retroactively in `chapters/<book>/outline-deviation.md` with plant-shift list" (the canon-side documentation). The orchestration applies fix first (canon docs the deviation), then revise restores or confirms via the SMELL.md entry.
 
 #### P. Cross-Substrate Sensory-Echo Audit (WARNING — confirm intent)
 
@@ -244,9 +251,9 @@ NOT BLOCKING — these are advisory; the user/reviser decides per match.
 
 **Flag:**
 - Match documented as intentional → no flag (this is a planted echo working correctly).
-- Match NOT documented → **WARNING**: "potential cross-substrate sensory echo at <file>:<line>: \"<quote>\". Same value/object as <canonical anchor> at <other-level>. Confirm intent in `temporal-echoes.md` (intentional resonance OR unintentional collision — change one of the two if accidental)."
+- Match NOT documented → **WARNING**: "potential cross-substrate sensory echo at <file>:<line>: \"<quote>\". Same value/object as <canonical anchor> at <other-level>." **Route to:** PAIRED entries — (a) DEVPLAN milestone proposing a one-line addition to `world/temporal-echoes.md §Cross-Substrate Sensory Resonances` (intentional resonance — the default, since silently un-coordinated matches at the same value are statistically rare), AND (b) SMELL.md entry on the chapter classified ACCEPT with `Status: ✅ Resolved upstream by /book fix` once the addition lands. If the resonance reading is wrong (the prose value should change instead), the post-fix coherence pass will catch the residual inconsistency and write a SMELL.md INLINE entry.
 
-NOT BLOCKING — forces the question to be answered, doesn't require a fix.
+NOT BLOCKING — auto-resolves via the canon-side addition.
 
 #### Q. Redundancy-with-Adjacent-Text (NOTE)
 
@@ -254,9 +261,9 @@ NOT BLOCKING — forces the question to be answered, doesn't require a fix.
 
 **Detection:** within a 3-paragraph window, if paragraph N+1 contains specific concrete details (named ingredient, named location, named object, named action) that are explicitly stated in paragraph N, AND paragraph N is a system-text / dialogue / revelation moment, flag.
 
-**Flag every match as NOTE:** "redundancy with adjacent text at <file>:<para>: \"<quote>\". The reader receives this datum twice — consider deferring or varying the second beat (or trusting the reader to fill in)."
+**Flag every match as NOTE:** "redundancy with adjacent text at <file>:<para>: \"<quote>\". The reader receives this datum twice — consider deferring or varying the second beat (or trusting the reader to fill in)." **Route to:** SMELL.md entry on the chapter (INLINE, Severity: NOTE).
 
-NOT BLOCKING — judgment call, sometimes deliberate (echo, theme reinforcement).
+NOT BLOCKING — revise applies the trim or vary, with light authority (NOTE-level fixes are last in the apply order so other higher-severity fixes don't get pre-empted by a redundancy trim).
 
 #### R. Context-list Orphan (WARNING)
 
@@ -298,11 +305,17 @@ Display issues to the user in order of severity:
 - [issue description] — [file:line]. **Fix:** [practical solution]
 ```
 
-### 4. Write the Corrections Devplan (MANDATORY)
+### 4. Write the Corrections (MANDATORY)
 
-**This is the critical step.** The report is analysis; the devplan is the actionable output. Without this step, findings are lost.
+**This is the critical step.** The report is analysis; the corrections are the actionable output. Without this step, findings are lost.
 
-Create or append to `DEVPLAN.md` a new Phase with milestones for every fix. The Phase is named `Phase NN — Coherence Fixes ([scope])`.
+**Routing rule (applied to every finding):** classify the finding's primary target file BEFORE writing the milestone or entry. Per `world/canon-hierarchy.md`:
+
+- Target file in `world/`, `plot/`, `characters/`, `chapters/<book>/outline.md`, `chapters/<book>/state.md`, or `chapters/<book>/writing-notes.md` → write a **DEVPLAN milestone** (format below).
+- Target file in `chapters/<book>/ch*.md` (chapter prose) → write a **per-chapter `chapters/<book>/SMELL.md` entry** using the same format `sniff.md` uses (Quote, Category, What the reader thinks, Classification — INLINE / ANCHOR-NEEDED / ACCEPT, Suggested action) with an additional `Source: coherence` tag inside the entry. If the chapter has no SMELL.md yet, create it with the standard header. If a SMELL.md exists, append entries (do not overwrite — sniff and coherence entries coexist).
+- Findings that need both canon AND prose changes → write **paired entries** in both channels, citing the pairing in each entry's body. The orchestration runs `/book fix` first (canon), then `/book revise` (prose) so the prose entry sees the corrected canon.
+
+Create or append to `DEVPLAN.md` a new Phase with milestones for the canon-side fixes. The Phase is named `Phase NN — Coherence Fixes ([scope])`.
 
 **Format:**
 
@@ -345,7 +358,7 @@ Fixes ordered by severity, then by file.
 - Every fix that adds content must include: "Verify file stays within word budget (see init.md)."
 - Classify each fix as SUBTRACTIVE (removes/corrects) or ADDITIVE (adds content). Max 10 additive fixes per phase. If more needed, split phases with `/book compact` between them.
 - Total additions per phase: max 500 words across all fixes. Compress or defer if exceeded.
-- After writing, announce: *"Coherence devplan written: X milestones. Run `/book fix <book>` to apply fixes."*
+- After writing, announce: *"Coherence corrections written: X canon milestones in DEVPLAN.md, Y prose entries written to SMELL.md across N chapters. Run `/book fix <book>` then `/book revise <book>` to apply both channels."*
 
 ### 5. Summary
 

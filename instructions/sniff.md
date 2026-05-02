@@ -103,10 +103,24 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 1. Resolve the chapter file: if `chNN` provided, read `chapters/<book>/<ch>.md`; else find the most recently modified `chapters/<book>/ch*.md`.
 2. Load the project context for the level the chapter is set in (read CLAUDE.md to find the level mapping; for a Reality scene, load `world/level-0-reality/*.md` and the relevant character sheets).
 3. Load `world/timeline.md` to know the year and macro context.
-4. Read the chapter line by line. For every concrete assertion, run the nine categories. Aggregate findings.
-5. Classify each finding (INLINE / ANCHOR-NEEDED / ACCEPT) using the heuristics above.
-6. Write `chapters/<book>/SMELL.md` with the format above.
-7. Print: `wrote SMELL.md — N objections (X INLINE, Y ANCHOR-NEEDED, Z ACCEPT)`.
+4. Load `world/canon-hierarchy.md` — the resolution doctrine. Use it when classifying ANCHOR-NEEDED entries to decide which file should change and what the canonical value should be.
+5. Read the chapter line by line. For every concrete assertion, run the nine categories. Aggregate findings.
+6. Classify each finding (INLINE / ANCHOR-NEEDED / ACCEPT) using the heuristics above.
+7. Write `chapters/<book>/SMELL.md` with the format above.
+8. **For every ANCHOR-NEEDED entry, also append a fix milestone to `DEVPLAN.md`.** Open `DEVPLAN.md`, scan for the highest existing `## Phase NN —` heading, and append a new phase named `## Phase <NN+1> — Sniff anchor fixes (<book> <chNN>) (<date>)`. Under that phase, write one milestone per ANCHOR-NEEDED entry, using the format below. Reuse the entry's existing "Suggested project DEVPLAN milestone language" content as the milestone body, augmented with the canon-hierarchy resolution rationale.
+9. Print: `wrote SMELL.md — N objections (X INLINE, Y ANCHOR-NEEDED, Z ACCEPT). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
+
+## DEVPLAN milestone format (for ANCHOR-NEEDED entries)
+
+```markdown
+### M<n>: <one-line title — match the SMELL.md entry summary>
+
+**Files affected:** `<canonical file to update>` (REVISIONE), `<other affected files>` (cascade).
+
+- [ ] <The "Suggested project DEVPLAN milestone language" content from the SMELL.md entry>
+- [ ] **Resolution per canon-hierarchy:** higher-tier file <file> wins over lower-tier <file>. Update <lower-tier-file> §<section> to value <X> (was <Y>). Internal-consistency check: <one-line citation of the sibling canon that supports the chosen value>.
+- [ ] **Cascade:** grep the repository for the conflicting value <Y> and update every occurrence (writing-notes, prose, state.md, outlines, callbacks). Verify no residual.
+```
 
 ## Calibration
 
@@ -118,7 +132,8 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 
 ## Notes
 
-- This command is on-demand but recommended after every chapter write, before review/proofread/revise. The pipeline order is: `write → sniff → review → proofread → revise`.
-- `revise.md` consumes SMELL.md INLINE entries automatically (alongside REVIEW.md and PROOFREAD.md). ANCHOR-NEEDED entries are NOT auto-applied — they surface to the project's DEVPLAN as worldbuilding milestones the user must triage.
-- ACCEPT entries are noted but not acted on.
+- This command is on-demand but recommended after every chapter write, before review/proofread/revise. The pipeline order is: `write → sniff → fix → coherence (chapter-scoped) → fix → review → proofread → revise`.
+- `revise.md` consumes SMELL.md INLINE entries automatically (alongside REVIEW.md and PROOFREAD.md). **ANCHOR-NEEDED entries are auto-routed**: the SMELL.md entry stays for traceability; the corresponding fix milestone is appended to `DEVPLAN.md` and applied by `/book fix` on the next orchestration step. By the time `/book revise` runs, ANCHOR-NEEDED entries should already be resolved upstream — revise marks them `Status: ✅ Resolved upstream by /book fix`.
+- ACCEPT entries are noted but not acted on. ACCEPT entries that recommend a canon tightening (e.g., "add a sentence to `temporal-echoes.md` to license this uncanny") still get a DEVPLAN milestone — they are auto-applied silently.
 - The `SMELL.md` file is per-chapter and overwritten on re-runs. Older sniffs live in git history.
+- See `world/canon-hierarchy.md` for the tier order and resolution rules used when populating the Resolution and Cascade fields of each milestone.

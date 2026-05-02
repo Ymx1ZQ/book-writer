@@ -172,7 +172,21 @@ Contemplative endings used so far in this book: X/2
 
 ## Step 2.5: Pre-Drafting Anchor Checks (MANDATORY)
 
-Before drafting a single sentence, scan the plan for elements that REQUIRE a worldbuilding anchor. The chapter writer MUST NOT invent fact-with-system-implications when a canonical anchor is missing — invented "flavor numbers" silently corrupt the worldbuilding and force expensive retrofits later. STOP rather than invent.
+Before drafting a single sentence, scan the plan for elements that REQUIRE a worldbuilding anchor. The chapter writer MUST NOT invent fact-with-system-implications when a canonical anchor is missing — invented "flavor numbers" silently corrupt the worldbuilding and force expensive retrofits later.
+
+**Escalation, not invention.** When an anchor is missing, the writer does NOT pick a value to fill the gap. Instead, the writer writes a fully-specified canon-creation milestone to `DEVPLAN.md` (proposing a value derived from adjacent canonical anchors and `timeline.md` trajectory, with explicit reasoning), then exits with the special string `ANCHOR-NEEDED-RETRY` as the FINAL line of agent output. The orchestration script catches this signal, runs `/book fix book-N` to apply the milestone (creating the canon entry per the proposal), and re-runs the writer once. The proposed value is then visible in DEVPLAN diff and is verified by the next coherence pass — no single skill has unilateral authoring authority. See `world/canon-hierarchy.md §Anchor-creation policy` for the doctrine.
+
+**The DEVPLAN milestone format for an escalation:**
+
+```markdown
+### M<n>: Create canon anchor — <one-line title>
+
+**File:** `<canonical anchor file>` (REVISIONE / NEW SECTION as appropriate)
+
+- [ ] Add §<section name> to `<file>` defining: <what is needed for the chapter>.
+- [ ] Proposed value: <X>. Reasoning: adjacent anchor (<file> §<section>: <existing canonical value>); timeline trajectory (`world/timeline.md`: <relevant CPI / climate / tech context>); internal-consistency check (<sibling canon supporting the value>); within documented range / extrapolation gradient.
+- [ ] Cite the new value in <prose section> when chapter resumes drafting.
+```
 
 ### 2.5.a — Level-aware economic-anchor pre-check (HARD `MUST`)
 
@@ -190,7 +204,7 @@ If the plan contains ANY of these triggers in a scene, the corresponding anchor 
 | Dome (L2) | `world/level-2-dome/bureaucracy.md` §Allocation Mathematics + `context.md` §Economy and Distribution |
 | Cross-level (memory credits) | `world/economy-cross-level.md` §Memory Credits — Canonical Definition |
 
-**If no appropriate anchor exists,** STOP. Do not draft the scene. Announce: *"⛔ Pre-drafting anchor check failed: scene <name> requires monetary detail; no canonical anchor in <expected file>. Stopping. The user must add a worldbuilding-anchor milestone to the project's DEVPLAN before this chapter can be drafted."* Save the plan; exit.
+**If no appropriate anchor exists,** ESCALATE. Do not draft the scene. Write a canon-creation milestone to `DEVPLAN.md` using the format above, deriving the proposed monetary value from adjacent rows in the level-appropriate anchor file (e.g. consumer-anchors.md neighbors) and the `timeline.md` CPI/scarcity-premium trajectory. Save the plan. Announce: *"⛔ Pre-drafting anchor check found a gap: scene <name> requires monetary detail; no canonical anchor in <expected file>. Wrote canon-creation milestone M<n> to DEVPLAN.md proposing <value> with reasoning. Exiting for orchestration to apply fix and retry."* Then print as the FINAL line: `ANCHOR-NEEDED-RETRY`
 
 ### 2.5.b — Broader no-invent rule (system-implying details) (HARD `MUST`)
 
@@ -198,11 +212,11 @@ The same STOP rule applies to ANY fact that implies a system. Trigger keywords (
 
 `tier <digit>`, `score`, `Hz` near digits, `MHz` near digits, `% offer`, `% loyalty`, `compliance check at <time>`, `corridor 0\d\d`, `latency`, `bandwidth`, `LED <state>` with hardware-vintage capability claim, `firmware`, `handshake`, `signature` (sonic/digital), drone-altitude class, attestation tier, filtration alert tier.
 
-For each match, verify a canonical worldbuilding file defines the system. If not, STOP and request a worldbuilding-anchor milestone. The writer MUST NOT pick a plausible-looking number to fill the gap.
+For each match, verify a canonical worldbuilding file defines the system. If not, ESCALATE: write a canon-creation milestone to `DEVPLAN.md` proposing the system definition (tier scale / corridor numbering / frequency band / etc.) anchored to canonical adjacent systems and the timeline. The proposal MUST include a `Reasoning:` block citing every input. The writer MUST NOT pick a plausible-looking number unilaterally — the proposal goes through `/book fix` (which applies it) and the next coherence pass (which verifies it). Then print as the FINAL line: `ANCHOR-NEEDED-RETRY`
 
 ### 2.5.c — Cross-substrate sensory echo check (MUST)
 
-If the plan involves a sensory anchor (a number, a frequency, a specific object) that ALSO appears canonically at a DIFFERENT narrative level, verify whether the echo is intentional. Read `world/temporal-echoes.md` §Cross-Substrate Sensory Resonances (if present). If the echo is canonical, USE the canonical signature exactly. If the echo is not yet documented and the writer cannot determine intent, STOP and ask for a one-line decision in `world/temporal-echoes.md` before drafting. Examples to flag: any 440 Hz reference (already canonical in Ark per Phase 111 M3); any "Phrygian quarter-tone bent-third" signature; any object that recurred in another book's chapter.
+If the plan involves a sensory anchor (a number, a frequency, a specific object) that ALSO appears canonically at a DIFFERENT narrative level, verify whether the echo is intentional. Read `world/temporal-echoes.md` §Cross-Substrate Sensory Resonances (if present). If the echo is canonical, USE the canonical signature exactly. If the echo is not yet documented and the writer cannot determine intent, ESCALATE: write a canon-creation milestone to `DEVPLAN.md` proposing a one-line addition to `world/temporal-echoes.md §Cross-Substrate Sensory Resonances` that documents the echo as intentional (the default, since silent un-coordinated matches at the same value are statistically rare — per `canon-hierarchy.md`, the existing canonical signature wins; the new chapter aligns to it). Include the canonical signature as the proposed value. Then print as the FINAL line: `ANCHOR-NEEDED-RETRY`. Examples to flag: any 440 Hz reference (already canonical in Ark per Phase 111 M3); any "Phrygian quarter-tone bent-third" signature; any object that recurred in another book's chapter.
 
 ### 2.5.d — Outline-deviation contract (MUST)
 
@@ -234,7 +248,7 @@ Parse the chapter outline beats up to the next chapter header. Extract:
 - **Explicit references**: every `→ see <path>` and every bare `<path>` mentioned in beats.
 - **Implicit references**: every named character (cross-ref `characters/**.md`); every named location (cross-ref `world/level-N-*/locations*.md` or `world/level-0-reality/architecture.md`); every named system, mechanism, or technical anchor (cross-ref `world/**.md`); every named ration unit, compliance score, anomaly code, frequency, or hardware artifact that traces to a canonical file.
 
-Compare the union against the chapter's `**context:**` list, **minus** the always-loaded set declared in the outline header. Files referenced in beats but missing from `**context:**` → STOP. Output the list of missing files and request user confirmation to add (or auto-add if the writer call explicitly pre-authorized context-list edits).
+Compare the union against the chapter's `**context:**` list, **minus** the always-loaded set declared in the outline header. Files referenced in beats but missing from `**context:**` → AUTO-ADD: append the missing files to the chapter's `**context:**` field in the outline (this is a per-outline edit fully within the writer's scope; no escalation needed since the symmetry rule is mechanical, not creative). Announce: *"✅ Pre-drafting context symmetry: auto-added N files to `**context:**` (<list>) to match beat references."* Then proceed to drafting.
 
 ### 2.6.b — Context-side scan (orphan candidates)
 

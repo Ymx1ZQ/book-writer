@@ -2,6 +2,8 @@
 
 Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PROOFREAD.md) fixes to written chapter prose. Does NOT touch project architecture — for that, use `/book fix`.
 
+**Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, OR `continuity` (each entry tags its origin via a `Source:` field). All three sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
+
 ## Invocation
 
 ```
@@ -21,9 +23,9 @@ Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PR
 Check three sources:
 
 **A. SMELL.md** — `chapters/<book>/SMELL.md`
-Parse all entries. Each entry has a **Classification** field with one of: `INLINE`, `ANCHOR-NEEDED`, `ACCEPT`.
+Parse all entries. Each entry has a **Classification** field with one of: `INLINE`, `ANCHOR-NEEDED`, `ACCEPT`. Each entry may include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`); processing is uniform regardless of source.
 - **INLINE** items are revisable in prose — process them like editorial fixes (look for the entry's `Suggested action` block which contains the proposed rewrite).
-- **ANCHOR-NEEDED** items are NOT applied here. They mark a worldbuilding gap that must be filled in the project DEVPLAN before the chapter can ship. Surface them in the session summary; do not edit prose.
+- **ANCHOR-NEEDED** items are resolved upstream by `/book fix` before revise runs. If revise still finds an ANCHOR-NEEDED entry without a `Status:` line, mark it `Status: ⚠️ Unresolved upstream — orchestration likely skipped a fix step` and skip; the orchestration script's stuck-issue guardrail will report it. If revise finds the entry already marked `Status: ✅ Resolved upstream by /book fix`, skip silently. The cascade implied by the entry (any prose update needed after the canon update) lives in a paired INLINE entry — process that.
 - **ACCEPT** items are noted; no action.
 
 **B. REVIEW.md** — `chapters/<book>/REVIEW.md`
@@ -37,12 +39,13 @@ Parse all unchecked `- [ ]` items. These are line-level fixes (grammar, spelling
 📋 Book Revise — [book]
 Pending fixes:
   Smell-test (SMELL.md): X INLINE / Y ANCHOR-NEEDED / Z ACCEPT
+    sources: a sniff / b coherence / c continuity
   Editorial (REVIEW.md): X items (C:X H:X M:X L:X CC:X)
   Proofreading (PROOFREAD.md): X items
   Total INLINE+EDITORIAL+PROOFREAD: X
 
 Processing order: Smell-test INLINE → Editorial → Proofreading
-ANCHOR-NEEDED items will be reported at session end (NOT applied).
+ANCHOR-NEEDED items expected to be resolved upstream by /book fix; any unresolved ones will be flagged for the stuck-issue guardrail.
 ```
 
 If a filter was specified (sniff/review/proofread), only process that source.
@@ -80,7 +83,7 @@ Follow the fix instruction. Types:
 After applying, verify:
 
 1. **The original problem is gone.** Grep for the old text — it should not appear.
-2. **Word count still meets minimum.** If a cut dropped the chapter below the minimum word count, flag it: `⚠️ Ch. N now at XXXX words (below minimum). Needs expansion.` Do NOT expand automatically — flag it for the next writing session.
+2. **Word count still meets minimum.** If a cut dropped the chapter below the minimum word count, flag it: `⚠️ Ch. N now at XXXX words (below minimum). Will be recovered in Step 5.` Do not expand inline (it would interleave with the fix queue and risk introducing fixes whose target text has just shifted) — Step 5 (Word Count Recovery) collects all flagged chapters at session end and applies dialogue-only expansion. Auto-recovery is the standard path; never defer to a future writing session.
 3. **The surrounding prose flows.** Read 5 lines before and 5 lines after the edit. Fix orphaned transitions, dangling references, or broken paragraphs.
 4. **No new violations introduced.** The fix must not create new show/tell violations, break character voice registers, or introduce tic-caption errors.
 
@@ -164,10 +167,11 @@ Next: [what to do if items remain — typically "triage ANCHOR-NEEDED into proje
 - ❌ Never add thematic content while revising. Fixes are surgery, not writing.
 - ❌ Never skip verification (word count + flow check) after each fix.
 - ❌ Never apply proofreading before editorial — the text may change.
-- ❌ Never auto-apply ANCHOR-NEEDED entries from SMELL.md — those are worldbuilding gaps, not prose problems. They surface to the project DEVPLAN for the user to triage.
 - ❌ Never mark an item `[x]` without actually applying the fix.
 - ❌ Never rewrite MORE than the fix specifies. Minimal changes only.
+- ✅ ANCHOR-NEEDED entries are resolved upstream by `/book fix` per `world/canon-hierarchy.md` two-channel routing. Revise consumes the paired INLINE entry that handles the prose cascade after the canon update; if no INLINE pair exists and the ANCHOR-NEEDED entry is unmarked, flag it as a stuck-issue candidate for the orchestration script.
 - ✅ Grep for exact quotes before editing — line numbers shift as fixes accumulate.
 - ✅ Process top-to-bottom within each source to minimize drift.
 - ✅ If a fix references text changed by a prior fix, re-locate and adapt.
 - ✅ If a fix would break continuity, flag it and skip rather than applying blindly.
+- ✅ See `world/canon-hierarchy.md` for the routing doctrine that determines which findings reach SMELL.md vs DEVPLAN.

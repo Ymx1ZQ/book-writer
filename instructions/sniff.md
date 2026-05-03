@@ -124,6 +124,8 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 - [ ] **Cascade:** grep the repository for the conflicting value <Y> and update every occurrence (writing-notes, prose, state.md, outlines, callbacks). Verify no residual.
 ```
 
+**Autonomous decision + no-Pending entries:** when an ANCHOR-NEEDED finding has multiple plausible resolutions across canon files, the implementing agent picks the canon-defended default per `instructions/milestone-format.md` §Autonomous-decision principle (priority: canon-hierarchy → existing canon → chapter guards → Occam) and writes that choice into the milestone — never escalates the choice to the user via DEVPLAN as "user picks A or B?". The Resolution and Cascade fields above must contain the chosen value, not options.
+
 ## Calibration
 
 - **Err toward more objections.** A false positive (an objection the user dismisses) costs nothing. A false negative (a smell that ships) costs trust with the reader.

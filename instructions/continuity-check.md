@@ -9,6 +9,8 @@ Verify continuity between books before starting the next one. Run this AFTER com
 - Target in `chapters/<book>/ch*.md` but the file does not yet exist (chapter undrafted) → add a new keyed section `ChNN-<short-name>` to `chapters/<book>/writing-notes.md` with the action guidance, AND a `→ See writing-notes.md §ChNN-<short-name>` pointer at the relevant beat in `chapters/<book>/outline.md`. Do NOT write to SMELL.md. Reason: SMELL.md tracks fixes against existing prose; deferred-by-design instructions for future writer passes belong in context, not in fix-tracking.
 - Findings that need both canon AND prose changes → **paired entries** in both channels.
 
+**Autonomous decision + no-Pending entries:** see `instructions/milestone-format.md` §What never enters DEVPLAN and §Autonomous-decision principle. Triage NEVER produces "user picks", "needs design decision", or "deferred-only" buckets — the system commits a default per the four-tier order (canon-hierarchy → existing canon → chapter guards → Occam) and records the rationale.
+
 **Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. Continuity findings routed to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
 
 ## Invocation

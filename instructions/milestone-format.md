@@ -56,6 +56,44 @@ These describe a runbook. The user runs the script (or instructs Claude to run i
 
 Global CLAUDE.md may instruct "every task uses a checkbox." This skill's doctrine **overrides** that for `DEVPLAN.md` files inside book-skill projects: only executable items get checkboxes. Project-level CLAUDE.md should restate the override and point here.
 
+## What never enters DEVPLAN
+
+DEVPLAN holds **milestones only** — never future-writer instructions, never editorial-choice escalations, never long-lived backlog. The following patterns are anti-patterns regardless of the label used:
+
+- **`### Pending` / `### Decisions Pending` / `### Drafting-Only` / `### Awaits Draft` / `### Escalated to User` sections** → BANNED. Route by content:
+  - Drafting-time guidance for an undrafted chapter → keyed section `## ChNN-<short-name>` in `chapters/<book>/writing-notes.md` + `→ See writing-notes.md §ChNN-<short-name>` pointer at the relevant outline beat. Apply the writing-notes section *now*, even though the chapter prose does not yet exist; that *is* the action.
+  - Editorial choice between A/B → see §Autonomous-decision principle below. The system picks one and records the rationale; it does not escalate.
+  - Tracker drift / list maintenance with no obvious assignment → derive the most defensible target (closest chapter that imports the relevant context, character file owning the trait, etc.) and apply now. Don't park.
+- **`Status: Pending (awaits ...)` lines** in any tracker file (SMELL.md, REVIEW.md, PROOFREAD.md, DEVPLAN.md) → BANNED. Same routing as above.
+- **`### Deferred to Phase NNN` sections** → permitted ONLY for cap-overflow inside a single coherence/continuity phase, AND only if the successor phase consumes them within 1-2 cycles. A "Deferred" section that survives 3+ phases is a backlog leak — promote everything to writing-notes / outline / character file and delete the section.
+- **Future-writer instructions** (e.g., "verify draft uses X phrasing", "remember at draft time to surface the Y plant") → BANNED in DEVPLAN. Route to `chapters/<book>/writing-notes.md` as a drafting guard, with `→ See writing-notes.md §...` pointer at the relevant outline beat. The writing-notes section is the durable home; DEVPLAN is the work-in-progress ledger.
+
+The unifying rule: if a finding's resolution lives at draft time, the *current-phase* action is to write the drafting guidance into context (writing-notes / outline / character file) so the future writer pass picks it up automatically. Parking the finding in DEVPLAN as "deferred" routes it nowhere and accumulates as backlog leak.
+
+## Autonomous-decision principle
+
+The book pipeline is an **autonomous writer**, not an assistant. Editorial-choice escalations to the user are always a failure mode — the system must commit a position based on canon and apply it.
+
+When a finding has multiple plausible resolutions, derive the default in this priority order:
+
+1. **`world/canon-hierarchy.md` tier order** — explicit precedence rules between worldbuilding files, character files, plot files, outlines, and prose. The higher tier always wins; lower-tier files defer.
+2. **Canon as already written** — among files at the same tier, the existing canon usage takes precedence over the new finding's framing. If 80% of the trilogy already calls a sensor "PD-073", the canonicalization adopts that form.
+3. **Chapter's own tonal/structural guards already declared** — writing-notes per-chapter sections (density caps, register guards, opening-type rotation, beat-priority caps) constrain the resolution space. If a guard caps a beat at 1 sentence, the resolution must fit.
+4. **Occam** — among options that survive (1)-(3), pick the one that adds the least new infrastructure (no new files, no new naming conventions, no new cross-references unless one already exists).
+
+Apply the chosen default to canon AND record a one-line rationale in the appropriate decision-record location:
+
+- Drafting-time guidance → `chapters/<book>/writing-notes.md` keyed section.
+- Character-level decision → character file (Habits, Tradecraft, Voice, etc.).
+- Plot-level decision → `plot/<file>.md` (key-scenes, ticking-clocks, plant tracking).
+- Worldbuilding decision → `world/<file>.md`.
+
+The user can always override later by editing the decision-record. But the system commits a position — it never returns "A or B?" as a question.
+
+**Banned constructs:** `"User picks A or B?"`, `"Needs design decision"`, `"Escalated to user"`, `"Pending user input"`, `"Choice point — user must decide"`. If a triage step produces such a bucket, the triage is incomplete: re-derive the default per the four-tier order and apply.
+
+**Genuine blockers** (the canon contradicts itself irreducibly, AND no defensible default exists from any of the four tiers) are vanishingly rare. Confirm the contradiction is irreducible before raising. If raised, present 2-3 options each with concrete canon evidence (file:line for each), not as an open question.
+
 ## Used by
 
 `sniff.md`, `coherence-check.md`, `continuity-check.md`, `fix.md`, `revise.md`, `chapter-writer.md` — and by Claude when planning phases for the surrounding orchestration (write/coherence cycle scripts, deferred verifications).

@@ -6,6 +6,7 @@ Verify continuity between books before starting the next one. Run this AFTER com
 
 - Target in `world/`, `plot/`, `characters/`, `outline.md`, `state.md`, `voice-samples.md`, `flashback-beats.md`, `chorus-poem-map.md`, `sauveterre-plant.md`, `temporal-echoes.md`, character sheets → **DEVPLAN milestone** (consumed by `/book fix`).
 - Target in `chapters/<book-N>/ch*.md` or `chapters/<book-N+1>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`) using the same format `sniff.md` uses, with `Source: continuity` tag inside the entry.
+- Target in `chapters/<book>/ch*.md` but the file does not yet exist (chapter undrafted) → add a new keyed section `ChNN-<short-name>` to `chapters/<book>/writing-notes.md` with the action guidance, AND a `→ See writing-notes.md §ChNN-<short-name>` pointer at the relevant beat in `chapters/<book>/outline.md`. Do NOT write to SMELL.md. Reason: SMELL.md tracks fixes against existing prose; deferred-by-design instructions for future writer passes belong in context, not in fix-tracking.
 - Findings that need both canon AND prose changes → **paired entries** in both channels.
 
 **Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. Continuity findings routed to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
@@ -120,6 +121,7 @@ Each finding is annotated with its routing destination — `[→ DEVPLAN]`, `[�
 - "Character X ended Book 1 in state Y, but Book 2 outline opens in state Z" — outline change → DEVPLAN.
 - "Tic re-explained in B2 ch.03 prose" — prose change → SMELL.md for ch.03.
 - "Plant placed in B1 ch.12, payoff missing from B2 outline AND from B2 prose" — paired (DEVPLAN: add payoff to outline; SMELL.md ch.NN: write payoff into prose at the chosen chapter).
+- "Plant placed in B2 ch.20, payoff outline beat exists in B3 ch.28 but ch28.md is undrafted" → writing-notes.md §Ch28-... + outline.md beat-end pointer; no SMELL.md entry.
 
 ### 4. Write Corrections (if issues found)
 

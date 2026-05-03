@@ -2,12 +2,15 @@
 
 Run a comprehensive coherence review across the project's worldbuilding, characters, and outlines. Combines the "reader who asks obvious questions" with the rigor of a professional script doctor. Genre, tone, and structural rules are read from the project's own files — this instruction is genre-agnostic.
 
-**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed to one of two channels per `world/canon-hierarchy.md`:
+**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed to one of three channels per `world/canon-hierarchy.md`:
 
 - Target in `world/`, `plot/`, `characters/`, `chapters/<book>/outline.md`, `chapters/<book>/state.md`, or `chapters/<book>/writing-notes.md` → **DEVPLAN milestone** (consumed by `/book fix`).
-- Target in `chapters/<book>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`).
+- Target in `chapters/<book>/ch*.md` (chapter prose, file exists) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`).
+- Target in `chapters/<book>/ch*.md` but the file does not yet exist (chapter undrafted) → add a new keyed section `## ChNN-<short-name>` to `chapters/<book>/writing-notes.md` with the action guidance, AND a `→ See writing-notes.md §ChNN-<short-name>` pointer at the relevant beat in `chapters/<book>/outline.md`. Do NOT write to SMELL.md and do NOT create a "Pending" / "Drafting-Only" entry in DEVPLAN. Reason: SMELL.md tracks fixes against existing prose; deferred-by-design instructions for future writer passes belong in context, not in fix-tracking.
 
-A single finding may produce paired entries in BOTH channels when the contradiction needs canon AND prose updates (the orchestration scripts run `fix` and `revise` in sequence so both close in the same cycle). The two-channel routing is what closes the loop on chapter-prose findings — without it, prose-target milestones written to DEVPLAN would never be applied (`/book fix` does not touch chapter prose by design).
+A single finding may produce paired entries in BOTH the canon and prose channels when the contradiction needs canon AND prose updates (the orchestration scripts run `fix` and `revise` in sequence so both close in the same cycle). The two-channel routing is what closes the loop on chapter-prose findings — without it, prose-target milestones written to DEVPLAN would never be applied (`/book fix` does not touch chapter prose by design).
+
+**Autonomous decision + no-Pending entries:** see `instructions/milestone-format.md` §What never enters DEVPLAN and §Autonomous-decision principle. Triage NEVER produces "user picks", "needs design decision", or "deferred-only" buckets — the system commits a default per the four-tier order (canon-hierarchy → existing canon → chapter guards → Occam) and records the rationale.
 
 **Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. Coherence findings routed to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
 

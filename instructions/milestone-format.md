@@ -102,9 +102,22 @@ Three rules constrain the block:
 
 **1. Per-phase scope only.** Operational items describe ONLY actions that close THIS phase's milestones (e.g., `/book fix <scope>` for the canon side, `/book revise <scope>` for the prose side, a re-run of THIS phase's check that verifies clean state). They do NOT restate prior phases' pending status. The cycle script's `count_unresolved_global` (run-coherence-cycle.sh) is the cross-phase source of truth — restating "Pending milestones from Phases X / Y / Z still require application" propagates a meta-statement that becomes stale the instant the next `/book fix` lands, and the propagation amplifies as each new phase copies it forward.
 
-**2. No transitive forward-looking unblock claims.** Statements like "B1 drafting unblocked once Phase X / Y / Z close" depend on external phases and decay silently. Drafting readiness lives in episode/state docs, not phase ledgers. The verification block may reference the genuine immediate successor of THIS phase (`/book fix <scope>` → re-run `/book coherence <scope>` → `/book write <scope>` *only if it's the next pipeline step from THIS phase's clean state*), but never a transitive dependency on other phases.
+**2. Allowed and banned command references.** Operational items in pre-writing-phase ledgers (the ledgers consumed by `/book fix` / `/book coherence` / `/book continuity` / `/book compact`) follow an explicit allow/ban list:
 
-**3. `/book fix` closes matching operational items.** When `/book fix <scope>` applies a phase's executable milestones, it MUST also scan DEVPLAN.md for plain-bullet operational items in OTHER phases whose action names the just-completed `/book fix <scope>` (typical patterns: `Apply Phase NN milestones via /book fix <scope>`, `Re-run /book fix <scope>`). For each match with status `— pending`, update to `— done YYYY-MM-DD`. This keeps the operational ledger consistent with the executable ledger so the user does not see stale "pending" markers after a clean cycle.
+- **Allowed:** `/book fix`, `/book coherence`, `/book continuity`, `/book compact` — the pre-writing pipeline. Each has a §2.5/§4.5 step that closes its own pending refs at successful invocation, so the ledger self-cleans.
+- **Banned:** `/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise` — writing-phase commands. Their state belongs to writing-phase ledgers (chapter-level files: `chapters/<book>/state.md`, `chapters/<book>/SMELL.md`, `chapters/<book>/REVIEW.md`, `chapters/<book>/PROOFREAD.md`), never to a phase-level pre-writing ledger. Pre-writing convergence (worldbuilding / coherence-clean) is the prior phase; drafting is a separate ledger.
+- **Drafting-unblock state observations** (e.g., "B1 drafting unblocked once Phase X / Y / Z close") are transitive forward-looking claims that depend on external phases and decay silently. Route to `chapters/<book>/state.md` §Open Threads (or the equivalent state-doc location), never phase ledgers.
+- **Orchestration script references** (`./run-coherence-cycle.sh ...`, `./run-write-cycle.sh ...`) are circular in phase ledgers because the script is what generated the phase. Discouraged. If genuinely informational, use plain bullet without `— pending` status.
+
+**3. Pre-writing commands close matching operational items.** Every pre-writing pipeline command MUST scan DEVPLAN.md for plain-bullet operational items naming its just-completed invocation, and update `— pending` → `— done YYYY-MM-DD`:
+
+- `/book fix <scope>` — closes refs to `Apply Phase NN milestones via /book fix <scope>`, `Re-run /book fix <scope>`, etc. (`fix.md` §2.5).
+- `/book coherence <scope>` — when invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings, closes refs to `/book coherence <scope>`, `Re-run /book coherence <scope>` (`coherence-check.md` §4.5).
+- `/book continuity <from> <to>` — same trigger and pattern (`continuity-check.md` §4.5).
+- `/book compact <scope>` — closes refs to `/book compact <scope>` on every invocation (compact is idempotent — every successful run is valid evidence the named compact was performed; `compact.md` §4.5).
+- Scope-aware: `<scope>=all` matches per-book scopes per the union rule (closes `/book fix book-1`, `/book fix book-2`, etc.).
+
+This keeps the operational ledger consistent with the executable ledger; combined with rule 2's allow/ban list, the ledger has zero `— pending` items at convergence and stays zero across cycles.
 
 ## Used by
 

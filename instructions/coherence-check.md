@@ -363,8 +363,30 @@ Fixes ordered by severity, then by file.
 - Every fix that adds content must include: "Verify file stays within word budget (see init.md)."
 - Classify each fix as SUBTRACTIVE (removes/corrects) or ADDITIVE (adds content). Max 10 additive fixes per phase. If more needed, split phases with `/book compact` between them.
 - Total additions per phase: max 500 words across all fixes. Compress or defer if exceeded.
-- The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims.
+- The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims, allowed/banned command-reference list per rule 2.
 - After writing, announce: *"Coherence corrections written: X canon milestones in DEVPLAN.md, Y prose entries written to SMELL.md across N chapters. Run `/book fix <book>` then `/book revise <book>` to apply both channels."*
+
+### 4.5 Close Matching Operational Items
+
+**Triggers when this `/book coherence <scope>` invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings** (the verification semantic — a clean coherence run is itself the verification that prior `/book coherence <scope>` operational refs can close). Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
+
+Semantic: "this `/book coherence <scope>` invocation has just verified scope `<scope>` is coherence-clean; any operational item naming `/book coherence <scope>` as pending elsewhere in DEVPLAN.md can be closed."
+
+If findings are non-zero, skip §4.5 — convergence has not been re-verified.
+
+If 0/0/0:
+
+Scan DEVPLAN.md for plain-bullet operational items in any phase whose action names this invocation. Match patterns (scope-aware):
+- `Re-run .*/book coherence <scope>` (verification re-run — the canonical phrasing)
+- `Then .*/book coherence <scope>` / `After .* /book coherence <scope>` (phasing-language phrasings)
+- For invocations with `<scope>=all`: also match per-book scopes (`/book coherence book-1`, `/book coherence book-2`, `/book coherence book-3`, `/book coherence common`) since `all` is the union.
+
+For each match with status `— pending`, update to `— done YYYY-MM-DD` (today's date). Skip matches already marked `— done`. Do NOT touch operational items referencing other commands — those close from their own consumers (`/book fix` §2.5, `/book continuity` §4.5, `/book compact` §4.5).
+
+Announce in the summary:
+```
+Operational items closed: X (in phases: [list])
+```
 
 ### 5. Summary
 

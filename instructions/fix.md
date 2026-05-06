@@ -96,6 +96,8 @@ For each match with status `— pending`, update to `— done YYYY-MM-DD` (today
 
 **Stale meta-statement cleanup.** Same pass: scan for plain-bullet items matching `Pending milestones from Phases [\d, /]+ still require application via .*/book fix invocations` with status `— pending`. If every Phase NN listed has all `[ ]` items now `[x]`, update the operational item to `— done YYYY-MM-DD`. If any phase still has open `[ ]` items, leave the marker `— pending`.
 
+**Defensive convergence sweep.** If after the literal-pattern passes above the invocation completes with `grep -c "^- \[ \]" DEVPLAN.md == 0` (zero unchecked anywhere in the file), perform a final sweep: for each `— pending` item remaining in any phase whose checkboxes are all `[x]`, inspect the action description. If it describes pre-writing-phase work — namely references `/book fix`, `/book coherence`, `/book continuity`, `/book compact`, or `./run-coherence-cycle.sh` in any phrasing — update to `— done YYYY-MM-DD`. Catches edge-case phrasings the literal patterns miss (`M1 closes via /book fix book-2`, `After M1 applies, …`, `Run ./run-coherence-cycle.sh book-2`). Do NOT close items referencing banned writing-phase commands per `instructions/milestone-format.md` §Verification & next-steps blocks rule 2 (`/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise`) — those should not be in the ledger at all per doctrine; flag them for surface to the user instead of closing.
+
 Announce in the session summary:
 ```
 Operational items closed: X (in phases: [list])

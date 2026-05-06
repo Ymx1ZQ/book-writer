@@ -130,6 +130,25 @@ For every file in scope (world/, characters/, plot/), apply token-reducing compr
 
 ---
 
+### 5.5 Close Matching Operational Items
+
+**Runs once per `/book compact <scope>` invocation, unconditionally** — compact is idempotent, every successful run is valid evidence the named compact was performed. Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
+
+Semantic: "this `/book compact <scope>` invocation has just performed (or re-confirmed) compaction on `<scope>`; any operational item naming `/book compact <scope>` as pending elsewhere in DEVPLAN.md can be closed."
+
+Scan DEVPLAN.md for plain-bullet operational items naming this invocation. Match patterns (scope-aware):
+- `.*/book compact <scope>` in any phrasing (`Run /book compact X`, `Then /book compact X`, `After … /book compact X`, etc.)
+- For invocations with `<scope>=all`: also match per-book scopes (`/book compact book-1`, `/book compact book-2`, `/book compact book-3`, `/book compact common`) since `all` is the union.
+
+For each match with status `— pending`, update to `— done YYYY-MM-DD`. Skip matches already marked `— done`. Do NOT touch operational items referencing other commands.
+
+Announce in the report:
+```
+Operational items closed: X (in phases: [list])
+```
+
+---
+
 ### 6. Report
 
 ```

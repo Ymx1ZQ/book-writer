@@ -288,3 +288,40 @@ Fix is two complementary doctrine additions: (a) constrain the verification bloc
 - [x] **M5**: Reinstall — `cd ~/Documents/software/skills/book && ./install.sh --force`. ✅ (deployed to `~/.claude/skills/book` 2026-05-06)
 
 **Out of scope:** retroactive cleanup of the 30 already-stale markers in the ground-truth project's DEVPLAN. Those will close on the next `/book fix` invocation that touches a phase referenced by them, OR via a one-shot chirurgical edit (separate ask).
+
+---
+
+## Phase 7 — Operational closure across pre-writing commands (2026-05-06)
+
+Surfaced from ground-truth DEVPLAN audit after Phase 6 deployment: `/book fix all` §2.5 closed 20 of 48 residual `— pending` items; 28 remained. Two doctrine gaps:
+
+1. Operational items pointing to non-`/book fix` pre-writing commands (`/book coherence`, `/book continuity`, `/book compact`) have no consumer that closes them — Phase 6 §2.5 deferred to "their own consumers" but those consumers don't exist.
+2. Operational items pointing to `/book write` and drafting-unblock state observations leak writing-phase content into the pre-writing ledger. Pre-writing convergence (worldbuilding / coherence-clean) is the prior phase; drafting is a separate ledger and its readiness statements belong in chapter-level state docs, not phase ledgers.
+
+Fix is symmetric across pre-writing commands plus a doctrine ban on write-phase refs.
+
+**Convergence trace.** Post-Phase-7 + post-M6 sweep, `run-coherence-cycle.sh` leaves the ledger clean across cycles:
+
+| Step in cycle | What it closes | New refs it may write |
+|---------------|----------------|----------------------|
+| `/book coherence <scope>` (0/0/0) | §4.5: own pending refs | only allowed pre-writing refs |
+| `/book fix <scope>` | §2.5: own pending refs (+ widened sweep, M5) | n/a — fix doesn't add operational items |
+| `/book revise <scope>` (no chapters) | n/a | n/a — no-op until drafting starts |
+| `/book continuity X Y` (0/0/0) | §4.5: own pending refs | only allowed pre-writing refs |
+| `/book compact <scope>` | §4.5: own pending refs (idempotent) | n/a |
+
+Invariants at convergence (stable across cycles):
+- `grep -c "^- \[ \]" DEVPLAN.md == 0` (existing — checkbox count)
+- `grep -c "— pending$" DEVPLAN.md == 0` (new — operational-item count)
+
+The cycle script's `count_unresolved_global` already enforces invariant 1. Phase 7 makes invariant 2 self-maintaining.
+
+- [x] **M1**: `instructions/milestone-format.md` §Verification & next-steps blocks — extend rule 2 with explicit allow/ban list. **Allowed** pre-writing refs in operational blocks: `/book fix`, `/book coherence`, `/book continuity`, `/book compact`. **Banned** writing-phase refs: `/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise` — these belong to a separate writing-phase ledger (chapter-level files: `chapters/<book>/state.md`, SMELL.md, REVIEW.md, PROOFREAD.md). Drafting-unblock state observations ("B1 drafting unblocked once Phase X closes") route to `chapters/<book>/state.md` §Open Threads, never phase ledgers — they are transitive-forward-looking per existing rule 2 and decay silently. Orchestration script refs (`./run-coherence-cycle.sh ...`) are circular in phase ledgers (the script generated the phase) — discouraged; if genuinely needed, use plain bullet without `— pending` (informational, not actionable).
+- [x] **M2**: `instructions/coherence-check.md` — add §4.5 "Close Matching Operational Items" mirroring fix.md §2.5. Trigger: invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings (the verification semantic). Action: scan DEVPLAN for plain-bullet items matching `/book coherence <scope>` or `Re-run .*/book coherence <scope>` with status `— pending`, update to `— done YYYY-MM-DD`. Scope-aware (matches `all` against per-book scopes per the union rule).
+- [x] **M3**: `instructions/continuity-check.md` — same §4.5 pattern for `/book continuity <from> <to>` (or `/book continuity X Y`). Trigger same: 0/0/0 actionable.
+- [x] **M4**: `instructions/compact.md` — same §4.5 for `/book compact <scope>`. Trigger: every invocation (compact is idempotent — re-running on a converged state confirms convergence; a fresh run is valid evidence the named compact was performed).
+- [x] **M5**: `instructions/fix.md` §2.5 — defensive widen. After the existing pattern matches, if the invocation completes with DEVPLAN at zero unchecked `[ ]`, also sweep `— pending` items in fully-`[x]`-closed phases whose action describes pre-writing work (fix/coherence/continuity/compact/cycle script). Catches edge-case phrasings the literal patterns miss (e.g., `M1 closes via /book fix book-2`, `After M1 applies, ...`). Defensive — should not fire on the happy path post-M1+M6, but provides a safety net.
+- [x] **M6**: One-time chirurgical sweep of the 28 residuals in `~/Documents/books/ground-truth/DEVPLAN.md`. Rationale: all 28 reference banned commands per M1 OR describe verifiably-completed actions (commit history + Phase 181 convergence trace). Update each `— pending` → `— done 2026-05-06`. Lines: 247–250, 291, 292, 385, 386, 441, 442, 477, 512, 547, 578, 614, 645, 682, 723, 761, 762, 796, 848, 880, 925, 964, 1003, 1033, 1082.
+- [x] **M7**: Reinstall (`cd ~/Documents/software/skills/book && ./install.sh --force`) + commit skill repo + commit project DEVPLAN sweep.
+
+**Out of scope:** writing-phase ledger architecture (separate file? separate top-level section in DEVPLAN.md?). For now, writing-phase state lives in chapter-level files. If a recurring pattern emerges where writing needs its own DEVPLAN section, surface as Phase 8.

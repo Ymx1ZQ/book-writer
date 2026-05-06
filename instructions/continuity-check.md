@@ -129,7 +129,29 @@ Each finding is annotated with its routing destination — `[→ DEVPLAN]`, `[�
 
 Same pattern as `/book coherence`: route each correction by target file. Canon-side findings → append a Phase to `DEVPLAN.md` with milestones. Prose-side findings → append entries to the affected chapter's `chapters/<book>/SMELL.md` with `Source: continuity` tag. Cross-link to `world/canon-hierarchy.md` for tier-respecting decisions when canon files disagree.
 
-The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims.
+The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims, allowed/banned command-reference list per rule 2.
+
+### 4.5 Close Matching Operational Items
+
+**Triggers when this `/book continuity <from> <to>` invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings** (the verification semantic — a clean continuity run is itself the verification that prior `/book continuity <from> <to>` operational refs can close). Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
+
+Semantic: "this `/book continuity <from> <to>` invocation has just verified the `<from>`→`<to>` transition is continuity-clean; any operational item naming `/book continuity <from> <to>` (or the reverse pair) as pending elsewhere in DEVPLAN.md can be closed."
+
+If findings are non-zero, skip §4.5 — convergence has not been re-verified.
+
+If 0/0/0:
+
+Scan DEVPLAN.md for plain-bullet operational items naming this invocation. Match patterns:
+- `Re-run .*/book continuity <from> <to>` (verification re-run)
+- `Then .*/book continuity <from> <to>` / `After .* /book continuity <from> <to>` (phasing-language)
+- `.*/book continuity <from> <to>.*verify clean state` (full canonical phrasing)
+
+For each match with status `— pending`, update to `— done YYYY-MM-DD`. Skip matches already marked `— done`. Do NOT touch operational items referencing other commands.
+
+Announce in the summary:
+```
+Operational items closed: X (in phases: [list])
+```
 
 ### 5. Summary
 

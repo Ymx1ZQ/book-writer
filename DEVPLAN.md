@@ -272,3 +272,19 @@ Surfaced by the M5 smoke test — these are **pre-existing Phase 2 bugs** that n
 **Phase 5 totals:** 6 milestones. Migrates Phase 1 + Phase 2 scripts to PEP 723 / uv self-bootstrap; surfaces and fixes two pre-existing EPUB bugs along the way. Removes the install.sh PEP 668 footgun. Closes Phase 2 M4 (smoke test, blocked since 2026-04-29).
 
 **Out of scope:** generic uv migration of any future Python tooling — handle case-by-case as scripts are added. The pattern (PEP 723 + `uv run --script` shebang) is now the project's default for standalone Python scripts in this skill.
+
+---
+
+## Phase 6 — Verification-block scope rule (2026-05-06)
+
+Surfaced by ground-truth project DEVPLAN: 17 stale "Pending milestones from Phases X/Y/Z still require application" meta-statements + 13 stale "Apply Phase NN via `/book fix <scope>` — pending" operational items, all referencing phases that had been applied + re-verified clean by subsequent coherence cycles. Root cause: `coherence-check.md` / `continuity-check.md` Step 4 specify the executable milestone template but not the `### Verification & next steps` block, so the model invents that block per phase and propagates prior-phase status forward; `/book fix` closes only `[ ]` checkboxes, never the matching plain-bullet `— pending` operational items.
+
+Fix is two complementary doctrine additions: (a) constrain the verification block to per-phase scope (no transitive forward-looking, no prior-phase restatement), (b) extend `/book fix` to close operational items that name its just-completed invocation.
+
+- [x] **M1**: Add `## Verification & next-steps blocks` section to `instructions/milestone-format.md` codifying three rules — per-phase scope only, no transitive forward-looking unblock claims, `/book fix` closes matching operational items. ✅
+- [x] **M2**: In `instructions/coherence-check.md` §4 "Rules for the corrections devplan", add a bullet cross-linking to `instructions/milestone-format.md` §Verification & next-steps blocks. ✅
+- [x] **M3**: In `instructions/continuity-check.md` §4 "Write Corrections", add the same cross-link. ✅
+- [x] **M4**: In `instructions/fix.md` §2 "Apply Each Milestone", add `Step E — Close Matching Operational Items` describing the scan-and-update logic (match `/book fix <scope>` references in DEVPLAN, update `— pending` → `— done YYYY-MM-DD`). ✅
+- [x] **M5**: Reinstall — `cd ~/Documents/software/skills/book && ./install.sh --force`. ✅ (deployed to `~/.claude/skills/book` 2026-05-06)
+
+**Out of scope:** retroactive cleanup of the 30 already-stale markers in the ground-truth project's DEVPLAN. Those will close on the next `/book fix` invocation that touches a phase referenced by them, OR via a one-shot chirurgical edit (separate ask).

@@ -94,6 +94,18 @@ The user can always override later by editing the decision-record. But the syste
 
 **Genuine blockers** (the canon contradicts itself irreducibly, AND no defensible default exists from any of the four tiers) are vanishingly rare. Confirm the contradiction is irreducible before raising. If raised, present 2-3 options each with concrete canon evidence (file:line for each), not as an open question.
 
+## Verification & next-steps blocks
+
+Phases written by `/book coherence` and `/book continuity` may include a `### Verification & next steps` block listing operational items that close the phase. These items are plain-bullet (per the executable/operational distinction above) and may carry inline status (`- pending`, `- done YYYY-MM-DD`).
+
+Three rules constrain the block:
+
+**1. Per-phase scope only.** Operational items describe ONLY actions that close THIS phase's milestones (e.g., `/book fix <scope>` for the canon side, `/book revise <scope>` for the prose side, a re-run of THIS phase's check that verifies clean state). They do NOT restate prior phases' pending status. The cycle script's `count_unresolved_global` (run-coherence-cycle.sh) is the cross-phase source of truth — restating "Pending milestones from Phases X / Y / Z still require application" propagates a meta-statement that becomes stale the instant the next `/book fix` lands, and the propagation amplifies as each new phase copies it forward.
+
+**2. No transitive forward-looking unblock claims.** Statements like "B1 drafting unblocked once Phase X / Y / Z close" depend on external phases and decay silently. Drafting readiness lives in episode/state docs, not phase ledgers. The verification block may reference the genuine immediate successor of THIS phase (`/book fix <scope>` → re-run `/book coherence <scope>` → `/book write <scope>` *only if it's the next pipeline step from THIS phase's clean state*), but never a transitive dependency on other phases.
+
+**3. `/book fix` closes matching operational items.** When `/book fix <scope>` applies a phase's executable milestones, it MUST also scan DEVPLAN.md for plain-bullet operational items in OTHER phases whose action names the just-completed `/book fix <scope>` (typical patterns: `Apply Phase NN milestones via /book fix <scope>`, `Re-run /book fix <scope>`). For each match with status `— pending`, update to `— done YYYY-MM-DD`. This keeps the operational ledger consistent with the executable ledger so the user does not see stale "pending" markers after a clean cycle.
+
 ## Used by
 
 `sniff.md`, `coherence-check.md`, `continuity-check.md`, `fix.md`, `revise.md`, `chapter-writer.md` — and by Claude when planning phases for the surrounding orchestration (write/coherence cycle scripts, deferred verifications).

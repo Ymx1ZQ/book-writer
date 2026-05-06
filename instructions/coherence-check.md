@@ -363,6 +363,7 @@ Fixes ordered by severity, then by file.
 - Every fix that adds content must include: "Verify file stays within word budget (see init.md)."
 - Classify each fix as SUBTRACTIVE (removes/corrects) or ADDITIVE (adds content). Max 10 additive fixes per phase. If more needed, split phases with `/book compact` between them.
 - Total additions per phase: max 500 words across all fixes. Compress or defer if exceeded.
+- The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims.
 - After writing, announce: *"Coherence corrections written: X canon milestones in DEVPLAN.md, Y prose entries written to SMELL.md across N chapters. Run `/book fix <book>` then `/book revise <book>` to apply both channels."*
 
 ### 5. Summary

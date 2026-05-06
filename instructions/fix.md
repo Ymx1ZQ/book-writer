@@ -80,6 +80,27 @@ Announce:
    Remaining: X milestones
 ```
 
+### 2.5 Close Matching Operational Items
+
+**Runs once per `/book fix <scope>` invocation, unconditionally** — whether Step 1 found N milestones to apply (then runs after Step D for the last one) or reported zero (the scope is already in applied state). Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
+
+Semantic: "this `/book fix <scope>` invocation has just confirmed scope `<scope>` is in applied state; any operational item naming `/book fix <scope>` as pending elsewhere in DEVPLAN.md can be closed."
+
+Scan DEVPLAN.md for plain-bullet operational items in any phase whose action names this invocation. Match patterns (scope-aware):
+- `Apply Phase NN milestones via .*/book fix <scope>`
+- `Re-run .*/book fix <scope>`
+- `Apply pending milestones from .* via .*/book fix` paired with `<scope>` or with `prior /book fix invocations` (the latter catches collective references when this invocation is `all`)
+- For invocations with `<scope>=all`: also match per-book scopes (`book-1`, `book-2`, `book-3`, `common`) since `all` is the union.
+
+For each match with status `— pending`, update to `— done YYYY-MM-DD` (today's date). Skip matches already marked `— done`. Do NOT touch operational items referencing `/book write`, `/book revise`, `/book coherence`, `/book continuity`, `/book compact`, or any command other than `/book fix` — those close from their own consumers (or from re-verification cycles that produce 0 BLOCKING / 0 WARNING / 0 NOTE in subsequent phases of the same scope).
+
+**Stale meta-statement cleanup.** Same pass: scan for plain-bullet items matching `Pending milestones from Phases [\d, /]+ still require application via .*/book fix invocations` with status `— pending`. If every Phase NN listed has all `[ ]` items now `[x]`, update the operational item to `— done YYYY-MM-DD`. If any phase still has open `[ ]` items, leave the marker `— pending`.
+
+Announce in the session summary:
+```
+Operational items closed: X (in phases: [list])
+```
+
 ### 3. Session Complete
 
 ```

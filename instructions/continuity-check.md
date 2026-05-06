@@ -129,6 +129,8 @@ Each finding is annotated with its routing destination — `[→ DEVPLAN]`, `[�
 
 Same pattern as `/book coherence`: route each correction by target file. Canon-side findings → append a Phase to `DEVPLAN.md` with milestones. Prose-side findings → append entries to the affected chapter's `chapters/<book>/SMELL.md` with `Source: continuity` tag. Cross-link to `world/canon-hierarchy.md` for tier-respecting decisions when canon files disagree.
 
+The `### Verification & next steps` block (if written) follows `instructions/milestone-format.md` §Verification & next-steps blocks: per-phase scope only, no restatement of prior phases' pending status, no transitive forward-looking unblock claims.
+
 ### 5. Summary
 
 ```

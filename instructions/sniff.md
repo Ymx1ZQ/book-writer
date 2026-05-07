@@ -48,6 +48,24 @@ For every concrete assertion in the chapter (a number, a fact, an object, a capa
 
 5. **Domain plausibility.** Read each assertion as if the reader has expert knowledge in the relevant domain — economist, engineer, doctor, person with the relevant disability, native of the city/region, professional in the depicted field. Would they call BS? "Two euros the kilo" for fresh sardines in a 2045 climate-stressed Mediterranean = an economist calls BS. A wheelchair maneuver that cannot physically be done with the chair geometry described = a wheelchair user calls BS. A surgical detail wrong by current medical practice = a doctor calls BS.
 
+   **5.a — Real-world factual-claim audit (operational sub-rubric).** The expert-reader framing above is the lens; this sub-rubric is the procedure. For every concrete assertion in the chapter that depends on knowledge **external to the project's canon files**, classify into one of three buckets:
+
+   - **Anchored in canon** — the assertion is supported by a canonical project file (e.g., `world/`, `characters/`, `plot/`, `consumer-anchors.md`). Cite the file. Pass.
+   - **Real-world verifiable, high confidence** — the assertion is a fact about the real world (geography, physics, language grammar, etc.) that the agent can confirm with high confidence. Declare it. Pass.
+   - **Cannot verify / makes friction** — neither anchored nor confidently real. Flag. Classification: INLINE if a prose tweak fixes it, ANCHOR-NEEDED if the project should canonicalize an in-world override, ACCEPT only with explicit outline evidence per the standard rule.
+
+   Categories the agent must scan, generic across the trilogy:
+
+   - **Real-world places** — streets, neighborhoods, landmarks, country/city facts, geography, climate. A real city named in the prose (Marseille, Torino, Bruxelles) inherits the real geography of that city; relative positions of named places must match the real map unless the project canonicalizes an override.
+   - **Specific technology** — model numbers, connector types, version numbers, hardware compatibility, software stacks, physical chains (source→display, etc.). Period plausibility: does it exist at the implied year? was it in actual use at that year? is the chain of compatibility physically realizable in the implied direction?
+   - **Foreign-language grammar in proper nouns** — when the text names a French / Italian / Spanish / etc. proper noun, source-language grammar applies (article-preposition contractions, gender agreement, accents). Capitalization in in-world terminal output does not exempt the noun from its source-language grammar.
+   - **Real physics, biology, medicine, law, finance** — assertions in these domains are checkable against domain knowledge.
+   - **Real brand names, dates, currencies, units** — real things named in the prose must be real.
+
+   **Calibration (load-bearing).** Specific-sounding details fail at higher rates than their tone suggests. A writer agent producing "model VGA-to-HDMI converter cable" or "Rue de Petit Puits, Le Panier" is not stating a verified fact — it is selecting a plausible-sounding token to add texture. Sniff must treat highly-specific technical or geographic assertions with **more** suspicion than general descriptive ones, because the failure mode is *plausibly worded → plausibly wrong*. Err toward flagging when the specificity exceeds the agent's actual confidence.
+
+   The prevention layer is `chapter-writer.md` §3.5 #16 (the writer's self-edit "External-world claim discipline" check). Sniff §5.a is the post-draft safety net. The continuity-within-chapter check is §9 (props/geometry consistency *inside* the scene), distinct from §5.a (claims about the *external* world).
+
 6. **Physical implausibility.** Geometry, physics, biology of described actions. Does the room dimension allow the movement described? Does the elapsed time match the action volume? Does the body do what the prose says it does (cold travels up the bones; can hands feel cold "stop where the calluses started"? — physiologically, no — but it can be a metaphor signaled as such)?
 
 7. **Character behavior.** Read the character's sheet in `characters/foreground/` or `characters/midground/`. Does the behavior in the scene match the established voice, defaults, history, relationships? A character described as withholding who suddenly delivers a soliloquy about themes is a smell.

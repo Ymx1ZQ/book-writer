@@ -387,10 +387,10 @@ Categories the agent must scan (generic, not chapter-specific):
 
 Calibration note (load-bearing): **specific-sounding details fail at higher rates than their tone suggests.** A writer agent producing "model VGA-to-HDMI converter cable" is not stating a verified fact; it's selecting a plausible-sounding token to add texture. Sniff must treat highly-specific technical assertions with more suspicion than general descriptive ones, because the failure mode is "plausibly worded → plausibly wrong."
 
-- [ ] Restructure §5 to have a lead paragraph (existing expert-reader framing, kept) + a sub-rubric "Real-world factual claim audit" with the three-way classification.
-- [ ] List the 5 categories generically (no Ch.01-specific examples).
-- [ ] Add the calibration note about tone-vs-correctness.
-- [ ] Cross-link forward to §9 (continuity within chapter) and back to chapter-writer.md §3.5 #16 (the prevention layer).
+- [x] Restructure §5 to have a lead paragraph (existing expert-reader framing, kept) + a sub-rubric "Real-world factual claim audit" with the three-way classification. ✅
+- [x] List the 5 categories generically (no Ch.01-specific examples). ✅ (places, technology, foreign-language grammar, physics/biology/medicine/law/finance, brands/dates/currencies/units)
+- [x] Add the calibration note about tone-vs-correctness. ✅
+- [x] Cross-link forward to §9 (continuity within chapter) and back to chapter-writer.md §3.5 #16 (the prevention layer). ✅
 
 ### M3: proof-reader.md P4 — foreign-language proper-noun grammar
 

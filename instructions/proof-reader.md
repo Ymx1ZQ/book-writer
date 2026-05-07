@@ -76,6 +76,13 @@ For each chapter, scan every line and report issues with **exact quotes and line
   - **Aliases:** E. Sauveterre (with period after E)
   - **The Game:** Always capitalized when referring to the specific Game
 - Flag any variant spelling of these terms.
+- **Foreign-language proper-noun grammar.** For proper nouns from non-English source languages (French, Italian, Spanish, German, etc.) — toponyms, institution names, product names — the source-language grammar is normative. The most common slip is the article-preposition contraction:
+  - French: `de + le → du`, `de + les → des`, `à + le → au`, `à + les → aux`. Example: `Rue de + le Petit Puits → Rue du Petit Puits` (NOT `Rue de Petit Puits`).
+  - Italian: `di + il → del`, `di + lo → dello`, `di + la → della`, `a + il → al`, `da + il → dal`, `in + il → nel`, `su + il → sul`. Example: `Via di + il Foro → Via del Foro` (NOT `Via di Foro`).
+  - Spanish: `de + el → del`, `a + el → al`. Example: `Calle de + el Sol → Calle del Sol` (NOT `Calle de el Sol`).
+  - German: definite-article form must agree with grammatical gender + case in compound place names.
+  Also generic: gender agreement, plural forms, and accent marks (é, è, à, ñ, ü, ß, etc.) must be present where the source language requires them.
+  **The rule applies even when the proper noun is rendered in CAPS** (e.g., on an in-world terminal output) **or surrounded by English-language narration.** Capitalization and English context do not exempt the noun from its source-language grammar.
 
 #### P5. American English
 

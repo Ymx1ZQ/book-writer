@@ -409,9 +409,9 @@ Also generic: gender agreement, plural forms, accent marks (é, è, à, ñ, ü) 
 
 The rule applies even when the proper noun is rendered in CAPS (e.g., on an in-world terminal) or surrounded by English-language narration. Capitalization does not exempt the noun from its source-language grammar.
 
-- [ ] Append a sub-rule under P4 with the rule + the three example forms (FR / IT / ES contractions). Generic, not Ch.01-specific.
-- [ ] Note the in-CAPS / in-English-context exemption-is-not-allowed clause.
-- [ ] One-line example each, no full case studies.
+- [x] Append a sub-rule under P4 with the rule + the four example forms (FR / IT / ES + DE gender-case agreement). Generic, not Ch.01-specific. ✅
+- [x] Note the in-CAPS / in-English-context exemption-is-not-allowed clause. ✅
+- [x] One-line example each, no full case studies. ✅
 
 ### M4: Reinstall + commit + push
 

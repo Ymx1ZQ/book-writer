@@ -347,6 +347,11 @@ Before checking word count, re-read the chapter and apply these cuts:
     - `started to <verb>` ... `[before|and] stopped` (when used as interior gesture-labeling rather than exterior fact) — rewrite as the gesture or its bare interruption, no narrator commentary.
     - `<character> felt <X>` immediately followed by an explanation of what `<X>` is — collapse to the physical signal alone.
     Target: **0** matches in narration. Aphorism-style interior labels are forbidden regardless of the count cap in check #6 — that cap covers narrator wisdom; this check covers narrator emotion-labeling, a distinct failure mode.
+16. **External-world claim discipline (see `sniff.md` §5):** scan the draft for every concrete assertion that depends on knowledge external to the project's canon files — real place names (streets, neighborhoods, landmarks, geography), specific technology (model numbers, connector types, hardware compatibility, software stacks, period plausibility), foreign-language grammar in proper nouns (article-preposition contractions, gender agreement, accents), real physics, biology, medicine, law, finance, brand names, dates, currencies, units. For each, classify as one of:
+    - **(a) Project canon supports it.** Cite the canonical file (e.g., `world/level-0-reality/...`, `consumer-anchors.md`). Keep.
+    - **(b) High-confidence real-world fact.** Declare; the assertion is now load-bearing on real-world knowledge and will be re-checked at sniff §5.
+    - **(c) Cannot verify.** Abstract or cut. False precision is more costly than vagueness — a generic "the cable" is worth more than a wrong specific cable.
+    Default rule: when in doubt, cut the specificity. The writer agent's tendency is to add plausible-sounding tokens for texture; this is the failure mode this check exists for. The post-draft safety net is `sniff.md` §5 (Real-world factual claim audit), but it's cheaper to prevent than to detect.
 
 ---
 

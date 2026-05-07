@@ -325,3 +325,100 @@ The cycle script's `count_unresolved_global` already enforces invariant 1. Phase
 - [x] **M7**: Reinstall (`cd ~/Documents/software/skills/book && ./install.sh --force`) + commit skill repo + commit project DEVPLAN sweep.
 
 **Out of scope:** writing-phase ledger architecture (separate file? separate top-level section in DEVPLAN.md?). For now, writing-phase state lives in chapter-level files. If a recurring pattern emerges where writing needs its own DEVPLAN section, surface as Phase 8.
+
+---
+
+## Phase 8 — External-world factual-claim guardrails (2026-05-07)
+
+> **Execution mode:** IDD fallback expected, per Phase 3 precedent. Deliverables are markdown LLM-instruction edits; grep-tests would be cargo-cult per `~/.claude/skills/devplan/TDD.md` §1 ("if you cannot articulate a testable user-visible behavior, fall back to IDD").
+
+Surfaced from B1 Ch.01 audit (ground-truth project, 2026-05-07). The chapter passed the writer's 9 verification passes and would have passed coherence-check (canon-internal). Manual reader audit caught four real errors: a hardware-connector direction inverted (HDMI-to-VGA ↔ VGA-to-HDMI), a real-world street name placed in the wrong arrondissement, a French toponym with broken article-preposition contraction (`Rue de Petit Puits` for `Rue du Petit Puits`), and an intra-scene continuity slip on a wrapping cloth.
+
+Three of the four are **assertions about facts external to the project's canon** — real geography, real technology, foreign-language grammar of proper nouns. The skill canonizes its own world meticulously but assumes the writer agent's internal model is reliable for facts not in the canon files. In practice the writer agent confidently produces plausible-sounding-but-wrong specifics in this class. The fourth (cloth) is intra-scene continuity, already covered by sniff §9 — a calibration matter, not a structural gap.
+
+Phase 8 adds three structural guardrails, one per stage of the cycle (prevention, detection, enforcement):
+
+1. **Prevent at draft.** chapter-writer.md self-edit gets an "External-world claim discipline" check (#16).
+2. **Detect at sniff.** sniff.md §5 gets an explicit "Real-world factual claim" sub-rubric.
+3. **Enforce at proofread.** proof-reader.md P4 gets a foreign-language proper-noun grammar rule.
+
+Generic across the trilogy. Not patching the four specific Ch.01 incidents — patching the class.
+
+**Out of scope (separate trilogy-side concern):** `run-write-cycle.sh` line 574 — flip `needs_thinking` from `0` to `1` for the PROOFREAD step so selective `--ultrathink` flows into proofread. The script lives in the trilogy project, not the skill repo. Will be applied separately project-side after Phase 8 ships.
+
+### M1: chapter-writer.md self-edit — add #16 "External-world claim discipline"
+
+**File:** `instructions/chapter-writer.md` §Step 3.5 Self-Edit Pass (REVISIONE — append item 16).
+
+Insert a 16th item in the numbered self-edit checklist, in the same format as items 1-15. Content: for every concrete real-world assertion in the draft (real place name, technical specification, foreign-language grammar of a proper noun, real physics/biology/medicine/law/finance, real brand or date or currency), the writer agent must classify the assertion as one of:
+
+- **(a) Project canon supports it** — the writer can cite a canonical file (e.g., `world/level-0-reality/...`, `consumer-anchors.md`, etc.). Keep.
+- **(b) High-confidence real-world fact** — the writer is confident this is correct external knowledge. Keep, but the assertion is now declared as load-bearing on real-world fact.
+- **(c) Cannot verify** — abstract or cut. False precision is more costly than vagueness.
+
+Default rule: when in doubt, cut the specificity. A scene rendered with a generic "the cable" is worth more than a scene rendered with a specific cable model that is wrong.
+
+The check explicitly cross-references sniff.md §5 (where the post-draft detection layer lives). The self-edit is the prevention layer; sniff is the safety net.
+
+- [x] Append item 16 to the numbered list at lines 325-349, matching the existing item format (one short bold lead-in clause, then the rule). ✅
+- [x] Item title: **External-world claim discipline (see `sniff.md` §5).** ✅
+- [x] Body: 5 lines. Cover the (a)/(b)/(c) classification + the default-to-cut bias + cross-link to sniff §5. ✅
+- [x] No examples that name specific Ch.01 incidents (HDMI/VGA, Marseille, etc.) — keep the rule generic across the trilogy. ✅
+
+### M2: sniff.md §5 — explicit "Real-world factual claim" sub-rubric
+
+**File:** `instructions/sniff.md` §5 (REVISIONE — restructure).
+
+Today §5 ("Domain plausibility") names a few expert-reader personas (economist, engineer, doctor, native of the city/region) as a single short paragraph. Restructure §5 into a layered rubric: (a) keep the existing expert-reader framing as the lead, (b) add an explicit sub-rubric "Real-world factual claim audit" that operationalizes it.
+
+The sub-rubric: for every concrete assertion that depends on knowledge external to the project's canon files, the sniff agent classifies into:
+
+- **Anchored in canon** — cite the file. Pass.
+- **Real-world verifiable, high confidence** — declare. Pass.
+- **Cannot verify / makes friction** — flag. Classification: INLINE if prose-fixable, ANCHOR-NEEDED if the project should canonicalize an in-world override, ACCEPT only with explicit outline evidence.
+
+Categories the agent must scan (generic, not chapter-specific):
+
+- Real-world places: streets, neighborhoods, landmarks, country/city facts, geography, climate facts.
+- Specific technology: model numbers, connector types, version numbers, hardware compatibility, software stacks, period plausibility (does this exist at the implied year? is it in actual use at that year? is the chain physically realizable?).
+- Foreign-language grammar in proper nouns: when the text names a French / Italian / Spanish / etc. proper noun, the source-language grammar applies (article-preposition contractions, gender agreement, etc.).
+- Real-world physics, biology, medicine, law, finance.
+- Real brand names, dates, currencies, units.
+
+Calibration note (load-bearing): **specific-sounding details fail at higher rates than their tone suggests.** A writer agent producing "model VGA-to-HDMI converter cable" is not stating a verified fact; it's selecting a plausible-sounding token to add texture. Sniff must treat highly-specific technical assertions with more suspicion than general descriptive ones, because the failure mode is "plausibly worded → plausibly wrong."
+
+- [ ] Restructure §5 to have a lead paragraph (existing expert-reader framing, kept) + a sub-rubric "Real-world factual claim audit" with the three-way classification.
+- [ ] List the 5 categories generically (no Ch.01-specific examples).
+- [ ] Add the calibration note about tone-vs-correctness.
+- [ ] Cross-link forward to §9 (continuity within chapter) and back to chapter-writer.md §3.5 #16 (the prevention layer).
+
+### M3: proof-reader.md P4 — foreign-language proper-noun grammar
+
+**File:** `instructions/proof-reader.md` P4 (REVISIONE — append sub-rule).
+
+Today P4 ("Spelling & Proper Nouns") lists project-canonical proper nouns and flags variants. Add a generic sub-rule: foreign-language proper nouns must respect source-language grammar.
+
+Rule: for proper nouns from non-English source languages — toponyms, institution names, product names — the source-language grammar is normative. The most common slip a model anglophone makes is the article-preposition contraction:
+
+- French: `de + le → du`, `de + les → des`, `à + le → au`, `à + les → aux`. So `Rue de + le Petit Puits → Rue du Petit Puits`.
+- Italian: `di + il → del`, `di + lo → dello`, `di + la → della`, `a + il → al`, etc. So `Via di + il Foro → Via del Foro`.
+- Spanish: `de + el → del`, `a + el → al`. So `Calle de + el Sol → Calle del Sol`.
+- German: noun-gender + case agreement on articles in compound place names.
+
+Also generic: gender agreement, plural forms, accent marks (é, è, à, ñ, ü) must be present where the source language requires them.
+
+The rule applies even when the proper noun is rendered in CAPS (e.g., on an in-world terminal) or surrounded by English-language narration. Capitalization does not exempt the noun from its source-language grammar.
+
+- [ ] Append a sub-rule under P4 with the rule + the three example forms (FR / IT / ES contractions). Generic, not Ch.01-specific.
+- [ ] Note the in-CAPS / in-English-context exemption-is-not-allowed clause.
+- [ ] One-line example each, no full case studies.
+
+### M4: Reinstall + commit + push
+
+- [ ] `cd ~/Documents/software/skills/book && ./install.sh --force` — deploy to `~/.claude/skills/book/`.
+- [ ] `git add` modified instruction files + DEVPLAN.md, commit with message describing Phase 8 scope.
+- [ ] `git push` to skill repo origin.
+
+---
+
+**Phase 8 totals:** 4 milestones (3 doctrine + 1 deploy). Adds prevention/detection/enforcement guardrails for one class of failure: external-world factual assertions. Generic across the trilogy. Out of scope: trilogy-side `run-write-cycle.sh` line 574 flip (separate, applied project-side after Phase 8 ships).

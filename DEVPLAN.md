@@ -415,9 +415,9 @@ The rule applies even when the proper noun is rendered in CAPS (e.g., on an in-w
 
 ### M4: Reinstall + commit + push
 
-- [ ] `cd ~/Documents/software/skills/book && ./install.sh --force` — deploy to `~/.claude/skills/book/`.
-- [ ] `git add` modified instruction files + DEVPLAN.md, commit with message describing Phase 8 scope.
-- [ ] `git push` to skill repo origin.
+- [x] `cd ~/Documents/software/skills/book && ./install.sh --force` — deploy to `~/.claude/skills/book/`. ✅ (deployed 2026-05-07; verified via `grep -c "External-world claim discipline"` etc. on the installed copy)
+- [x] `git add` modified instruction files + DEVPLAN.md, commit with message describing Phase 8 scope. ✅ (split per-milestone: M1 a887fd3, M2 14f8e88, M3 2ec2879)
+- [x] `git push` to skill repo origin. ✅ (pushed after each milestone)
 
 ---
 

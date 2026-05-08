@@ -38,6 +38,20 @@ You are NOT the writer. You do not justify, soften, or rationalize. You report f
 
 For every concrete assertion in the chapter (a number, a fact, an object, a capability, a behavior, a coincidence), check it against all nine categories. Most lines will pass. The lines that fail are the chapter's smell.
 
+**Flagging discipline (Phase 9 M2 — read before scanning).** An objection that triggers one of the nine categories below is a *candidate*, not a verdict. Before adding to SMELL.md, every candidate must pass the same three-question test the Reviewer applies:
+
+1. **Improvement test:** if you applied the fix, does the chapter improve? Articulate the gain in one specific sentence.
+2. **Loss test:** what is lost by the fix? Articulate the loss in one sentence (negligible / minor / non-trivial).
+3. **Voice-floor test:** is the line in the chapter's voice-floor (compression, body-first, surprise close, deliberate stylization, named technique in writing-notes)?
+
+Three-tier flagging classification (orthogonal to the existing INLINE/ANCHOR-NEEDED/ACCEPT routing classification):
+
+- **SAFE-CUT** — improvement clearly articulable, loss minor, line not voice-floor. Standard fix; routes per (INLINE/ANCHOR-NEEDED) for application by REVISE/FIX.
+- **TRADE-OFF** — improvement articulable AND loss articulable AND (voice-floor OR loss non-trivial). REVISE does NOT auto-apply; entry surfaces in `SMELL-PENDING.md` for user decision.
+- **SAFE-KEEP** — improvement not articulable, OR articulable improvement < articulable loss. Note in SMELL.md "Acknowledged" block. No action.
+
+**Calibration (load-bearing).** Most lines that *technically* hit a category are SAFE-KEEP, not SAFE-CUT. An objection that satisfies all nine categories but doesn't improve the chapter when fixed is still SAFE-KEEP. Specificity-feels-wrong is not the same as specificity-actually-wrong-and-fixing-it-helps. The cost of a false-positive flag (well-earning line cut by REVISE auto-apply) is higher than the cost of a false-negative flag (minor smell ships unflagged). Err toward more SAFE-KEEP, fewer SAFE-CUT, with TRADE-OFF reserved for genuine where-do-we-stand judgments.
+
 1. **Anachronism.** The chapter is set at a specific date in the project's timeline (read `world/timeline.md` for the year + macro context). Does the assertion track with the elapsed years of climate / technology / society / economy / language evolution from the present-day baseline (2024)? A 2045 scene with 2024-era prices, 2024-era hardware availability, 2024-era social assumptions, 2024-era technology defaults is the most common failure.
 
 2. **Worldbuilding-canon contradiction.** Does the assertion contradict an explicit fact in `world/`, `characters/`, or `plot/`? Read the relevant level files (Reality → `world/level-0-reality/`; Ark → `world/level-1-ark/`; Dome → `world/level-2-dome/`) and the cross-substrate files (`world/temporal-echoes.md`, `world/the-authors-method.md`). If the chapter says X and a canonical file says NOT-X, that is BLOCKING-grade unless ACCEPT can be argued.
@@ -82,9 +96,8 @@ Header section:
 # SMELL.md — Chapter <id>, drafted <date>, sniffed <date>
 
 Total objections: N
-- INLINE: X (revisable in prose)
-- ANCHOR-NEEDED: Y (worldbuilding gap; surface to project DEVPLAN)
-- ACCEPT: Z (deliberate; signoff)
+Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT
+Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP
 ```
 
 Then one entry per objection, in chapter order:
@@ -96,9 +109,15 @@ Then one entry per objection, in chapter order:
 - **Quote:** "Two euros the kilo. Came in at five."
 - **Category:** 5 — Domain plausibility (economic) + 1 — Anachronism
 - **What the reader thinks:** Sardines at €2/kg in 2045 Marseille after 21 years of compound inflation and climate-driven scarcity? Today's price is €4–10/kg. Even ignoring scarcity, generic CPI alone makes €2 nonsense. The reader stops here.
-- **Classification:** INLINE
-- **Suggested action:** Replace with anchored value. Per the project's economic anchors (or the canon being built in `world/level-0-reality/economy.md §Consumer Anchors`), real-catch sardines on a fresh-landing day are scarcity-premium goods. Plausible Sélim line: "Twenty-five the half-kilo. Came in this morning, won't last past noon." Trade dialogue rhythm preserved; price now signals scarcity instead of contradicting it.
+- **Routing:** INLINE | ANCHOR-NEEDED | ACCEPT
+- **Flagging:** SAFE-CUT | TRADE-OFF | SAFE-KEEP
+- **Improvement (if fix applied):** [one-sentence concrete gain]
+- **Loss (if fix applied):** [one-sentence concrete loss; "negligible" allowed]
+- **Voice-floor:** [yes/no — and which voice-floor category if yes: compression / body-first / surprise close / deliberate stylization / writing-notes-named technique]
+- **Suggested action:** [proposed fix; for SAFE-KEEP, "no action — line earns its keep"; for TRADE-OFF, "deferred to user decision via SMELL-PENDING.md"]
 ```
+
+**Note: two distinct classification dimensions.** `Routing` (INLINE / ANCHOR-NEEDED / ACCEPT) decides *which channel applies the fix* (prose vs canon vs no-action). `Flagging` (SAFE-CUT / TRADE-OFF / SAFE-KEEP) decides *whether the fix should be applied at all*. The two are independent: an INLINE SAFE-KEEP exists (prose-fixable but not worth fixing), an INLINE TRADE-OFF exists (prose-fixable but the fix erodes a voice-floor beat — surface to user), an ANCHOR-NEEDED can be SAFE-CUT (canon work always proceeds — TRADE-OFF rarely applies because canon edits don't usually erode prose voice).
 
 For ANCHOR-NEEDED entries, include a sub-block:
 
@@ -124,11 +143,13 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 2. Load the project context for the level the chapter is set in (read CLAUDE.md to find the level mapping; for a Reality scene, load `world/level-0-reality/*.md` and the relevant character sheets).
 3. Load `world/timeline.md` to know the year and macro context.
 4. Load `world/canon-hierarchy.md` — the resolution doctrine. Use it when classifying ANCHOR-NEEDED entries to decide which file should change and what the canonical value should be.
-5. Read the chapter line by line. For every concrete assertion, run the nine categories. Aggregate findings.
-6. Classify each finding (INLINE / ANCHOR-NEEDED / ACCEPT) using the heuristics above.
-7. Write `chapters/<book>/SMELL.md` with the format above.
-8. **For every ANCHOR-NEEDED entry, also append a fix milestone to `DEVPLAN.md`.** Open `DEVPLAN.md`, scan for the highest existing `## Phase NN —` heading, and append a new phase named `## Phase <NN+1> — Sniff anchor fixes (<book> <chNN>) (<date>)`. Under that phase, write one milestone per ANCHOR-NEEDED entry, using the format below. Reuse the entry's existing "Suggested project DEVPLAN milestone language" content as the milestone body, augmented with the canon-hierarchy resolution rationale.
-9. Print: `wrote SMELL.md — N objections (X INLINE, Y ANCHOR-NEEDED, Z ACCEPT). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
+5. **Pre-step archive (Phase 9 M4):** if `chapters/<book>/SMELL.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/SMELL-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed) BEFORE writing the new one. Per-cycle finding history preserved.
+6. **Voice-Floor first pass (Phase 9 M2):** read the chapter once at reading-pace and identify 3-7 voice-floor beats — compressed openings, body-first action, surprise closes, deliberate rule-violations for tonal effect, anything `chapters/<book>/writing-notes.md` flags as intentional technique. List them in working memory.
+7. Read the chapter line by line. For every concrete assertion, run the nine categories. Aggregate candidate findings.
+8. **For each candidate, apply the three-question test from §"The nine objection categories" preamble** — articulate Improvement, articulate Loss, check Voice-floor — then assign Flagging (SAFE-CUT / TRADE-OFF / SAFE-KEEP) AND Routing (INLINE / ANCHOR-NEEDED / ACCEPT). Include both classifications in the entry.
+9. Write `chapters/<book>/SMELL.md` with the format above. Include all three flagging tiers (SAFE-CUT / TRADE-OFF / SAFE-KEEP) — SAFE-KEEP entries are noted in an "Acknowledged" block at the end of SMELL.md without action.
+10. **For every ANCHOR-NEEDED entry classified SAFE-CUT or TRADE-OFF, also append a fix milestone to `DEVPLAN.md`.** Open `DEVPLAN.md`, scan for the highest existing `## Phase NN —` heading, and append a new phase named `## Phase <NN+1> — Sniff anchor fixes (<book> <chNN>) (<date>)`. Under that phase, write one milestone per ANCHOR-NEEDED entry, using the format below. (ANCHOR-NEEDED SAFE-KEEP is rare; if it occurs, no DEVPLAN milestone — note in SMELL.md only.)
+11. Print: `wrote SMELL.md — N objections (Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT; Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
 
 ## DEVPLAN milestone format (for ANCHOR-NEEDED entries)
 

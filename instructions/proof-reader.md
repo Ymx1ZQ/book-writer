@@ -30,6 +30,10 @@ Read these files:
 - `world/prose-rules.md` — for line-level style grep patterns (P9)
 - The target chapter file(s)
 
+**Pre-step archive (Phase 9 M4):** before writing any new PROOFREAD.md, if `chapters/<book>/PROOFREAD.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/PROOFREAD-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed). Per-cycle proofread history preserved.
+
+**Note on flagging discipline:** proofread P1-P9 checks are line-level mechanical fixes (grammar, spelling, punctuation, mechanical pattern violations). Findings are by definition SAFE-CUT — there is no judgment call to make on whether a misspelled word should remain misspelled. If a candidate flag here turns out to be voice-dependent (e.g. an intentional fragment for character voice), that's not a proofread finding — it belongs in REVIEW.md as a TRADE-OFF for the reviewer to weigh. Proofread does not write TRADE-OFF entries.
+
 ### 2. Run 9 Proofreading Checks
 
 For each chapter, scan every line and report issues with **exact quotes and line numbers**.

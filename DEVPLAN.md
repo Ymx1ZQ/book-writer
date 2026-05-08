@@ -422,3 +422,82 @@ The rule applies even when the proper noun is rendered in CAPS (e.g., on an in-w
 ---
 
 **Phase 8 totals:** 4 milestones (3 doctrine + 1 deploy). Adds prevention/detection/enforcement guardrails for one class of failure: external-world factual assertions. Generic across the trilogy. Out of scope: trilogy-side `run-write-cycle.sh` line 574 flip (separate, applied project-side after Phase 8 ships).
+
+---
+
+## Phase 9 — Reviewer flagging discipline: signal-not-noise (2026-05-08)
+
+> **Execution mode:** IDD fallback per Phase 3 / Phase 8 precedent — markdown LLM-instruction edits, no test runner. The "test" of Phase 9 is the next chapter's REVIEW/SMELL output: under the new doctrine, fewer SAFE-CUT findings, some TRADE-OFF findings explicitly surfaced for user decision, and SAFE-KEEP entries acknowledged-but-not-actioned.
+
+Surfaced from B1 Ch.01 cycle 1-3 polish run on the trilogy project (commits `4413287` → `2444c35` → `d7a857b`, 2026-05-08). Three cycles of SNIFF + REVIEW + PROOFREAD + REVISE removed four real factual bugs (HDMI/VGA direction, Marseille streets, French grammar, scarf continuity) — Phase 8 guardrails worked as designed. But the same three cycles also smoothed away the chapter's three sharpest beats: the iconic moka-pot opening, the Mariette-paid-the-contractor backstory paragraph, and the *"He did not look up"* close on the curb fall. Each cut was technically defensible per a style rule (compressed opening is a stative pattern; the backstory paragraph was an em-dash gloss; the line was an aphoristic close). Each cut weakened the chapter.
+
+The cycle is good at finding errors. It's less good at distinguishing problem from voice. The Reviewer's burden of proof is on the wrong foot: today, a rule-violation is automatic flag → REVISE auto-applies. Phase 9 flips it: a rule-violation is flagged ONLY IF removing it improves the chapter; the reviewer must articulate the improvement. If the reviewer can't articulate, no flag. When the reviewer does flag and the affected line is voice-floor (compression, body-first, deliberate violation, named in writing-notes as intentional), classification is TRADE-OFF — surfaced for user decision, NOT auto-applied.
+
+This is *not* a relaxation of standards. It's a higher standard: the Reviewer must *earn* each flag by stating the loss-vs-gain explicitly, not by pattern-matching against rule lists.
+
+Three concrete additions across reviewer/sniff/revise:
+
+1. **Voice-Floor Pass at the start of REVIEW and SNIFF** — first read identifies the chapter's load-bearing beats (compression, surprise, body-first close, deliberate stylization). Marked as VOICE-FLOOR for the second pass.
+2. **Three-tier classification** — every flag is classified as SAFE-CUT (rule-violation, removal improves chapter, REVISE auto-applies), TRADE-OFF (rule-violation OR voice-floor candidate, removal has named cost AND named benefit, REVISE does NOT auto-apply, surfaces in `*-PENDING.md`), or SAFE-KEEP (rule-violation but the line is earning its keep — informational, no action).
+3. **Pre-step archive** — at the start of each SNIFF/REVIEW/PROOFREAD step, if the existing finding-file is present, rename it to `archive/<NAME>-<timestamp>-<chapter>.md` before writing the new one. Forensic history of polish decisions across cycles.
+
+Plus one Reviewer addition that uses character canon as a positive constraint:
+
+4. **Voice-Signature positive check** — the Reviewer loads `voice-samples.md`, looks for a `§Voice Signature` paragraph per character (4-6 qualities to preserve, e.g. "Noah: short declarative sentences after long compressed ones; ends scenes on absence not summary; never explains his own emotions"), and uses it as a positive checklist. A fix that erodes a Voice-Signature quality is automatic TRADE-OFF, never SAFE-CUT.
+
+Out of scope (project-side, separate concern): authoring `§Voice Signature` paragraphs in the trilogy's `characters/notes/voice-samples.md`. Phase 9 specifies the format and tells the Reviewer how to use it. If the section is missing, the Reviewer notes the gap as a soft warning and falls back to style-rule-only mode (current behavior). That keeps the skill self-consistent on projects that haven't authored signatures yet.
+
+### M1: Reviewer voice-floor pass + three-tier classification + raised flagging bar
+
+**File:** `instructions/reviewer.md` (REVISIONE).
+
+- [x] Insert new step 2.5 (between current "Check Existing Reviews" and "Analyze — 8 Dimensions"): `Voice-Floor First Pass`. Body: read each chapter once before applying rule scans. Identify 3-7 voice-floor beats per chapter — sentences/paragraphs that are doing the heaviest work via compression, surprise, body-first cadence, deliberate violation of style rule for tonal effect, or matching a named technique in `writing-notes.md`. List them in working memory before the rule scan.
+- [x] Modify step 3 ("Analyze — 8 Dimensions"): each finding the Reviewer would historically flag must now be tested against three questions before being added to REVIEW.md: (1) does removing this line improve the chapter? articulate the gain in one sentence. (2) what is lost? articulate the loss in one sentence. (3) is the line voice-floor (from step 2.5)? If yes, classification is TRADE-OFF regardless of (1)/(2). If no but (1) > (2), SAFE-CUT. If (1) ≤ (2) or (1) cannot be articulated, SAFE-KEEP.
+- [x] Modify step 5 ("Output — The Report"): each entry now carries a Classification: line (SAFE-CUT / TRADE-OFF / SAFE-KEEP). TRADE-OFF entries include explicit `Loss:` and `Gain:` lines. SAFE-KEEP entries are listed in a separate "Acknowledged, no action" block.
+- [x] Modify step 6 ("Write the Review Devplan"): only SAFE-CUT items become checkboxes in REVIEW.md. TRADE-OFF items go in a new `## Trade-Off Decisions Pending` section without checkboxes — REVISE will read but not auto-apply. SAFE-KEEP items in `## Acknowledged (No Action)` section.
+- [x] Add a Calibration paragraph at the end of step 3: "Most rule-violations in a polished chapter are SAFE-KEEP, not SAFE-CUT. The Reviewer's job is signal, not coverage. If you cannot articulate a one-sentence improvement from removing a line, that line is not a finding."
+
+### M2: Sniff three-tier classification
+
+**File:** `instructions/sniff.md` (REVISIONE).
+
+- [x] In §"The nine objection categories", add a preamble paragraph: each objection must pass the same three-question test as the Reviewer (improvement articulable? loss articulable? voice-floor? → SAFE-CUT / TRADE-OFF / SAFE-KEEP). The existing INLINE/ANCHOR-NEEDED/ACCEPT classification is orthogonal — applies to canon-vs-prose routing, not to flagging discipline.
+- [x] In §"Output format — SMELL.md", augment the entry template to include a `Classification: SAFE-CUT | TRADE-OFF | SAFE-KEEP` line alongside the existing `Classification:` (which is INLINE/ANCHOR-NEEDED/ACCEPT). Clarify these are two distinct dimensions: the routing dimension (INLINE/etc) and the flagging-discipline dimension (SAFE-CUT/etc).
+- [x] Add Calibration: "An objection that satisfies all nine categories but doesn't improve the chapter when fixed is still SAFE-KEEP. Specificity-feels-wrong is not the same as specificity-actually-wrong-and-fixing-it-helps."
+
+### M3: Revise handles TRADE-OFF — does not auto-apply
+
+**File:** `instructions/revise.md` (REVISIONE).
+
+- [x] In the load-list section, add: read REVIEW.md and SMELL.md TRADE-OFF blocks. These are NOT auto-applied.
+- [x] After SAFE-CUT items are applied, write `chapters/<book>/REVIEW-PENDING.md` and `chapters/<book>/SMELL-PENDING.md` containing the TRADE-OFF entries verbatim with `Status: pending — manual decision required` on each. These files are user-facing surfaces; the user reviews and applies (or marks `Status: ✓ Accepted (defer)`) manually before the next cycle.
+- [x] In the revise summary output, include a `Trade-Off decisions surfaced: N` line and the path to the *-PENDING.md files. Surface specifically: how many entries pending, location, brief preview.
+- [x] In the load-list section, also handle the case where *-PENDING.md exists from a prior cycle: items already present are NOT re-prompted; their state is preserved and re-emitted in the next cycle's *-PENDING.md so the user can accumulate decisions across cycles.
+
+### M4: Pre-step archive for SMELL/REVIEW/PROOFREAD
+
+**Files:** `instructions/sniff.md`, `instructions/reviewer.md`, `instructions/proof-reader.md` (each REVISIONE — small addition at start of process).
+
+- [x] In each of the three skill files, at step 1 (or earliest pre-write step), add: "If `chapters/<book>/<NAME>.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/<NAME>-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed) BEFORE writing the new one. This preserves per-cycle finding history without manual git archaeology."
+- [x] Note: the archive lives under `chapters/<book>/archive/` (per-book, not per-project root) so each book's polish history is self-contained.
+
+### M5: Reviewer Voice-Signature positive check
+
+**Files:** `instructions/reviewer.md` (REVISIONE — positive constraint logic), `instructions/init.md` (light update — voice-samples.md format expectation).
+
+- [x] In `reviewer.md` step 1 (Load Reference), expand voice-samples.md handling: read each character's `§Voice Signature` section if present (format: 4-6 bullet lines describing prose-level qualities to preserve, e.g. compression patterns, sentence rhythm signatures, what the character never does, deliberate stylistic moves). If a character's section is missing, note as a soft warning in the report and fall back to style-rule-only review for that character.
+- [x] In `reviewer.md` step 3, add a "Voice-Signature drift check" sub-step before the 8 dimensions. For each chapter, scan: does the prose preserve the character's listed voice-signature qualities? If a candidate flag (from rule scan) would erode a voice-signature quality, classification becomes TRADE-OFF automatically — Reviewer cannot SAFE-CUT a fix that breaks character voice signature.
+- [x] In `instructions/init.md` (light touch), add: "After voice-samples.md exists, each foreground character should have a `§Voice Signature` paragraph (4-6 prose-level qualities to preserve) — used by reviewer for positive constraint. If absent, reviewer falls back to style-rule-only mode."
+
+### M6: Install + commit + push
+
+- [x] `cd ~/Documents/software/skills/book && ./install.sh --force`
+- [x] Stage all instruction edits + DEVPLAN.md, single commit with message describing Phase 9 scope.
+- [x] `git push` to origin.
+
+---
+
+**Phase 9 totals:** 6 milestones (5 doctrine + 1 deploy). Raises the Reviewer/Sniff flagging bar from "rule-violation = flag" to "rule-violation that doesn't improve when fixed = SAFE-KEEP". Introduces TRADE-OFF as user-decision channel (not auto-applied). Adds per-cycle archive of finding-files. Adds Voice-Signature positive constraint with graceful fallback if missing.
+
+**Out of scope (project-side, separate phase or done in next chapter prep):**
+- Authoring `§Voice Signature` paragraphs in trilogy's `characters/notes/voice-samples.md` for Noah, Lena, Roe, etc. The skill ships the format expectation and the fallback; authoring the actual signatures is a one-time project-side write.

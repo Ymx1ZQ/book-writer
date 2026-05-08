@@ -25,32 +25,42 @@ Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PR
 Check three sources:
 
 **A. SMELL.md** — `chapters/<book>/SMELL.md`
-Parse all entries. Each entry has a **Classification** field with one of: `INLINE`, `ANCHOR-NEEDED`, `ACCEPT`. Each entry may include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`); processing is uniform regardless of source.
-- **INLINE** items are revisable in prose — process them like editorial fixes (look for the entry's `Suggested action` block which contains the proposed rewrite).
-- **ANCHOR-NEEDED** items are resolved upstream by `/book fix` before revise runs. If revise still finds an ANCHOR-NEEDED entry without a `Status:` line, mark it `Status: ⚠️ Unresolved upstream — orchestration likely skipped a fix step` and skip; the orchestration script's stuck-issue guardrail will report it. If revise finds the entry already marked `Status: ✅ Resolved upstream by /book fix`, skip silently. The cascade implied by the entry (any prose update needed after the canon update) lives in a paired INLINE entry — process that.
-- **ACCEPT** items are noted; no action.
+Parse all entries. Each entry now carries TWO independent classifications (Phase 9 M2):
+- `Routing:` field — one of `INLINE`, `ANCHOR-NEEDED`, `ACCEPT` (which channel applies the fix)
+- `Flagging:` field — one of `SAFE-CUT`, `TRADE-OFF`, `SAFE-KEEP` (whether to apply at all)
+
+Each entry may also include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`); processing is uniform regardless of source.
+
+Apply rules:
+- **INLINE × SAFE-CUT** — process like editorial SAFE-CUT (look for `Suggested action`, apply, mark Fixed).
+- **INLINE × TRADE-OFF** — **DO NOT auto-apply** (Phase 9 M3). Surface to `chapters/<book>/SMELL-PENDING.md` with `Status: pending — manual decision required`. User reviews and applies (or marks `Status: ✓ Accepted (defer)`) manually before next cycle.
+- **INLINE × SAFE-KEEP** — note in revise summary as "acknowledged, no action"; mark in SMELL.md as `Status: ✓ Acknowledged (SAFE-KEEP)`.
+- **ANCHOR-NEEDED × SAFE-CUT or TRADE-OFF** — resolved upstream by `/book fix`. If revise finds entry without `Status:` line, mark `Status: ⚠️ Unresolved upstream` and skip. If marked `Status: ✅ Resolved upstream by /book fix`, skip silently. Any cascade lives in a paired INLINE entry — process that.
+- **ANCHOR-NEEDED × SAFE-KEEP** — rare; treat as ACCEPT.
+- **ACCEPT** (any flagging) — noted, no action.
+
+For backwards compatibility: if an entry has `Classification:` (legacy single field) but no separate `Routing:` and `Flagging:`, interpret `Classification:` as `Routing:` and default `Flagging:` to `SAFE-CUT`. New entries written by Phase-9-onwards sniff/coherence/continuity use the two-field form.
 
 **B. REVIEW.md** — `chapters/<book>/REVIEW.md`
-Parse all unchecked `- [ ]` items. These are editorial fixes (show/tell, voice, structure, pacing). Organized by severity: Critical > High > Medium > Low > Cross-Chapter.
+Parse all unchecked `- [ ]` items in the Critical / High / Medium / Low / Cross-Chapter sections — these are editorial SAFE-CUT fixes. Then parse the `## Trade-Off Decisions Pending` section (Phase 9 M1) — these are NOT auto-applied; surface to `chapters/<book>/REVIEW-PENDING.md` for user decision. The `## Acknowledged (No Action)` section is informational.
 
 **C. PROOFREAD.md** — `chapters/<book>/PROOFREAD.md`
-Parse all unchecked `- [ ]` items. These are line-level fixes (grammar, spelling, punctuation, repetition). Organized by chapter.
+Parse all unchecked `- [ ]` items. These are line-level mechanical fixes (grammar, spelling, punctuation, repetition); by definition SAFE-CUT.
 
 **Announce:**
 ```
 📋 Book Revise — [book]
 Pending fixes:
-  Smell-test (SMELL.md): X INLINE / Y ANCHOR-NEEDED / Z ACCEPT
+  Smell-test (SMELL.md): Routing X INLINE / Y ANCHOR-NEEDED / Z ACCEPT
+                         Flagging A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP
     sources: a sniff / b coherence / c continuity
-  Editorial (REVIEW.md): X items (C:X H:X M:X L:X CC:X)
+  Editorial (REVIEW.md): X SAFE-CUT items (C:X H:X M:X L:X CC:X) + Y TRADE-OFF items
   Proofreading (PROOFREAD.md): X items
-  Total INLINE+EDITORIAL+PROOFREAD: X
-
-Processing order: Smell-test INLINE → Editorial → Proofreading
-ANCHOR-NEEDED items expected to be resolved upstream by /book fix; any unresolved ones will be flagged for the stuck-issue guardrail.
+  Total auto-applying: X
+  Total surfaced to *-PENDING.md (manual decision): Y
 ```
 
-If a filter was specified (sniff/review/proofread), only process that source.
+If a filter was specified (sniff/review/proofread), only process that source. TRADE-OFF surfacing to *-PENDING.md applies regardless of filter.
 
 ### 2. Processing Order
 
@@ -136,21 +146,64 @@ If any chapter dropped below the minimum word count after cuts:
 3. Add 1-3 dialogue exchanges that are character-appropriate and advance the scene.
 4. Verify the chapter is back above minimum.
 
+### 5.5. Surface TRADE-OFF Entries to *-PENDING.md (Phase 9 M3)
+
+Before session-complete summary, write user-facing decision surfaces for any TRADE-OFF entries collected from SMELL.md and REVIEW.md.
+
+**`chapters/<book>/SMELL-PENDING.md`** — for SMELL TRADE-OFF entries:
+```markdown
+# SMELL — Trade-Off Decisions Pending
+
+**Book:** <book>
+**Chapter:** <chNN>
+**Cycle ended:** YYYY-MM-DD
+**Decisions awaiting user input:** N
+
+For each entry below: review the proposed fix, weigh Loss vs Gain, and either:
+(a) apply the fix to prose manually, OR
+(b) update Status to `✓ Accepted (defer)` to keep current text, OR
+(c) update Status to `✅ Fixed (manual)` after applying it yourself.
+
+Items with no Status update by next cycle are re-emitted unchanged.
+
+---
+
+## #N — <one-line summary>
+[verbatim copy of the SMELL.md entry, including Routing, Flagging,
+Improvement, Loss, Voice-floor, Suggested action]
+
+**Status:** pending — manual decision required
+```
+
+**`chapters/<book>/REVIEW-PENDING.md`** — same structure, for REVIEW TRADE-OFF entries (the `## Trade-Off Decisions Pending` section content from REVIEW.md).
+
+**Persistence rule:** if `*-PENDING.md` from a prior cycle exists, read it. Entries marked with a final Status (`✓ Accepted (defer)` or `✅ Fixed (manual)`) are dropped from the new pending file. Entries still `pending — manual decision required` are re-emitted alongside any new TRADE-OFFs from this cycle. The pending file accumulates user-decided history across cycles, never clears silently.
+
+**Pre-step archive (Phase 9 M4):** before writing the new `*-PENDING.md`, if the file exists, rename to `chapters/<book>/archive/SMELL-PENDING-<YYYYMMDD-HHMMSS>-<chapter>.md` (or REVIEW-PENDING) before writing the merged version. Forensic history of what was decided when.
+
 ### 6. Session Complete
 
 ```
 📋 Book Revise — [book] — Complete
 
-Applied:
+Applied (SAFE-CUT, auto-applied):
   Smell-test INLINE: X/X items
   Editorial: X/X items
   Proofreading: X/X items
+
+Trade-Off decisions surfaced (NOT applied — see *-PENDING.md):
+  Smell-test TRADE-OFF: X items → chapters/<book>/SMELL-PENDING.md
+  Editorial TRADE-OFF: X items → chapters/<book>/REVIEW-PENDING.md
+
+Acknowledged (SAFE-KEEP, no action):
+  Smell-test SAFE-KEEP: X items
+  Editorial SAFE-KEEP: X items
 
 Deferred to project DEVPLAN (ANCHOR-NEEDED, NOT applied):
   [list each ANCHOR-NEEDED entry with its suggested DEVPLAN milestone language,
    so the user can paste them straight into the project's DEVPLAN.md]
 
-Accepted (no action):
+Accepted (Routing: ACCEPT — no action):
   [list ACCEPT entries with the evidence that supported the deliberate choice]
 
 Chapters modified: [list with word counts]

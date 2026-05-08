@@ -30,13 +30,16 @@ The reviewer asks: "Is the chapter GOOD?"
 Read these files:
 - `world/prose-rules.md` — the full prose-rule set (Rule 0 stella polare + Rules 1-24)
 - `world/tones.md` — tonal registers
-- `characters/notes/voice-samples.md` — voice profiles
+- `characters/notes/voice-samples.md` — voice profiles. **For each foreground character, look for a `§Voice Signature` paragraph** (4-6 prose-level qualities to preserve, e.g. compression patterns, sentence rhythm signatures, what the character never does, deliberate stylistic moves). Used in step 3 as positive constraint. If a character's `§Voice Signature` is missing, note as a soft warning in the report and fall back to style-rule-only review for that character — do not invent qualities.
+- `chapters/<book>/writing-notes.md` — if it exists. Each chapter's writing-notes may name deliberate stylistic moves (compressed openings, action-freeze closings, named techniques). These are voice-floor by construction — see step 2.5.
 - `world/writing-checklists.md` — for context, not re-verification
 - `world/technology-comparison.md` — if it exists (needed for check I: level fingerprint)
 - `plot/prestige-inventory.md` — if it exists (needed for check K and M: plants + object permanence)
 - `plot/motif-tracking.md` — if it exists (needed for check M: echo-not-repetition)
 
 Load these upfront once. Do not read them again mid-review.
+
+**Pre-step archive (Phase 9 M4):** before writing any new REVIEW.md, if `chapters/<book>/REVIEW.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/REVIEW-<YYYYMMDD-HHMMSS>-<chapters-reviewed>.md` (creating the archive subdir if needed). Preserves per-cycle review history without manual git archaeology.
 
 ### 2. Check Existing Reviews & Read the Chapters
 
@@ -57,7 +60,38 @@ If a chapter still has unchecked fixes, it has NOT been fully reviewed — but d
 
 **Output to the user** which chapters are being reviewed, which are skipped (and why: "already reviewed — all fixes applied" vs "corrections pending — N fixes remaining"), and how many remain for the next session if the cap applies.
 
+### 2.5. Voice-Floor First Pass (Phase 9 M1)
+
+Before applying rule scans (step 3), read each chapter once at reading-pace and identify **3-7 voice-floor beats per chapter** — the sentences or short paragraphs doing the heaviest work in this specific chapter. Voice-floor candidates:
+
+- **Compression beats** — sentences that pack iconic image + tonal weight in <12 words (e.g., a chapter opening that establishes register and tension in three short clauses).
+- **Body-first beats** — physical action rendered before the character names what it means (e.g., a hand reaching toward an object before the narrator labels the impulse).
+- **Surprise / negation closes** — scene endings on absence, refusal, withholding, or a beat that recontextualizes what came before.
+- **Deliberate rule-violation for tonal effect** — an aphorism, an em-dash gloss, a stative opener, etc., used precisely BECAUSE it breaks the rule, with the surrounding prose justifying the break.
+- **Named techniques** — moves explicitly cited in `chapters/<book>/writing-notes.md` for this chapter (e.g., "Compressed Opening 400w cap absorbed into Beat 1 ramp", "Action-Freeze ending"). Anything writing-notes flags as intentional is voice-floor by construction.
+- **Voice-Signature matches** — sentences that exemplify a quality listed in the POV character's `§Voice Signature` (from `voice-samples.md`).
+
+List these beats in working memory before step 3. They will modulate flagging classification: any candidate flag in step 3 that hits a voice-floor beat is automatic TRADE-OFF, not SAFE-CUT.
+
+**Calibration:** 3-7 beats per chapter is the target band. Fewer than 3 = either you're under-reading or the chapter genuinely has no load-bearing prose (rare; flag the chapter itself as a quality concern). More than 7 = you're being generous; tighten to the 3-7 truly load-bearing.
+
 ### 3. Analyze — 8 Dimensions
+
+**Flagging discipline (Phase 9 M1 — read before scanning).** Every candidate finding from the rule scans below must pass a three-question test before being added to REVIEW.md:
+
+1. **Improvement test:** if you removed (or rewrote) this line, does the chapter improve? Articulate the gain in **one specific sentence**. If you cannot articulate the gain concretely, the line is not a finding — skip it.
+2. **Loss test:** what is lost by the removal/rewrite? Articulate the loss in one sentence (it can be small — "negligible", "minor compression" — but must be named).
+3. **Voice-floor test:** is this line in your voice-floor list from step 2.5, OR does it match a `§Voice Signature` quality of the POV character?
+
+Three-tier classification based on the answers:
+
+- **SAFE-CUT** — improvement clearly articulable, loss minor or negligible, line NOT voice-floor. Standard fix, REVISE auto-applies.
+- **TRADE-OFF** — improvement articulable AND loss articulable AND either (line is voice-floor) OR (loss is non-trivial). REVISE does NOT auto-apply; surfaces in `REVIEW-PENDING.md` for user decision.
+- **SAFE-KEEP** — improvement NOT articulable, OR articulable improvement < articulable loss. The line is earning its keep — note in "Acknowledged" block, no action.
+
+**Voice-Signature drift sub-check.** Before the 8 dimensions, scan the chapter against the POV character's `§Voice Signature` qualities (from step 1). For each quality, ask: does the prose preserve it? If a candidate flag (from the dimension scans below) would erode a `§Voice Signature` quality, classification is automatic TRADE-OFF — Reviewer cannot SAFE-CUT a fix that breaks character voice signature.
+
+**Calibration paragraph (load-bearing).** Most rule-violations in a polished chapter are SAFE-KEEP, not SAFE-CUT. The Reviewer's job is **signal, not coverage**. A rule that says "0 metaphors in narration" exists because *most* narrator metaphors weaken prose; it does not mean *every* narrator metaphor weakens prose. If you cannot articulate a one-sentence improvement from removing a line, that line is not a finding. Pattern-matching is a starting point, not the verdict. The cost of false-positive flags is higher than the cost of false-negative flags: a missed minor issue ships fine; a falsely-flagged voice-floor beat gets cut and the chapter loses one of its best moments.
 
 For each chapter (or across all chapters if reviewing a batch), evaluate:
 
@@ -155,10 +189,16 @@ Structure the report as:
 ### Executive Summary
 [2-3 sentences: overall quality assessment, biggest strength, biggest problem]
 
+### Voice-Floor Beats (this session)
+[Per chapter: list of 3-7 voice-floor beats from step 2.5 — quoted lines, one-line note on what each is doing. Establishes the protected set for the polish pipeline.]
+
+### Voice-Signature Coverage
+[Per POV character in the reviewed set: were §Voice Signature qualities present and preserved? Flag any character whose voice-samples.md lacks §Voice Signature as soft warning ("falling back to style-rule-only review for <character>; consider authoring §Voice Signature").]
+
 ### Chapter-by-Chapter
 
 #### Ch. N — [Title]
-- Show/Tell violations: X [quotes]
+- Show/Tell violations: X [quotes — each tagged SAFE-CUT/TRADE-OFF/SAFE-KEEP]
 - Aphorisms: X [quotes]
 - Dialogue: XX% [best/worst exchange quoted]
 - Opening: [type], tension at word ~XXX, first-150w image+tension? [yes/no]
@@ -192,9 +232,9 @@ Structure the report as:
 
 ### 6. Write the Review Devplan (MANDATORY)
 
-After the report, create (or update) the file `chapters/<book>/REVIEW.md`. This is a **correction devplan** — an ordered checklist of every fix the reviewer identified, sorted by impact (highest first).
+After the report, create (or update) the file `chapters/<book>/REVIEW.md`. This is a **correction devplan** — an ordered checklist of every SAFE-CUT fix the reviewer identified, sorted by impact (highest first), plus separate non-checkbox sections for TRADE-OFF and SAFE-KEEP entries.
 
-Each fix is a checkbox with: severity tag, chapter reference, exact quote to find, and the correction instruction.
+Each SAFE-CUT fix is a checkbox with: severity tag, chapter reference, exact quote to find, and the correction instruction.
 
 Severity tags:
 - **[CRITICAL]** — Structural duplication, broken endings, missing beats. The chapter doesn't work until this is fixed.
@@ -213,12 +253,12 @@ Format:
 
 ## Critical
 
-- [ ] **Ch. NN, line ~XXX** — [description]. Find: `"exact quote to locate"`. Fix: [specific instruction — cut, rewrite, restructure].
+- [ ] **Ch. NN, line ~XXX** — [description]. Find: `"exact quote to locate"`. Fix: [specific instruction — cut, rewrite, restructure]. Classification: SAFE-CUT.
 - [ ] ...
 
 ## High
 
-- [ ] **Ch. NN, line ~XXX** — [description]. Find: `"exact quote"`. Fix: [instruction].
+- [ ] **Ch. NN, line ~XXX** — [description]. Find: `"exact quote"`. Fix: [instruction]. Classification: SAFE-CUT.
 - [ ] ...
 
 ## Medium
@@ -231,17 +271,36 @@ Format:
 
 ## Cross-Chapter (apply across all reviewed chapters)
 
-- [ ] **[severity]** — [pattern description]. Affected: Ch. X, Ch. Y, Ch. Z. Fix: [instruction].
+- [ ] **[severity]** — [pattern description]. Affected: Ch. X, Ch. Y, Ch. Z. Fix: [instruction]. Classification: SAFE-CUT.
 - [ ] ...
+
+## Trade-Off Decisions Pending
+
+Each entry is a candidate fix where the loss-vs-gain trade is non-trivial OR the line is voice-floor. **NOT auto-applied by REVISE** — surfaced for user decision.
+
+- **Ch. NN, line ~XXX** — [description]. Find: `"exact quote"`. Proposed fix: [instruction].
+  - Loss: [one sentence — what the chapter loses by applying the fix]
+  - Gain: [one sentence — what the chapter gains by applying the fix]
+  - Voice-floor flag: [yes/no — and which voice-floor category from step 2.5 if yes]
+  - Voice-Signature flag: [yes/no — and which §Voice Signature quality if yes]
+
+## Acknowledged (No Action)
+
+Lines that match a style-rule pattern but are earning their keep. Recorded for transparency; no fix proposed.
+
+- **Ch. NN, line ~XXX** — `"quote"`. Pattern: [which rule it matched]. Rationale: [one sentence why this is SAFE-KEEP]
+- ...
 ```
 
 Rules for the devplan:
-- Every fix from "Top 5 Things to Fix" MUST appear as a checkbox.
-- Every show/tell violation, aphorism, and narrator-overreach quote from the chapter-by-chapter analysis MUST appear as a checkbox.
+- **Only SAFE-CUT items become checkboxes.** TRADE-OFF goes in its own non-checkbox section. SAFE-KEEP goes in "Acknowledged".
+- Every SAFE-CUT fix from "Top 5 Things to Fix" MUST appear as a checkbox.
+- Every SAFE-CUT show/tell violation, aphorism, and narrator-overreach quote from the chapter-by-chapter analysis MUST appear as a checkbox.
 - Cross-chapter repetition problems get their own section at the bottom.
 - Fixes are ordered: CRITICAL first, then HIGH, MEDIUM, LOW. Within each severity: ordered by chapter number.
 - Each checkbox must contain enough context to find and fix the issue without re-reading the full report.
 - When the reviewer runs again later, it checks existing `REVIEW.md` entries and marks completed ones `[x]` if the fix has been applied. New issues get appended.
+- **TRADE-OFF entries persist across cycles**: when re-running review, preserve any TRADE-OFF entries the user has not yet decided on (still in `REVIEW-PENDING.md` per Phase 9 M3 revise behavior); add new ones if the chapter has been re-revised since.
 
 ---
 

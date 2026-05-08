@@ -109,6 +109,9 @@ Each file is created with a header, a brief instruction comment, and empty secti
 ## Voice
 [Speech patterns: stress, relaxed, lying. Words never used. 2-3 sample lines.]
 
+## Voice Signature
+[4-6 prose-level qualities to preserve, used by `/book review` as positive constraint (Phase 9 M5). Examples of qualities: compression patterns ("short declarative sentences after long compressed ones"), sentence rhythm signatures, body-first cadence ("hand reaches before narrator names the impulse"), what the character never does in narration ("never explains his own emotions"), deliberate stylistic moves ("scene closes on absence, not summary"). The reviewer uses these as positive constraints — a fix that would erode any listed quality is automatic TRADE-OFF, never SAFE-CUT. If this section is missing, reviewer falls back to style-rule-only review for this character.]
+
 ## Core
 **Worst Act:** [1 paragraph]
 **Inconfessable Desire:** [1 paragraph]

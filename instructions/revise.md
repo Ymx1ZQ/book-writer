@@ -2,6 +2,8 @@
 
 Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PROOFREAD.md) fixes to written chapter prose. Does NOT touch project architecture — for that, use `/book fix`.
 
+**Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the entry's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving any specific draft choice — and not defending prior decisions. This applies regardless of who authored the finding (past you, the writer-side review pass, an external reviewer): findings are signal; you decide the response on merit. No competition.
+
 **Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, OR `continuity` (each entry tags its origin via a `Source:` field). All three sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
 
 **Milestone format:** see `instructions/milestone-format.md`. `/book revise` parses only `- [ ]` items in REVIEW.md and PROOFREAD.md (and SMELL.md INLINE entries). Operational items in plain-bullet form are ignored.

@@ -2,6 +2,8 @@
 
 Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, characters/, plot/, outlines). Does NOT touch chapter prose — for that, use `/book revise`.
 
+**Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the milestone's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving any specific draft choice — and not defending prior decisions. This applies regardless of who authored the finding (past you, the writer-side coherence pass, an external reviewer): findings are signal; you decide the response on merit. No competition.
+
 **Milestone format:** see `instructions/milestone-format.md`. `/book fix` parses only `- [ ]` items inside coherence/sniff/continuity milestones — operational items in plain-bullet form are ignored by design (they are not pipeline-executable).
 
 ## Invocation

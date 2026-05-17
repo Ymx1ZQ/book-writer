@@ -9,9 +9,10 @@ Run an informed-but-skeptical reader over the latest chapter draft. Catch what c
 | Internal consistency of the book against its own canon | `coherence-check.md` |
 | Craft (voice, pacing, structure, scene shaping) | `reviewer.md` |
 | Surface (grammar, syntax, punctuation, line-level) | `proof-reader.md` |
-| **"Would a reader call BS on this?"** | **THIS check** |
+| **"Would a reader call BS on this?"** (categories 1-9) | **THIS check** |
+| **"Is the writer showing off?" — prose-event mannerism, form > function** (category 10) | **THIS check** |
 
-Sniff is the **plausibility / nose-wrinkle** layer. It assumes the reader is informed, skeptical, and not romantic about the work. It catches the patterns a writer agent typically falls into when worldbuilding is silent: filling gaps with plausible-but-uncanonicalized invention, modern unconscious bias, technobabble without referent, unearned capabilities, convenient coincidences.
+Sniff is the **plausibility / nose-wrinkle** layer. It assumes the reader is informed, skeptical, and not romantic about the work. It catches the patterns a writer agent typically falls into when worldbuilding is silent: filling gaps with plausible-but-uncanonicalized invention, modern unconscious bias, technobabble without referent, unearned capabilities, convenient coincidences. Category 10 extends the same reader-friction lens to *prose-event mannerism* — the stylistic devices that grow too dense, arrive in too-extreme a form before training the reader, or do more rhetorical work than narrative/character work.
 
 **Milestone format:** see `instructions/milestone-format.md` — checkboxes only for pipeline-executable items. ANCHOR-NEEDED milestones written to `DEVPLAN.md` are executable by `/book fix`, so they correctly use `- [ ]`.
 
@@ -34,11 +35,11 @@ You are a well-read, skeptical, informed reader. You are not romantic about this
 
 You are NOT the writer. You do not justify, soften, or rationalize. You report friction.
 
-## The nine objection categories
+## The ten objection categories
 
-For every concrete assertion in the chapter (a number, a fact, an object, a capability, a behavior, a coincidence), check it against all nine categories. Most lines will pass. The lines that fail are the chapter's smell.
+Categories 1-9 are evaluated **line-by-line**: for every concrete assertion in the chapter (a number, a fact, an object, a capability, a behavior, a coincidence), check it against all nine. Most lines will pass. Category 10 is evaluated **device-by-device, then occurrence-by-occurrence**: it audits recurring prose devices (tautology, anaphora, fragments, parallel triplets, etc.), not individual assertions.
 
-**Flagging discipline (Phase 9 M2 — read before scanning).** An objection that triggers one of the nine categories below is a *candidate*, not a verdict. Before adding to SMELL.md, every candidate must pass the same three-question test the Reviewer applies:
+**Flagging discipline (Phase 9 M2 — read before scanning).** An objection that triggers one of the ten categories below is a *candidate*, not a verdict. Before adding to SMELL.md, every candidate must pass the same three-question test the Reviewer applies:
 
 1. **Improvement test:** if you applied the fix, does the chapter improve? Articulate the gain in one specific sentence.
 2. **Loss test:** what is lost by the fix? Articulate the loss in one sentence (negligible / minor / non-trivial).
@@ -87,6 +88,35 @@ Three-tier flagging classification (orthogonal to the existing INLINE/ANCHOR-NEE
 8. **Plot armor / convenience.** Does an event resolve too easily? Does information appear exactly when needed? Does a chance encounter feel engineered? "The number's been disconnected since 2031" — convenient confirmation; is the chain of inference signposted, or did the reader leap with the writer's hand?
 
 9. **Continuity within the chapter.** Timeline, geography, props consistent across the chapter itself. The moka pot is on the gas flame in line 3 → does it move plausibly to "three feet to my left" by line 178? The chair "slides back two inches" in line 117 → is the writer tracking that the chair is now two inches back for the rest of the scene, or did it teleport? An object placed in pocket should re-emerge from pocket, not from hand, without transition.
+
+10. **Stylistic excess (form > function).** This category audits *prose devices*, not factual assertions. A *device* is a stylistic technique repeated across the chapter: tautology (X was X), anaphora, asyndeton, sentence fragments, parallel triplets, structural repetition of openings/closes, nominal sentences, catalog sentences, etc. The failure mode is: the form is louder than the function it was supposed to render. The reader notices the *writing* instead of the world/character — "this author is showing off, this is too much". This is distinct from categories 1-9 (factual/world plausibility) and from Reviewer (scene shaping, pacing): it is **prose-event mannerism**.
+
+   This category operates **device-by-device first, then occurrence-by-occurrence**, not line-by-line. The device inventory is built in Step 6.5 and consumed here.
+
+   **10.a — Per-device metrics (computed in Step 6.5).**
+   - **Count:** total occurrences of the device in the chapter.
+   - **Max internal density:** most occurrences inside a single sentence (e.g., triple anaphora ×3 in one sentence).
+   - **Max window density:** most occurrences inside any 50-line window.
+   - **Intensity curve:** does the first *pure/extreme* form arrive before or after the first *softened/qualified* form? (The reader needs the softened form first to learn the device — otherwise the extreme reads as a glitch, a typo, or authorial showing-off rather than character voice.)
+   - **Setup/payoff status:** does the chapter contain a *broken* occurrence — the moment the pattern cracks and finally carries judgment/meaning (e.g., a tautology that breaks into "X was the *wrong* X")? If yes, the other occurrences are setup and earn their weight by enabling the payoff.
+   - **Writing-notes coverage:** does `chapters/<book>/writing-notes.md` name this device as intentional technique?
+
+   **10.b — Protection layers (load-bearing — without these, this check destroys deliberate stylization, which the project's tonal registers depend on).**
+   - **Writing-notes veto.** If `writing-notes.md` names the device as intentional technique for this chapter/level, ceiling is high — flagging an individual occurrence requires an explicit articulable argument that *this* occurrence falls outside the protected pattern.
+   - **Setup-payoff protection.** If the chapter contains a broken occurrence (payoff), the setup occurrences are protected by default.
+   - **Default SAFE-KEEP.** The burden of proof is on the flag, not on preservation. If you cannot articulate why *this specific occurrence* (not the device as a whole) fails its job, it is SAFE-KEEP.
+
+   **10.c — Per-occurrence flagging criteria.** Only flag with a specific, articulable failure:
+   - **First-encounter friction:** the first pure-form occurrence arrives before any softened/qualified form has trained the reader. The reader reads it as a glitch, not as character voice.
+   - **Internal density overflow:** a single sentence carries the device ×N where N exceeds what the meaning needs (e.g., triple anaphora where the triadic catalog could carry the meaning with the qualifier said once).
+   - **Window saturation:** a small line window carries the device at a density above what the chapter's voice-floor can absorb.
+   - **Form > function (sentence-event > scene-event):** the sentence does more rhetorical work than narrative/character work. The form is loud and the meaning it carries is small.
+
+   **10.d — Flagging budget.** At most 1-3 occurrences flagged per device. If you find yourself flagging more, you are flagging the *device*, not the *occurrences* — recalibrate to default SAFE-KEEP. Routing for Category 10 is almost always **INLINE** (prose fix); ANCHOR-NEEDED is rare (would require a worldbuilding change to license the form, unusual for style).
+
+   **10.e — The device inventory is always reported.** Even if zero occurrences flag, the "Stylistic Device Audit" section of SMELL.md must list every device identified with its metrics and per-device verdict (SAFE-KEEP / N occurrences flagged below). **Transparency = controllability.** Without this audit, the user cannot tell whether the agent searched and found nothing, or did not search.
+
+   **Prevention layer.** `chapter-writer.md` §3.5 does not currently include a stylistic-device audit — Category 10 is the only line of defense. A future iteration may move the device-audit upstream to chapter-writer; for now sniff carries it alone.
 
 ## Output format — `SMELL.md`
 
@@ -137,6 +167,32 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 - **Action:** none.
 ```
 
+### Stylistic Device Audit section (Category 10 — always present)
+
+After the per-objection entries (and before any "Acknowledged" SAFE-KEEP block), include a section listing every stylistic device identified in the chapter, even if zero occurrences flagged. This is the transparency artifact: the user must be able to see what the agent searched for.
+
+```markdown
+## Stylistic Device Audit (Category 10)
+
+Devices identified: N.
+
+### Device 1: <name — e.g., Tautology (X was X)>
+
+- **Count:** N occurrences in the chapter
+- **Max internal density:** M (e.g., ×3 in a single sentence at l.NN, or "1 max — no within-sentence stacking")
+- **Max window density:** P per 50-line window (location: lines XX-YY)
+- **Intensity curve:** first pure/extreme form at l.XX | first softened/qualified form at l.YY → [pure-first / softened-first / mixed / N/A — only one form exists]
+- **Setup/payoff:** [broken occurrence at l.ZZ — payoff present and protects setup occurrences | no payoff identified]
+- **Writing-notes coverage:** [named at `writing-notes.md` §<section> | not named]
+- **Verdict:** [SAFE-KEEP — device earns its weight | N occurrences flagged below: #X, #Y]
+
+### Device 2: <name>
+
+...
+```
+
+If no recurring stylistic devices are identified (rare — most chapters have at least one), state: `Devices identified: 0. No recurring stylistic devices found at audit threshold (≥ 3 occurrences in chapter or ≥ 2 in any single sentence).`
+
 ## Steps for the executing agent
 
 1. Resolve the chapter file: if `chNN` provided, read `chapters/<book>/<ch>.md`; else find the most recently modified `chapters/<book>/ch*.md`.
@@ -145,11 +201,12 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 4. Load `world/canon-hierarchy.md` — the resolution doctrine. Use it when classifying ANCHOR-NEEDED entries to decide which file should change and what the canonical value should be.
 5. **Pre-step archive (Phase 9 M4):** if `chapters/<book>/SMELL.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/SMELL-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed) BEFORE writing the new one. Per-cycle finding history preserved.
 6. **Voice-Floor first pass (Phase 9 M2):** read the chapter once at reading-pace and identify 3-7 voice-floor beats — compressed openings, body-first action, surprise closes, deliberate rule-violations for tonal effect, anything `chapters/<book>/writing-notes.md` flags as intentional technique. List them in working memory.
-7. Read the chapter line by line. For every concrete assertion, run the nine categories. Aggregate candidate findings.
-8. **For each candidate, apply the three-question test from §"The nine objection categories" preamble** — articulate Improvement, articulate Loss, check Voice-floor — then assign Flagging (SAFE-CUT / TRADE-OFF / SAFE-KEEP) AND Routing (INLINE / ANCHOR-NEEDED / ACCEPT). Include both classifications in the entry.
-9. Write `chapters/<book>/SMELL.md` with the format above. Include all three flagging tiers (SAFE-CUT / TRADE-OFF / SAFE-KEEP) — SAFE-KEEP entries are noted in an "Acknowledged" block at the end of SMELL.md without action.
+6.5. **Device-inventory pre-pass (Category 10).** Skim the chapter a second time for recurring stylistic devices: tautology (X was X), anaphora, parallel triplets, sentence fragments, nominal sentences, structural repetition of openings/closes, asyndeton, catalog sentences. For each device present, compute the metrics in Category 10 §10.a: total count, max internal density (per-sentence), max window density (per 50-line window), intensity curve (first pure-form vs first softened-form), setup/payoff status (does a broken occurrence exist?), `writing-notes.md` coverage. Record per-device metrics in working memory for Step 7 and for the Stylistic Device Audit output section.
+7. Read the chapter line by line. For every concrete assertion, run categories 1-9. For Category 10, audit per-device using the metrics from Step 6.5 (not line-by-line) — apply the §10.b protections and §10.c per-occurrence criteria, respecting the §10.d budget (1-3 occurrences per device max). Aggregate candidate findings.
+8. **For each candidate, apply the three-question test from §"The ten objection categories" preamble** — articulate Improvement, articulate Loss, check Voice-floor — then assign Flagging (SAFE-CUT / TRADE-OFF / SAFE-KEEP) AND Routing (INLINE / ANCHOR-NEEDED / ACCEPT). Include both classifications in the entry.
+9. Write `chapters/<book>/SMELL.md` with the format above. Include all three flagging tiers (SAFE-CUT / TRADE-OFF / SAFE-KEEP) — SAFE-KEEP entries are noted in an "Acknowledged" block at the end of SMELL.md without action. **Always include the "Stylistic Device Audit" section** (Category 10), listing every device identified with its metrics and per-device verdict, even if zero occurrences flag.
 10. **For every ANCHOR-NEEDED entry classified SAFE-CUT or TRADE-OFF, also append a fix milestone to `DEVPLAN.md`.** Open `DEVPLAN.md`, scan for the highest existing `## Phase NN —` heading, and append a new phase named `## Phase <NN+1> — Sniff anchor fixes (<book> <chNN>) (<date>)`. Under that phase, write one milestone per ANCHOR-NEEDED entry, using the format below. (ANCHOR-NEEDED SAFE-KEEP is rare; if it occurs, no DEVPLAN milestone — note in SMELL.md only.)
-11. Print: `wrote SMELL.md — N objections (Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT; Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
+11. Print: `wrote SMELL.md — N objections (Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT; Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP). Devices audited: D (E flagged occurrences across all devices). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
 
 ## DEVPLAN milestone format (for ANCHOR-NEEDED entries)
 
@@ -172,6 +229,7 @@ For ACCEPT entries, the writer agent must show evidence in the outline or world 
 - **Don't rationalize for the writer.** If you find yourself constructing a defense ("well, maybe the writer meant…"), that is a smell — write it as ANCHOR-NEEDED ("the prose does not signal X, so either the prose changes or the worldbuilding canonicalizes X").
 - **Specific quotes, not vague feelings.** Every objection is anchored to a quote and a line. "The chapter feels off" is useless.
 - **No INLINE for capability/knowledge gaps.** If a character, agent, or object has an unearned capability, prose tweaks rarely fix it — the worldbuilding has to earn it (ANCHOR-NEEDED) or the scene has to defer it (INLINE only if the deferral is clean).
+- **Category 10 is device-by-device, then occurrence-by-occurrence.** Do not flag a device wholesale ("the chapter uses too many tautologies"). Flag specific occurrences with articulable failure (first-encounter friction, internal density overflow, form > function). Devices named in `writing-notes.md` are protected unless an occurrence has a specific reason to exit the protection. Setup occurrences are protected when a payoff break exists in the chapter. Max 1-3 flagged occurrences per device — if you exceed that, you are flagging the device, recalibrate.
 
 ## Notes
 

@@ -547,8 +547,8 @@ Two structural gaps:
 
 ### M4: Validate + deploy
 
-- [x] `./install.sh --force` for the `book` skill and the `book-tradeoff-arbiter` skill.
-- [x] Commit + push both skill repos.
+- [x] `./install.sh --force` for the `book` skill and the `book-tradeoff-arbiter` skill — both deployed.
+- [x] Commit + push the `book` skill repo (commit `d427851`, pushed to `origin/main`). **The `book-tradeoff-arbiter` skill is not under version control** — `~/Documents/software/skills/book-tradeoff-arbiter/` is not a git repo. M2's edit is in the dev tree and installed, but cannot be committed/pushed until the repo is initialized (user decision pending).
 - Run the corrected sniff + new `/book coldread` on book-1 ch01, ch02, ch03. Expected: ch03 triggers a tautology `SATURATION` finding + cold-read legibility findings; ch01 and ch02 trigger no false saturation. This is the user-requested re-check of ch01 + ch02 — run with the fixed checks, not the old blind ones. - pending
 
 **Phase 10 totals:** 4 milestones (3 doctrine + 1 deploy/validate). Adds the one missing counterforce — a saturation finding sniff cannot silence, and a cold developmental pass no canon-aware check can replace. Out of scope: gating the orchestration scripts (`run-merge-phase.sh`, `run-write-cycle.sh`) on a COLDREAD `BLOCK` — project-side script work, surface as a follow-up phase if wanted.

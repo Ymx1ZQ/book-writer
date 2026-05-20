@@ -126,5 +126,18 @@ cp -r "$SRC_ROOT/instructions" "$DEST/instructions"
 
 echo ""
 echo "Installed book skill → $DEST"
+
+# --- Codex-side install: the `judge` subcommand (cross-CLI merge-phase lane) ---
+# The `book` pipeline is a Claude Code skill; under Codex the skill exposes only
+# the `judge` subcommand (the codex lane of the parallel-pipeline judge ensemble).
+if [ -f "$SRC_ROOT/codex/SKILL.md" ]; then
+    CODEX_DEST="$HOME/.codex/skills/book"
+    rm -rf "$CODEX_DEST"
+    mkdir -p "$CODEX_DEST"
+    cp "$SRC_ROOT/codex/SKILL.md" "$CODEX_DEST/SKILL.md"
+    [ -d "$SRC_ROOT/codex/agents" ] && cp -r "$SRC_ROOT/codex/agents" "$CODEX_DEST/agents"
+    echo "Installed book skill (codex variant — judge subcommand) → $CODEX_DEST"
+fi
+
 echo ""
 echo "Run /book help in Claude Code for the full command list."

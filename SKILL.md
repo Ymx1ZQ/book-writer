@@ -29,6 +29,9 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 | `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
 | `coldread <book> [ch]` | First-time-reader developmental pass → COLDREAD.md (scene engine, propulsion, legibility — reads with NO canon loaded) | `/book coldread book-1 ch03` |
+| `judge <manifest> <out>` | Cross-model chapter comparator → rank-only JSON (parallel-pipeline merge phase) | `/book judge manifest.json out.json` |
+| `integrate-anchors <json>` | Integrate winning-draft anchors from loser drafts (parallel-pipeline merge phase) | `/book integrate-anchors aggregated.json` |
+| `arbiter <book> <ch>` | Autonomous resolution of `*-PENDING.md` trade-offs (parallel-pipeline merge phase) | `/book arbiter book-1 ch01` |
 
 ## The Pipeline
 
@@ -53,7 +56,14 @@ WRITING LOOP (repeat per batch)
 BETWEEN BOOKS
  12. /book compact all         → post-cycle cleanup
  13. /book continuity book-1 book-2 → verify cross-book consistency
+
+PARALLEL PIPELINE — MERGE PHASE (run-merge-phase.sh, per chapter)
+  /book judge <manifest> <out>     → cross-model judge (×N ensemble) → rank-only JSON
+  /book integrate-anchors <json>   → integrate loser-draft anchors into the winner
+  /book arbiter <book> <ch>        → autonomously resolve *-PENDING.md trade-offs
 ```
+
+`judge`, `integrate-anchors`, and `arbiter` were standalone `book-*` skills until Phase 11 consolidated the toolchain into this one skill. `judge` is cross-CLI: under Claude it routes to `instructions/judge.md`; under Codex it is the `codex/SKILL.md` variant installed to `~/.codex/skills/book/`.
 
 **Pre-draft context symmetry:** the chapter-writer agent enforces beat↔context symmetry before drafting (chapter-writer Step 2.6 — STOP on missing files, advisory on orphans). `coherence-check` flags drift on already-written outlines as WARNING (classes R + S). No standalone subcommand: the symmetry check lives inside `chapter-writer` (write-time) and `coherence-check` (audit-time).
 
@@ -78,6 +88,9 @@ When a command is received:
    - `epub` → `instructions/epub.md`
    - `sniff` → `instructions/sniff.md`
    - `coldread` → `instructions/coldread.md`
+   - `judge` → `instructions/judge.md`
+   - `arbiter` → `instructions/arbiter.md`
+   - `integrate-anchors` → `instructions/integrate-anchors.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit all changes:

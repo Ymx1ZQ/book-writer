@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book"
+  short_description: "Book pipeline (Codex variant) — exposes the `judge` subcommand: cross-model chapter comparator ranking N parallel drafts on a 10-dimension brilliance rubric"
+  default_prompt: "Use $book with the `judge` subcommand and two arguments: the manifest JSON path and the absolute output JSON path. Read the drafts, rank them, write strict JSON to the output path per the schema in SKILL.md — no prose."

@@ -551,4 +551,88 @@ Two structural gaps:
 - [x] Commit + push the `book` skill repo (commit `d427851`, pushed to `origin/main`). **The `book-tradeoff-arbiter` skill is not under version control** — `~/Documents/software/skills/book-tradeoff-arbiter/` is not a git repo. M2's edit is in the dev tree and installed, but cannot be committed/pushed until the repo is initialized (user decision pending).
 - Run the corrected sniff + new `/book coldread` on book-1 ch01, ch02, ch03. Expected: ch03 triggers a tautology `SATURATION` finding + cold-read legibility findings; ch01 and ch02 trigger no false saturation. This is the user-requested re-check of ch01 + ch02 — run with the fixed checks, not the old blind ones. - pending
 
-**Phase 10 totals:** 4 milestones (3 doctrine + 1 deploy/validate). Adds the one missing counterforce — a saturation finding sniff cannot silence, and a cold developmental pass no canon-aware check can replace. Out of scope: gating the orchestration scripts (`run-merge-phase.sh`, `run-write-cycle.sh`) on a COLDREAD `BLOCK` — project-side script work, surface as a follow-up phase if wanted.
+### M5: coldread — inherited context via per-chapter reader-state snapshots (supersedes M3's "read all prior chapters")
+
+**Files:** `instructions/coldread.md` (REVISIONE — replaces the Context-discipline mechanism); `chapters/coldread-state/` (NEW project-side directory of per-chapter snapshots, created at runtime by coldread).
+
+**Why** (user feedback, 2026-05-20): three linked problems with the M3 cut.
+
+1. **Cost.** M3's context discipline is "read the target chapter + every prior chapter of the book." Cold-reading book-1 ch30 reads 30 chapters; one full-book coldread pass is 1+2+…+30 = 465 chapter-reads; with trilogy-wide reader memory (a book-3 chapter's reader has read ~94 chapters) a single run approaches ~300k input tokens. Trilogy-wide the naive design is ~15M tokens of chapter input and grows superlinearly. Unsustainable.
+2. **Fidelity.** Re-reading every prior chapter in full gives the agent *perfect verbatim recall* — which a real reader does not have. A reader at chapter 28 carries a compressed *memory*, not the transcript.
+3. **Addressability.** Reader-state is needed *as of a specific chapter* — coldread of chapter N needs the state the reader had *entering* N. A single rolling file holds only the latest state; the moment a chapter is rewritten and re-cold-read (e.g. ch03 under M27), the entry-state it needs has already been overwritten. State must be addressable per chapter.
+
+The fix is one structure, and it is the better reader-model: **per-chapter reader-state snapshots** — `chapters/coldread-state/book-N-chNN.md`, one file per chapter, each holding what a reader *retains* as of the end of that chapter (= the state a reader carries *into* the next chapter). The sequence is book-prefixed and trilogy-continuous (`book-1-ch30` → `book-2-ch01` → …) — reader memory does not reset between books, and neither does the snapshot chain. This answers the cross-3-books concern directly.
+
+**Design:**
+- Each snapshot, four content blocks, sized like reader memory — strong retained beats, not a log: **Open loops** (unresolved questions, cliffhangers, ticking clocks); **Character investment** (per major character: how much the reader cares, what they know, current situation — this tells coldread "new POV → zero investment"); **Emotional / thematic throughline**; **Planted-but-unresolved** (setups the reader has registered as load-bearing).
+- Built ONLY from chapter texts by coldread itself — never seeded from `state.md`, `outline.md`, or any canon file (the snapshot is strictly reader-side; `state.md` is authorial bookkeeping and includes what the reader does not yet know).
+- **Per-run context** = the `book-N-ch(NN-1)` snapshot + the immediately-preceding chapter in full (sharp short-term memory of the handoff) + the target chapter. Bounded ~8-10k tokens regardless of position in the trilogy (~750k trilogy-wide vs ~15M, and flat instead of superlinear). Exactly one snapshot is ever loaded per run; the rest are addressable history at zero context cost.
+- **The fold:** after producing findings for chapter N, coldread writes a new snapshot `book-N-chNN.md` = the N-1 snapshot with chapter N's changes folded in (new open loops added, resolved ones closed, character investment updated).
+- **Invalidation:** re-cold-reading chapter N rewrites `book-N-chNN.md` and invalidates every later snapshot (each rebuilds when its chapter is re-cold-read); all earlier snapshots are untouched — so re-cold-reading the rewritten ch03 just loads the intact `book-1-ch02.md`.
+
+This supersedes M3's "read every prior chapter" context discipline and subsumes the original M5 intent (credit inherited context): coldread reads the N-1 snapshot *as* its context, so Reads 1-2 judge against inherited state automatically.
+
+- [ ] Rewrite `coldread.md` §"Context discipline": per-run context is the `book-N-ch(NN-1)` snapshot + the immediately-preceding chapter in full + the target chapter — NOT all prior chapters. Still NO outline / character / world / plot / canon files.
+- [ ] Add a snapshot-spec section to `coldread.md`: the four content blocks, the "reader memory not transcript" sizing rule, the build-only-from-chapter-text rule, the separation from `state.md`, the `chapters/coldread-state/book-N-chNN.md` naming.
+- [ ] Add the **fold step** to the Steps: after writing COLDREAD.md, write the new `book-N-chNN.md` snapshot.
+- [ ] Bootstrap + ordering rules in `coldread.md`: if the `book-N-ch(NN-1)` snapshot is absent, coldread builds the missing snapshots first by reading those chapters in order (one-time cost); ch01 has no prior snapshot and no prior chapter — true cold open. Document the invalidation rule (re-cold-read N → snapshots after N are stale).
+- [ ] Recalibrate Read 1 (Scene engine) and Read 2 (Propulsion) to judge as a *continuation* against the snapshot — the engine may be a carried-forward want; propulsion is whether the chapter honors and advances the inherited open loops, not whether it rebuilds stakes from zero.
+- [ ] Guardrail in the Calibration section: inherited momentum is credited, never an alibi — a chapter that only coasts and advances nothing is still a finding; a new-POV chapter (e.g. ch03/Roe) inherits the book's open loops but zero investment in its POV, so it must do more first-chapter-of-a-character work, not less.
+- [ ] `chapters/coldread-state/` is committed (consistent with `state.md` / `SMELL.md` — small, makes coldread runs reproducible and inspectable).
+- [ ] `./install.sh --force` + commit + push the `book` skill. (M5 lands before the M4 validation run, which bootstraps snapshots ch01 → ch02 → ch03.)
+
+**Phase 10 totals:** 5 milestones (4 doctrine + 1 deploy/validate). Adds the one missing counterforce — a saturation finding sniff cannot silence, and a cold developmental pass no canon-aware check can replace, fed by per-chapter reader-state snapshots so it models a mid-book reader (compressed memory, bounded cost, state addressable per chapter) rather than a cold start or a perfect-recall re-read. Out of scope: gating the orchestration scripts (`run-merge-phase.sh`, `run-write-cycle.sh`) on a COLDREAD `BLOCK` — project-side script work, surface as a follow-up phase if wanted.
+
+---
+
+## Phase 11 — Consolidate the book toolchain into one skill (2026-05-20)
+
+> **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 / 10 precedent — markdown LLM-instruction edits, no test runner.
+
+There are four `book-*` skills: `book` (the unified pipeline) plus three satellites — `book-judge`, `book-tradeoff-arbiter`, `book-integrate-anchors`. They are one system: all three satellites are pipeline stages invoked by `run-merge-phase.sh` (the arbiter also by `run-write-cycle.sh`), all share the SAFE-CUT/TRADE-OFF/SAFE-KEEP vocabulary, the `*-PENDING.md` files, and the writing-notes / voice-samples / prose-rules doctrine. The split costs: (1) inconsistent invocation — `/book sniff` but `/book-judge`; (2) `/book help` cannot show the full pipeline; (3) **three of the four are not git repos** — `book-judge`, `book-tradeoff-arbiter`, `book-integrate-anchors` have no version control at all; (4) shared doctrine split across repos — Phase 10 M2 had to reach from `book` into the standalone arbiter to add the SATURATION carve-out.
+
+Consolidate all three into `book` as routed `/book <command>` subcommands. The unified skill keeps the name **`book`** (the `/book` command is load-bearing across 15+ commands and every orchestration script) and its existing repo **`Ymx1ZQ/book-writer`** — the satellites have no repos and no history to preserve, so consolidation needs no new repo. This also closes the Phase 10 M4 open item: the arbiter is not given its own repo — it is absorbed into `book`, which is versioned.
+
+### M1: Absorb book-tradeoff-arbiter → `/book arbiter`
+
+- [x] Move `book-tradeoff-arbiter/SKILL.md` content → `book/instructions/arbiter.md` (carries the Phase 10 M2 saturation carve-out, already present in the standalone file).
+- [x] `book/SKILL.md`: add command-table row `arbiter <book> <ch>`, add routing `arbiter → instructions/arbiter.md`, add the stage to the pipeline diagram (merge-phase auto-resolution of `*-PENDING.md`).
+- [x] Claude-only — every invocation is via `$CLAUDE`; no model variant needed.
+
+### M2: Absorb book-integrate-anchors → `/book integrate-anchors`
+
+- [x] Move `book-integrate-anchors/SKILL.md` → `book/instructions/integrate-anchors.md`; fold `book-integrate-anchors/README.md` into `book/README.md` (or the instruction header).
+- [x] `book/SKILL.md`: command-table row + routing + pipeline-diagram stage.
+- [x] Claude-only.
+
+### M3: Absorb book-judge → `/book judge` (cross-CLI — the one wrinkle)
+
+`book-judge` is invoked under BOTH `$CLAUDE` (`run-merge-phase.sh` lines 139, 144) and `$CODEX` (line 157) and ships two model variants: `claude/SKILL.md` + `codex/SKILL.md`.
+
+- [x] Move the two variants → `book/instructions/judge/claude.md` + `book/instructions/judge/codex.md`, preserving the model split; fold `book-judge/README.md` into `book/README.md`.
+- [x] `book/SKILL.md`: command-table row `judge <manifest> <outpath>` + routing — Claude invocations route to `instructions/judge/claude.md`.
+- [x] Inspect `book-judge/install.sh` for its codex-side install path; extend `book/install.sh` so it also installs the codex-side `book` skill (at minimum the `judge` command + `instructions/judge/codex.md`) into Codex's skill location, so `/book judge` resolves under `$CODEX` — preserving book-judge's current cross-CLI capability. This is the one non-trivial part of the consolidation.
+
+### M4: Retire the satellites
+
+- [x] Confirm `book/install.sh` installs every new file (the three new instructions, the `judge/` subdir, the codex side). Discard the three satellites' `install.sh`.
+- [x] Delete dev-tree dirs `~/Documents/software/skills/book-{judge,tradeoff-arbiter,integrate-anchors}/` and their installed copies `~/.claude/skills/book-{judge,tradeoff-arbiter,integrate-anchors}/` (plus the codex-side `book-judge`).
+- [x] The satellites carry no DEVPLAN files — nothing to merge into `book/DEVPLAN.md`.
+
+### M5: Update orchestration scripts (project-side — `ground-truth` repo; must land atomically with M6)
+
+The scripts invoke the old skill names; they break the instant the satellites are retired, so this milestone is committed together with M6.
+
+- [x] `run-merge-phase.sh`: `/book-judge` → `/book judge` (lines 139, 144, 157), `/book-integrate-anchors` → `/book integrate-anchors` (347), `/book-tradeoff-arbiter` → `/book arbiter` (391); update the banner/comment lines (9, 11, 232, 235, 345, 378).
+- [x] `run-write-cycle.sh`: `/book-tradeoff-arbiter` → `/book arbiter` (line 597; comment line 592).
+- [x] `aggregate-judges.sh`: update the comment path reference `~/.claude/skills/book-judge/SKILL.md` → `~/.claude/skills/book/instructions/judge/` (lines 4-5 — comment only, no invocation).
+
+### M6: Deploy + commit
+
+- [x] `./install.sh --force` from `book/`.
+- [x] Smoke-test: `/book help` lists `judge`, `arbiter`, `integrate-anchors`; the dispatcher resolves each to its instruction file.
+- [x] Commit + push the `book` skill repo (`book-writer.git`). Commit the M5 orchestration-script changes to the `ground-truth` repo — atomically with the skill deploy so the merge phase is never in a broken intermediate state.
+
+**Phase 11 totals:** 6 milestones. Collapses four `book-*` skills into one routed skill — uniform `/book` invocation, one repo, one install, one version, shared doctrine co-located. Closes the Phase 10 M4 arbiter-versioning limbo. One non-trivial part: M3's cross-CLI judge install.
+
+**Implementation note (2026-05-20):** the judge model-variant layout deviates slightly from M3's stated paths, for cleanliness — the Claude judge instruction is `instructions/judge.md` (dispatched by `/book judge`); the Codex variant is `codex/SKILL.md` + `codex/agents/openai.yaml` (the codex install payload), rather than an `instructions/judge/` subdir. `book/install.sh` is dual-target: Claude → `~/.claude/skills/book/`, Codex → `~/.codex/skills/book/`. Satellite READMEs were not folded — their content is redundant with each instruction file's own intro. All three satellites retired from the dev tree and from the installed Claude/Codex skill paths. Phase 11 deployed and verified; M5 orchestration-script edits committed to the `ground-truth` repo.

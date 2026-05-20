@@ -501,3 +501,54 @@ Out of scope (project-side, separate concern): authoring `§Voice Signature` par
 
 **Out of scope (project-side, separate phase or done in next chapter prep):**
 - Authoring `§Voice Signature` paragraphs in trilogy's `characters/notes/voice-samples.md` for Noah, Lena, Roe, etc. The skill ships the format expectation and the fallback; authoring the actual signatures is a one-time project-side write.
+
+---
+
+## Phase 10 — Engagement gate + saturation finding: closing the "boring chapter ships clean" hole (2026-05-20)
+
+> **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 precedent — markdown LLM-instruction edits, no test runner.
+
+Surfaced from book-1 ch03 (ground-truth project, 2026-05-20 editorial cold-read). ch03 shipped through the full pipeline with `REVIEW.md` verdict *"Roe reads as a person … page-turner 4/5"* and zero Critical/High/Medium/Low findings — while a cold reader (the user) found it boring and incomprehensible. **The pipeline did not miss the defect. Three protection layers, each added by a prior real milestone, suppressed it:**
+
+1. **sniff Category 10** (ground-truth book-1 M14) was built to detect "Stylistic Excess" but calibrated to the wrong failure mode. `sniff.md` line ~232: *"Do not flag a device wholesale ('the chapter uses too many tautologies')."* §10.b writing-notes veto gives a canonized device a "high ceiling." §10.d budget: *"max 1-3 occurrences per device — if you exceed that … recalibrate to default SAFE-KEEP."* The more saturated the defect, the more the check tells itself to back off. M14's calibration success criterion was literally "zero new flags." Cat 10 catches one too-extreme instance (M13's framing); by construction it cannot catch saturation.
+2. **reviewer flagging bar** (Phase 9): a voice-floor candidate is classified TRADE-OFF, never SAFE-CUT.
+3. **book-tradeoff-arbiter rule 3**: TRADE-OFF + unqualified voice-floor → DEFER. "Pillar beats outrank tightening wins."
+
+On ch03 the reviewer *did* flag the tautology formula and the abstract terminal paradox (`REVIEW-PENDING.md` #1, #2) — both died at arbiter rule 3. Every layer behaved exactly as specified; each was added to fix a real prior over-cut (Phase 9 saved the moka-pot opening). Composed, they are a one-way ratchet toward protection, with no counterforce that measures cumulative reader experience.
+
+Two structural gaps:
+
+- **Gap A — no saturation finding.** sniff Cat 10 is forbidden from raising a wholesale "device X carries the whole chapter" finding.
+- **Gap B — no developmental pass.** Every existing check is correctness (sniff 1-9, coherence L-S, continuity) or line-craft (sniff 10, reviewer 8-dimension, proofreader). None asks "is the chapter alive, and is it legible to a reader without the canon files." The reviewer reads WITH all canon loaded — it asserted "Roe reads as a person" because it knows `davan.md`; a first-time reader does not.
+
+### M1: sniff Cat 10 — add the Saturation finding type
+
+**File:** `instructions/sniff.md` (REVISIONE).
+
+- [x] Replace the line-~232 prohibition ("Do not flag a device wholesale") with a licensed, bounded wholesale finding: when a device's total count or max-window density exceeds a threshold, sniff MUST raise exactly ONE chapter-level `SATURATION` finding for that device (the per-occurrence 1-3 budget stays for non-saturation cases). Implemented as new §10.f.
+- [x] The Saturation finding is exempt from the §10.b writing-notes veto — writing-notes licenses a device's existence and register, not unlimited saturation. Exemption stated explicitly in §10.b and §10.f.
+- [x] Saturation classification is SAFE-CUT-class (structural), not TRADE-OFF — not subject to per-line voice-floor protection (the fix is "vary ~N occurrences," not "delete a pillar beat").
+- [x] Threshold defined concretely: Count ≥ 12 OR max 50-line-window density ≥ 6 (calibration-tunable; M4 calibrates against ch01/ch02/ch03).
+
+### M2: book-tradeoff-arbiter rule 3 — saturation carve-out
+
+**File:** `~/Documents/software/skills/book-tradeoff-arbiter/SKILL.md` (REVISIONE).
+
+- [x] Amend rule 3: voice-floor protection applies to per-line / per-beat trade-offs only. An item that is an instance of a device carrying a §10.f `SATURATION` finding in `SMELL.md` is NOT rule-3 deferred — it falls through to rules 4-6. Added `SMELL.md` to the arbiter's read list so it can detect saturation findings.
+
+### M3: New developmental cold-read pass
+
+**Files:** `instructions/coldread.md` (NEW), `SKILL.md` (REVISIONE).
+
+- [x] New `/book coldread` subcommand: a developmental-editor pass that reads the chapter with ONLY prior chapters as context — no outline, no character files, no canon. New subcommand rather than a reviewer pre-step: the defining constraint (canon NOT loaded) is incompatible with `reviewer.md`, which loads voice-samples and character files.
+- [x] Five reads per chapter: (1) scene engine — does the POV want something? (2) propulsion — does tension rise? (3) legibility — do the important moments land cold? (4) monotone — is one device carrying the chapter? (5) emotional core — is there one, legible without canon?
+- [x] Output `chapters/<book>/COLDREAD.md`; findings carry severity BLOCK / WEAKNESS / NOTE. Developmental findings are NOT auto-applied by `/book revise` — surfaced for the writer; a BLOCK becomes a named rewrite milestone.
+- [x] Wired into `SKILL.md` Pipeline: cold-read runs after review, before proofread/revise. Commands table + routing list updated.
+
+### M4: Validate + deploy
+
+- [x] `./install.sh --force` for the `book` skill and the `book-tradeoff-arbiter` skill.
+- [x] Commit + push both skill repos.
+- Run the corrected sniff + new `/book coldread` on book-1 ch01, ch02, ch03. Expected: ch03 triggers a tautology `SATURATION` finding + cold-read legibility findings; ch01 and ch02 trigger no false saturation. This is the user-requested re-check of ch01 + ch02 — run with the fixed checks, not the old blind ones. - pending
+
+**Phase 10 totals:** 4 milestones (3 doctrine + 1 deploy/validate). Adds the one missing counterforce — a saturation finding sniff cannot silence, and a cold developmental pass no canon-aware check can replace. Out of scope: gating the orchestration scripts (`run-merge-phase.sh`, `run-write-cycle.sh`) on a COLDREAD `BLOCK` — project-side script work, surface as a follow-up phase if wanted.

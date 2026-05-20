@@ -28,6 +28,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `pdf <book> [ch]` | Render a chapter or a whole book to PDF | `/book pdf book-1 ch01` |
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 | `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
+| `coldread <book> [ch]` | First-time-reader developmental pass → COLDREAD.md (scene engine, propulsion, legibility — reads with NO canon loaded) | `/book coldread book-1 ch03` |
 
 ## The Pipeline
 
@@ -45,12 +46,13 @@ WRITING LOOP (repeat per batch)
   6. /book write book-1        → write 5 chapters
   7. /book sniff book-1        → adversarial skeptical-reader → SMELL.md
   8. /book review book-1       → editorial review → REVIEW.md
-  9. /book proofread book-1    → line-level review → PROOFREAD.md
- 10. /book revise book-1       → apply SMELL + REVIEW + PROOFREAD fixes to prose
+  9. /book coldread book-1     → first-time-reader developmental pass → COLDREAD.md
+ 10. /book proofread book-1    → line-level review → PROOFREAD.md
+ 11. /book revise book-1       → apply SMELL + REVIEW + PROOFREAD fixes to prose
 
 BETWEEN BOOKS
- 11. /book compact all         → post-cycle cleanup
- 12. /book continuity book-1 book-2 → verify cross-book consistency
+ 12. /book compact all         → post-cycle cleanup
+ 13. /book continuity book-1 book-2 → verify cross-book consistency
 ```
 
 **Pre-draft context symmetry:** the chapter-writer agent enforces beat↔context symmetry before drafting (chapter-writer Step 2.6 — STOP on missing files, advisory on orphans). `coherence-check` flags drift on already-written outlines as WARNING (classes R + S). No standalone subcommand: the symmetry check lives inside `chapter-writer` (write-time) and `coherence-check` (audit-time).
@@ -75,6 +77,7 @@ When a command is received:
    - `pdf` → `instructions/pdf.md`
    - `epub` → `instructions/epub.md`
    - `sniff` → `instructions/sniff.md`
+   - `coldread` → `instructions/coldread.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit all changes:

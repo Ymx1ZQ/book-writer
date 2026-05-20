@@ -102,7 +102,7 @@ Three-tier flagging classification (orthogonal to the existing INLINE/ANCHOR-NEE
    - **Writing-notes coverage:** does `chapters/<book>/writing-notes.md` name this device as intentional technique?
 
    **10.b — Protection layers (load-bearing — without these, this check destroys deliberate stylization, which the project's tonal registers depend on).**
-   - **Writing-notes veto.** If `writing-notes.md` names the device as intentional technique for this chapter/level, ceiling is high — flagging an individual occurrence requires an explicit articulable argument that *this* occurrence falls outside the protected pattern.
+   - **Writing-notes veto.** If `writing-notes.md` names the device as intentional technique for this chapter/level, ceiling is high — flagging an individual occurrence requires an explicit articulable argument that *this* occurrence falls outside the protected pattern. The veto protects the device's *existence and register* — it does NOT license unbounded repetition: a device past the §10.f saturation threshold is flagged regardless of writing-notes coverage.
    - **Setup-payoff protection.** If the chapter contains a broken occurrence (payoff), the setup occurrences are protected by default.
    - **Default SAFE-KEEP.** The burden of proof is on the flag, not on preservation. If you cannot articulate why *this specific occurrence* (not the device as a whole) fails its job, it is SAFE-KEEP.
 
@@ -112,9 +112,18 @@ Three-tier flagging classification (orthogonal to the existing INLINE/ANCHOR-NEE
    - **Window saturation:** a small line window carries the device at a density above what the chapter's voice-floor can absorb.
    - **Form > function (sentence-event > scene-event):** the sentence does more rhetorical work than narrative/character work. The form is loud and the meaning it carries is small.
 
-   **10.d — Flagging budget.** At most 1-3 occurrences flagged per device. If you find yourself flagging more, you are flagging the *device*, not the *occurrences* — recalibrate to default SAFE-KEEP. Routing for Category 10 is almost always **INLINE** (prose fix); ANCHOR-NEEDED is rare (would require a worldbuilding change to license the form, unusual for style).
+   **10.d — Flagging budget.** At most 1-3 occurrences flagged per device. If you find yourself flagging more, you are flagging the *device*, not the *occurrences* — recalibrate to default SAFE-KEEP. Wanting to flag more than 3 occurrences is also the signal to test §10.f: if the device is saturated, raise the single §10.f `SATURATION` finding instead of many per-occurrence flags; if it is not saturated, recalibrate the surplus to SAFE-KEEP. Routing for Category 10 is almost always **INLINE** (prose fix); ANCHOR-NEEDED is rare (would require a worldbuilding change to license the form, unusual for style).
 
    **10.e — The device inventory is always reported.** Even if zero occurrences flag, the "Stylistic Device Audit" section of SMELL.md must list every device identified with its metrics and per-device verdict (SAFE-KEEP / N occurrences flagged below). **Transparency = controllability.** Without this audit, the user cannot tell whether the agent searched and found nothing, or did not search.
+
+   **10.f — Device saturation (the one licensed wholesale finding).** §10.a–§10.e govern *per-occurrence* flagging; by design they cannot raise "device X carries the whole chapter," and that gap let a monotone chapter ship clean. This sub-rule is the exception. From the §10.a metrics, a device is **saturated** when its **Count ≥ 12** OR its **max 50-line-window density ≥ 6**. (Defaults — calibration-tunable; the target is: a device supplying the chapter's dominant texture triggers, a device used as a deliberate but bounded motif does not.) For each saturated device, raise **exactly one** chapter-level `SATURATION` finding, separate from and additional to the §10.d per-occurrence budget. The `SATURATION` finding:
+   - is **exempt from the §10.b writing-notes veto** — writing-notes licenses a device's existence and register, not its saturation;
+   - is **exempt from setup/payoff protection** — one payoff break does not earn twenty setups;
+   - is classified **SAFE-CUT**, never TRADE-OFF — it is a structural defect, not a per-line voice trade-off, and is therefore not subject to per-line voice-floor protection (the fix is "vary ≈N occurrences across the chapter," not "delete a pillar beat");
+   - routes **INLINE**;
+   - uses the standard SMELL.md entry format with `Location:` = `chapter-wide (device audit)`; its `Suggested action` names the device, the current count, and a target post-fix count (a deliberate motif typically lives at 3–6 occurrences), and instructs the writer to vary the surplus into other registers — it does not enumerate every occurrence.
+
+   A `SATURATION` finding and an ordinary per-occurrence finding on the same device may coexist (the per-occurrence one flags a specific worst instance; the `SATURATION` one flags the aggregate).
 
    **Prevention layer.** `chapter-writer.md` §3.5 does not currently include a stylistic-device audit — Category 10 is the only line of defense. A future iteration may move the device-audit upstream to chapter-writer; for now sniff carries it alone.
 
@@ -184,7 +193,7 @@ Devices identified: N.
 - **Intensity curve:** first pure/extreme form at l.XX | first softened/qualified form at l.YY → [pure-first / softened-first / mixed / N/A — only one form exists]
 - **Setup/payoff:** [broken occurrence at l.ZZ — payoff present and protects setup occurrences | no payoff identified]
 - **Writing-notes coverage:** [named at `writing-notes.md` §<section> | not named]
-- **Verdict:** [SAFE-KEEP — device earns its weight | N occurrences flagged below: #X, #Y]
+- **Verdict:** [SAFE-KEEP — device earns its weight | SATURATED — Count/window crosses the §10.f threshold; one SATURATION finding raised (#X) | N occurrences flagged below: #X, #Y]
 
 ### Device 2: <name>
 
@@ -202,11 +211,11 @@ If no recurring stylistic devices are identified (rare — most chapters have at
 5. **Pre-step archive (Phase 9 M4):** if `chapters/<book>/SMELL.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/SMELL-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed) BEFORE writing the new one. Per-cycle finding history preserved.
 6. **Voice-Floor first pass (Phase 9 M2):** read the chapter once at reading-pace and identify 3-7 voice-floor beats — compressed openings, body-first action, surprise closes, deliberate rule-violations for tonal effect, anything `chapters/<book>/writing-notes.md` flags as intentional technique. List them in working memory.
 6.5. **Device-inventory pre-pass (Category 10).** Skim the chapter a second time for recurring stylistic devices: tautology (X was X), anaphora, parallel triplets, sentence fragments, nominal sentences, structural repetition of openings/closes, asyndeton, catalog sentences. For each device present, compute the metrics in Category 10 §10.a: total count, max internal density (per-sentence), max window density (per 50-line window), intensity curve (first pure-form vs first softened-form), setup/payoff status (does a broken occurrence exist?), `writing-notes.md` coverage. Record per-device metrics in working memory for Step 7 and for the Stylistic Device Audit output section.
-7. Read the chapter line by line. For every concrete assertion, run categories 1-9. For Category 10, audit per-device using the metrics from Step 6.5 (not line-by-line) — apply the §10.b protections and §10.c per-occurrence criteria, respecting the §10.d budget (1-3 occurrences per device max). Aggregate candidate findings.
+7. Read the chapter line by line. For every concrete assertion, run categories 1-9. For Category 10, audit per-device using the metrics from Step 6.5 (not line-by-line) — apply the §10.b protections and §10.c per-occurrence criteria, respecting the §10.d budget (1-3 occurrences per device max). Then apply §10.f: test every device against the saturation threshold and raise one `SATURATION` finding per saturated device. Aggregate candidate findings.
 8. **For each candidate, apply the three-question test from §"The ten objection categories" preamble** — articulate Improvement, articulate Loss, check Voice-floor — then assign Flagging (SAFE-CUT / TRADE-OFF / SAFE-KEEP) AND Routing (INLINE / ANCHOR-NEEDED / ACCEPT). Include both classifications in the entry.
 9. Write `chapters/<book>/SMELL.md` with the format above. Include all three flagging tiers (SAFE-CUT / TRADE-OFF / SAFE-KEEP) — SAFE-KEEP entries are noted in an "Acknowledged" block at the end of SMELL.md without action. **Always include the "Stylistic Device Audit" section** (Category 10), listing every device identified with its metrics and per-device verdict, even if zero occurrences flag.
 10. **For every ANCHOR-NEEDED entry classified SAFE-CUT or TRADE-OFF, also append a fix milestone to `DEVPLAN.md`.** Open `DEVPLAN.md`, scan for the highest existing `## Phase NN —` heading, and append a new phase named `## Phase <NN+1> — Sniff anchor fixes (<book> <chNN>) (<date>)`. Under that phase, write one milestone per ANCHOR-NEEDED entry, using the format below. (ANCHOR-NEEDED SAFE-KEEP is rare; if it occurs, no DEVPLAN milestone — note in SMELL.md only.)
-11. Print: `wrote SMELL.md — N objections (Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT; Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP). Devices audited: D (E flagged occurrences across all devices). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
+11. Print: `wrote SMELL.md — N objections (Routing: X INLINE / Y ANCHOR-NEEDED / Z ACCEPT; Flagging: A SAFE-CUT / B TRADE-OFF / C SAFE-KEEP). Devices audited: D (S saturated, E flagged occurrences across all devices). Wrote Phase <NN+1> to DEVPLAN.md with Y anchor-fix milestone(s).`
 
 ## DEVPLAN milestone format (for ANCHOR-NEEDED entries)
 
@@ -229,7 +238,7 @@ If no recurring stylistic devices are identified (rare — most chapters have at
 - **Don't rationalize for the writer.** If you find yourself constructing a defense ("well, maybe the writer meant…"), that is a smell — write it as ANCHOR-NEEDED ("the prose does not signal X, so either the prose changes or the worldbuilding canonicalizes X").
 - **Specific quotes, not vague feelings.** Every objection is anchored to a quote and a line. "The chapter feels off" is useless.
 - **No INLINE for capability/knowledge gaps.** If a character, agent, or object has an unearned capability, prose tweaks rarely fix it — the worldbuilding has to earn it (ANCHOR-NEEDED) or the scene has to defer it (INLINE only if the deferral is clean).
-- **Category 10 is device-by-device, then occurrence-by-occurrence.** Do not flag a device wholesale ("the chapter uses too many tautologies"). Flag specific occurrences with articulable failure (first-encounter friction, internal density overflow, form > function). Devices named in `writing-notes.md` are protected unless an occurrence has a specific reason to exit the protection. Setup occurrences are protected when a payoff break exists in the chapter. Max 1-3 flagged occurrences per device — if you exceed that, you are flagging the device, recalibrate.
+- **Category 10 is device-by-device, then occurrence-by-occurrence — with one licensed wholesale exception.** Per-occurrence flags need a specific articulable failure (first-encounter friction, internal density overflow, form > function); devices named in `writing-notes.md` are protected per §10.b, setup occurrences are protected when a payoff break exists, max 1-3 per device per §10.d. The one exception is the §10.f `SATURATION` finding: when a device's Count or window-density crosses the saturation threshold, raise exactly one chapter-level finding for it. That finding IS wholesale, by design — it is the check's only defense against a single device supplying the chapter's entire texture, and it is not silenced by writing-notes coverage or by voice-floor protection.
 
 ## Notes
 

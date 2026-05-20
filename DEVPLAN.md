@@ -636,3 +636,27 @@ The scripts invoke the old skill names; they break the instant the satellites ar
 **Phase 11 totals:** 6 milestones. Collapses four `book-*` skills into one routed skill — uniform `/book` invocation, one repo, one install, one version, shared doctrine co-located. Closes the Phase 10 M4 arbiter-versioning limbo. One non-trivial part: M3's cross-CLI judge install.
 
 **Implementation note (2026-05-20):** the judge model-variant layout deviates slightly from M3's stated paths, for cleanliness — the Claude judge instruction is `instructions/judge.md` (dispatched by `/book judge`); the Codex variant is `codex/SKILL.md` + `codex/agents/openai.yaml` (the codex install payload), rather than an `instructions/judge/` subdir. `book/install.sh` is dual-target: Claude → `~/.claude/skills/book/`, Codex → `~/.codex/skills/book/`. Satellite READMEs were not folded — their content is redundant with each instruction file's own intro. All three satellites retired from the dev tree and from the installed Claude/Codex skill paths. Phase 11 deployed and verified; M5 orchestration-script edits committed to the `ground-truth` repo.
+
+---
+
+## Phase 12 — coldread severity calibration: legibility is conditional on engagement (2026-05-21)
+
+> **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 / 10 / 11 precedent.
+
+Surfaced from M4 validation (book-1 ch03, 2026-05-21). The user's lived reaction to ch03 was BLOCK-grade — *"pallosissimo e neanche capisco cosa sta succedendo"* (boring; could not follow the plot). `/book coldread` rated ch03 **0 BLOCK / 1 WEAKNESS / 2 NOTE**, cold verdict *"qualified yes — the chapter works."* It assigned **the same severity profile to all three chapters** (ch01, ch02, ch03 each 0 BLOCK / 1 WEAKNESS) — it could not discriminate the chapter a real reader bounced off (ch03) from the two they did not (ch01, ch02).
+
+coldread's *diagnosis* was sharp — finding #1 correctly identified that ch03's opening third structurally re-runs ch02 (déjà vu) — but two calibration faults:
+
+1. **It judged the Davan / empty-stool emotional core "a live wire that works"** (Read 3, Legibility). The user, a real reader, did not register it ("only understood the stone in the boot"). Root cause: coldread reads cold (no canon) but still reads *attentively* — it recovers buried meaning by connecting dots a disengaged or uninvested reader skips. Legibility is being judged as "can an attentive agent recover it," not "will a reader at this engagement level register it."
+2. **Severity undercalls.** The persona says "you put the book down if bored," but the agent's actual reading never degrades, so the verdict never reaches BLOCK on a chapter a real reader would abandon.
+
+### M1: bind the coldread verdict to lived reader experience
+
+**File:** `instructions/coldread.md` (REVISIONE).
+
+- [ ] Read 3 (Legibility): when Read 2 (Propulsion) finds a slog/slack stretch, meaning that is *technically present but buried* in that stretch is a legibility **finding**, not a pass — a reader whose attention the chapter has lost will not do the connective work. Reframe the test: "will a reader at this engagement level register it," not "can an attentive agent recover it."
+- [ ] Severity: a chapter whose emotional core is present-but-buried-under-a-slog, or that a real reader would disengage from before the payoff, escalates toward BLOCK even when every element is technically on the page. The persona's "you put the book down if bored" must bind the verdict, not merely color the prose.
+- [ ] Calibration section: add — the agent must not let its own attentiveness paper over a real reader's inattention; the test is the median reader's lived experience, not the diligent agent's recovery. If the same severity would land on a chapter that pulls and one that drags, the rubric is not discriminating — re-judge.
+- [ ] `./install.sh --force` + commit + push.
+
+**Phase 12 totals:** 1 milestone. M4 validated the saturation finding (Phase 10 M1) cleanly; it also surfaced that coldread, while diagnostically sharp, undercalls severity because it cannot model a real reader's degraded attention. This milestone binds the verdict to lived reader experience.

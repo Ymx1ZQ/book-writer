@@ -34,6 +34,13 @@ h1 + p::first-letter {
 
 em { font-style: italic; }
 
+/* Game / terminal text (markdown backticks). monospace, serif fallback
+   so it never renders blank on a reader that lacks a monospace font. */
+code {
+  font-family: monospace, serif;
+  color: inherit;
+}
+
 hr {
   border: none;
   text-align: center;

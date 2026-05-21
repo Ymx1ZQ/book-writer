@@ -96,10 +96,13 @@ def make_chapter_item(filename: str, title: str, html_body: str) -> epub.EpubHtm
         "<?xml version='1.0' encoding='utf-8'?>"
         "<!DOCTYPE html>"
         "<html xmlns='http://www.w3.org/1999/xhtml'>"
-        f"<head><title>{title}</title>"
-        "<link rel='stylesheet' type='text/css' href='style.css'/>"
-        f"</head><body>{html_body}</body></html>"
+        f"<head><title>{title}</title></head>"
+        f"<body>{html_body}</body></html>"
     ).encode("utf-8")
+    # Register the stylesheet through ebooklib's API. A <link> injected into
+    # the content string is dropped when ebooklib re-serializes the <head>;
+    # only links added via add_link survive into the built XHTML.
+    chap.add_link(href="style.css", rel="stylesheet", type="text/css")
     return chap
 
 

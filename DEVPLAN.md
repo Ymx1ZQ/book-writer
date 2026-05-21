@@ -639,24 +639,23 @@ The scripts invoke the old skill names; they break the instant the satellites ar
 
 ---
 
-## Phase 12 — coldread severity calibration: legibility is conditional on engagement (2026-05-21)
+## Phase 12 — coldread severity calibration: a balanced, discriminating verdict (2026-05-21)
 
 > **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 / 10 / 11 precedent.
 
-Surfaced from M4 validation (book-1 ch03, 2026-05-21). The user's lived reaction to ch03 was BLOCK-grade — *"pallosissimo e neanche capisco cosa sta succedendo"* (boring; could not follow the plot). `/book coldread` rated ch03 **0 BLOCK / 1 WEAKNESS / 2 NOTE**, cold verdict *"qualified yes — the chapter works."* It assigned **the same severity profile to all three chapters** (ch01, ch02, ch03 each 0 BLOCK / 1 WEAKNESS) — it could not discriminate the chapter a real reader bounced off (ch03) from the two they did not (ch01, ch02).
+Surfaced from M4 validation (book-1 ch03, 2026-05-21) and the user's follow-up directive: coldread *"deve essere equilibrato — non voglio che faccia modifiche a cazzo ma neanche lasciar sempre perdere."* The verdict must be a **trustworthy signal**: when coldread says BLOCK we act, when it says NOTE we leave it, and the WEAKNESS between is a genuine judgement call — neither reflexive rewriting nor reflexive shrugging.
 
-coldread's *diagnosis* was sharp — finding #1 correctly identified that ch03's opening third structurally re-runs ch02 (déjà vu) — but two calibration faults:
+The M4 evidence was an **under-call**: the user's lived reaction to ch03 was BLOCK-grade ("pallosissimo e neanche capisco cosa sta succedendo"), but `/book coldread` rated it 0 BLOCK / 1 WEAKNESS, "qualified yes," and gave **the same severity profile to all three chapters** — it could not discriminate the chapter a real reader bounced off from the two they did not. Root cause: coldread reads cold (no canon) but still reads *attentively* — it recovers buried meaning a disengaged reader skips, and judged ch03's Davan core "a live wire that works." But the fix must not over-correct into reflexive harshness: a texture observation must stay a NOTE. The target is a severity ladder where BLOCK / WEAKNESS / NOTE are genuinely different claims, each tracking the median reader's lived experience.
 
-1. **It judged the Davan / empty-stool emotional core "a live wire that works"** (Read 3, Legibility). The user, a real reader, did not register it ("only understood the stone in the boot"). Root cause: coldread reads cold (no canon) but still reads *attentively* — it recovers buried meaning by connecting dots a disengaged or uninvested reader skips. Legibility is being judged as "can an attentive agent recover it," not "will a reader at this engagement level register it."
-2. **Severity undercalls.** The persona says "you put the book down if bored," but the agent's actual reading never degrades, so the verdict never reaches BLOCK on a chapter a real reader would abandon.
-
-### M1: bind the coldread verdict to lived reader experience
+### M1: make the coldread verdict discriminating and balanced
 
 **File:** `instructions/coldread.md` (REVISIONE).
 
-- [ ] Read 3 (Legibility): when Read 2 (Propulsion) finds a slog/slack stretch, meaning that is *technically present but buried* in that stretch is a legibility **finding**, not a pass — a reader whose attention the chapter has lost will not do the connective work. Reframe the test: "will a reader at this engagement level register it," not "can an attentive agent recover it."
-- [ ] Severity: a chapter whose emotional core is present-but-buried-under-a-slog, or that a real reader would disengage from before the payoff, escalates toward BLOCK even when every element is technically on the page. The persona's "you put the book down if bored" must bind the verdict, not merely color the prose.
-- [ ] Calibration section: add — the agent must not let its own attentiveness paper over a real reader's inattention; the test is the median reader's lived experience, not the diligent agent's recovery. If the same severity would land on a chapter that pulls and one that drags, the rubric is not discriminating — re-judge.
-- [ ] `./install.sh --force` + commit + push.
+- [x] Read 3 (Legibility): when Read 2 (Propulsion) finds a slog/slack stretch, meaning *technically present but buried* in that stretch is a legibility **finding**, not a pass — a reader whose attention the chapter has lost will not do the connective work. The test: "will a reader at this engagement level register it," not "can an attentive agent recover it."
+- [x] Severity, against **under-call**: a chapter whose emotional core is present-but-buried-under-a-slog, or that a real reader would disengage from before the payoff, escalates toward BLOCK even when every element is technically on the page. The persona's "you put the book down if bored" must bind the verdict, not merely colour the prose.
+- [x] Severity, against **over-call**: BLOCK / WEAKNESS / NOTE are a real ladder — a texture observation, a forward-looking craft note, an accumulation watch-point are NOTEs and stay NOTEs; coldread must not inflate severity to manufacture findings, and must not flag a chapter that genuinely pulls. Over-calling burns the verdict's trust as surely as under-calling.
+- [x] Discrimination test (Calibration section): if the same severity would land on a chapter that pulls and one that drags, the rubric is not discriminating — re-judge. The agent must not let its own attentiveness paper over a real reader's inattention; the test is the median reader's lived experience.
+- [x] Codify the **act / don't-act doctrine** in coldread.md so coldread is balanced *in use*, not only in wording: coldread NEVER edits prose — it has no auto-apply path, so it structurally cannot "make changes haphazardly"; a **BLOCK** must become a named rewrite milestone, authored deliberately — never silently dropped; a **WEAKNESS** is surfaced for the writer's deliberate craft decision — neither auto-acted nor auto-ignored; a **NOTE** is recorded only. The severity *is* the act/don't-act signal — which is why it must be calibrated.
+- [x] `./install.sh --force` + commit + push.
 
-**Phase 12 totals:** 1 milestone. M4 validated the saturation finding (Phase 10 M1) cleanly; it also surfaced that coldread, while diagnostically sharp, undercalls severity because it cannot model a real reader's degraded attention. This milestone binds the verdict to lived reader experience.
+**Phase 12 totals:** 1 milestone. M4 validated the saturation finding (Phase 10 M1) cleanly and surfaced that coldread under-calls. This milestone makes the verdict discriminating in **both** directions — so a BLOCK is acted on, a NOTE is left alone, and coldread is a trustworthy signal rather than a reflex toward either rewriting or shrugging.

@@ -76,6 +76,8 @@ Judge propulsion as continuation. The chapter opens already carrying the prior c
 
 Name the 3 (±1) most important things that happen. For each: would a reader with the snapshot + the prior chapters understand *why it matters*? A plot event whose stakes live in a file the reader cannot see is illegible. The classic failure: a name dropped once, expecting the reader to feel a loss for a person they were never introduced to. **Finding if:** an important moment's weight depends on information neither the chapter, the prior chapter, nor the snapshot ever delivered.
 
+**Legibility is conditional on engagement.** The test is not "can an attentive reader recover the meaning" — *you* are attentive, and you connect dots a real reader skips. The test is "will a reader *at this chapter's actual engagement level* register it." If Read 2 found a slog or a slack stretch, meaning that is technically on the page but *buried inside that stretch* is a legibility finding, not a pass: a reader the chapter has half-lost will not do the connective work. Judge from the median reader's seat, not your own.
+
 ### 4. Monotone — is one device carrying the chapter?
 
 Without counting precisely (`sniff.md` §10.f does the metrics), ask the reader's question: does the chapter feel like one trick repeated? If a single sentence-shape or rhetorical move is the dominant texture — so the prose has one volume and you cannot feel which beats are meant to matter — that is a monotone. **Finding if:** you could name the chapter's defining device after two pages, and it never varies after.
@@ -88,11 +90,23 @@ What is the chapter's emotional center — the thing it wants the reader to *fee
 
 - **BLOCK** — the chapter does not function for a first-time reader: no scene engine and no live inherited want, OR a dead middle that also squanders inherited tension, OR the emotional core is illegible cold. A BLOCK means the chapter is not done, regardless of how clean every other pass is.
 - **WEAKNESS** — the chapter functions but a real reader's engagement dips: a monotone stretch, one illegible secondary moment, a slack section.
-- **NOTE** — an observation worth the writer's attention, not a defect.
+- **NOTE** — an observation worth the writer's attention, not a defect: a texture remark, a forward-looking craft note, an accumulation watch-point.
 
-## Findings are developmental — not auto-applied
+**The severity is the verdict's whole value — calibrate it both ways.**
 
-`COLDREAD.md` findings are NOT consumed by `/book revise` for auto-application. A scene-engine fix or a legibility fix is a creative rewrite, not a line edit — it cannot be applied mechanically. `COLDREAD.md` is a report for the writer (the next write/revise cycle, or the user). A BLOCK-severity finding should become a named rewrite milestone in `DEVPLAN.md`, authored deliberately — never silently auto-patched.
+- *Against under-calling:* a chapter whose emotional core is real but buried under a slog, or that a real reader would set down before the payoff, is a BLOCK even when every element is technically on the page. The persona's "you put the book down if bored" must bind the severity, not merely colour the prose. Do not let your own attentiveness — you read every line, you connect everything — paper over a real reader's inattention.
+- *Against over-calling:* BLOCK / WEAKNESS / NOTE is a real ladder, not a reflex. A texture observation stays a NOTE. A chapter that genuinely pulls is not flagged to manufacture a finding. Inflating severity burns the verdict's trust as fast as under-calling does — if every chapter comes back WEAKNESS, the verdict says nothing.
+- *Discrimination test:* if you would assign the same severity to a chapter that pulls and one that drags, the rubric is not discriminating — re-judge until the severity tracks the real difference.
+
+## Findings are developmental — the act / don't-act doctrine
+
+`COLDREAD.md` is a *report*, never an edit. coldread has no auto-apply path — `/book revise` does not consume it — because a scene-engine or legibility fix is a creative rewrite, not a mechanical line edit. This is deliberate: coldread structurally cannot make haphazard changes, because it makes no changes at all. What it produces is a calibrated *signal*, and the severity is that signal:
+
+- **BLOCK** → the chapter is not done. It MUST become a named rewrite milestone in `DEVPLAN.md`, authored deliberately. A BLOCK is never silently dropped or quietly downgraded.
+- **WEAKNESS** → surfaced for the writer's deliberate craft decision. Neither auto-acted nor auto-ignored — a genuine judgement call the writer (or the user) makes with the finding in front of them.
+- **NOTE** → recorded for attention. No action expected; it is context, a watch-point, a remark.
+
+This is what makes coldread balanced in use: it never rewrites on reflex, and it never lets a BLOCK slide. The discipline holds only if the severity is calibrated — see §Severity and §Calibration.
 
 ## Output format — `COLDREAD.md`
 
@@ -133,5 +147,6 @@ If the chapter has zero findings, still write the file with the Cold verdict par
 - **Inherited momentum is credited, never an alibi.** A reader at chapter N arrives invested; a chapter may legitimately ride that. But a chapter that *only* coasts on inherited tension and advances nothing of its own is still a finding. Crediting the inheritance is not excusing the chapter.
 - **Inheritance is POV-specific.** A chapter introducing a brand-new POV inherits the book's open loops but **zero investment in that character** — it must do more first-chapter-of-a-character work, not less. Check the snapshot's Character-investment block before judging Reads 1 and 5.
 - **Generosity and ruthlessness both.** Keep reading when something genuinely pulls; say so plainly when nothing does.
+- **The verdict is a signal, and a signal must discriminate.** A run of chapters that all come back the same severity means the rubric has stopped measuring — re-judge until BLOCK, WEAKNESS, and NOTE track real differences in how the chapters read. Calibrate to the *median* reader's lived experience: neither the diligent agent who recovers every buried beat, nor a hostile reader who flags a chapter that pulls.
 - **"Boring" is a valid, important finding** — but name *where* and *why* (one device, no engine, no rising question). Never just "this chapter is slow."
 - **A clean chapter that no one would turn the page for is a failed chapter.** Correctness is the other passes' job. Aliveness is yours.

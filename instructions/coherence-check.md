@@ -60,12 +60,13 @@ Scope options:
 | O — Outline-to-Draft Coverage | Outlines already loaded for the scope; chapter drafts (re-use); `chapters/book-N/outline-deviation.md` if present. |
 | P — Cross-Substrate Sensory-Echo | `world/temporal-echoes.md` already loaded for A; chapter drafts (re-use). |
 | Q — Redundancy-with-Adjacent-Text | Chapter drafts only (re-use). |
+| T — First-Appearance Delivery | Re-use character sheets from D and chapter drafts from G/L. |
 
 **For scope `characters`:** load only rows D and skip all others.
 **For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
-**For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q only run if chapter drafts exist for the scope.
+**For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q and T only run if chapter drafts exist for the scope.
 
-### 2. Check Categories (19 checks)
+### 2. Check Categories (20 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
 
@@ -294,6 +295,21 @@ NOT BLOCKING — revise applies the trim or vary, with light authority (NOTE-lev
 #### Load files for R + S
 
 Same heuristic source: the active outline's `### Context Tags` header (always-loaded list); the per-chapter `**context:**` fields; the beat blocks following each chapter heading. No additional canon files needed beyond what's already loaded for L–Q.
+
+#### T. First-Appearance Delivery (WARNING)
+
+Checks D and I verify that a character is *consistent* and *cared about*; neither verifies that a character's introduction chapter actually *delivers* the premises the rest of the story leans on. A chapter can be fully canon-consistent and still omit a load-bearing trait — the canon stays intact, the chapter just never cashes it out, and a later payoff is left standing on nothing. (Ground Truth example: ch01 never established Noah as a lifelong player of the Game — a fact `world/level-0-reality/the-game.md` §Master Key Primitive depends on — and the coherence pass, asking "does canon support decades of play?", confirmed the canon and concluded "no problem". It checked the wrong layer: canon-consistency, not chapter-delivery.)
+
+**Runs only when chapter drafts exist for the scope.**
+
+**For each chapter draft that is a character's first POV chapter, or a major character's first substantial on-page appearance:**
+- Load the character sheet (`characters/foreground/` or `characters/midground/` — reuse those loaded for Check D).
+- From the sheet, identify the **3-5 load-bearing premises**: the role line, the central wound / arc engine, the defining physical or situational facts (disability, where and how they live, occupation), and the relationships the plot actively uses. Load-bearing = a later chapter, a planted payoff, or a canonical mechanism *depends* on the reader knowing it.
+- For each premise, verify the chapter renders it **on-page** — through action, dialogue, or sensory experience. It need not be stated outright, but it must be inferable from the page by a reader who has only the book.
+
+**Flag** each load-bearing premise absent from its character's introduction chapter as **WARNING**: "establishment gap at `chapters/<book>/chNN.md`: <character>'s introduction does not deliver <premise> (canon: `<file>`). A reader finishes the chapter without it." **Route to:** SMELL.md entry on the chapter — INLINE if a line or two can carry the premise, ANCHOR-NEEDED if it needs a new beat.
+
+This is delivery, not contradiction — WARNING, not BLOCKING. Escalate in triage if a documented later plant or reveal depends on the missing premise.
 
 ### 3. Output — Report to User
 

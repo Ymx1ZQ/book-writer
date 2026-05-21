@@ -15,6 +15,8 @@ That is correct for those checks — and it makes all of them unable to answer o
 
 `/book coldread` is the developmental-editor pass. It is the only check that reads cold. It does not verify correctness and it does not police line-craft — it asks whether the chapter has a reason to be turned page by page, and whether its most important moments land for someone reading the book and only the book.
 
+Even so, `/book coldread` is a *machine* approximation of the cold reader: the executing agent still comprehends holistically and cannot fully feel reading-speed friction. It narrows what a human cold-read must catch — it does not discharge it. A chapter is reader-validated only once a human has read it.
+
 ## Context discipline — READ THIS FIRST
 
 A reader at chapter N is not starting fresh and is not re-reading the whole book. They carry a *compressed memory* of everything so far. coldread models exactly that. The executing agent reads **only**:

@@ -65,6 +65,10 @@ PARALLEL PIPELINE — MERGE PHASE (run-merge-phase.sh, per chapter)
 
 `judge`, `integrate-anchors`, and `arbiter` were standalone `book-*` skills until Phase 11 consolidated the toolchain into this one skill. `judge` is cross-CLI: under Claude it routes to `instructions/judge.md`; under Codex it is the `codex/SKILL.md` variant installed to `~/.codex/skills/book/`.
 
+## The human cold-read gate
+
+The steps above are the *machine* pipeline. Completing them yields a **machine-checked** chapter — every enumerable check passed — not a *finished* one. The machine passes are structurally blind to what only a linear, committed, skeptical human reading catches: referential friction felt at reading speed, implausibility a cooperative reader rationalizes away, jargon the agent silently decodes, and whether the chapter is *alive* on the page. A chapter is reader-validated only after a human has read it at speed. The machine pipeline's job is to make that human read **cheap** — to exhaust the enumerable so the human's attention lands only where a human is required. Do not report a machine-checked chapter as "done" or "clean"; report it as machine-checked and awaiting human cold-read.
+
 **Pre-draft context symmetry:** the chapter-writer agent enforces beat↔context symmetry before drafting (chapter-writer Step 2.6 — STOP on missing files, advisory on orphans). `coherence-check` flags drift on already-written outlines as WARNING (classes R + S). No standalone subcommand: the symmetry check lives inside `chapter-writer` (write-time) and `coherence-check` (audit-time).
 
 ## Execution

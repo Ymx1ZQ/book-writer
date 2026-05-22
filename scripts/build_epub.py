@@ -31,7 +31,15 @@ DEFAULT_CSS = SCRIPT_DIR / "epub.css"
 
 
 def md_to_html(text: str) -> str:
-    return markdown.markdown(text, extensions=["extra", "smarty"])
+    html = markdown.markdown(text, extensions=["extra", "smarty"])
+    # Game / terminal text uses markdown backticks, which the library renders
+    # as <code>. <code> means "a fragment of computer code" — TTS / audiobook
+    # readers (e.g. ElevenReader) skip it, dropping the Game commands from the
+    # narration. The commands are diegetic text the listener must receive, so
+    # re-tag them as a narratable styled span. Inline backticks emit bare
+    # <code> with escaped text and no nested tags, so a string replace is safe.
+    html = html.replace("<code>", '<span class="game">').replace("</code>", "</span>")
+    return html
 
 
 def first_h1_title(md_text: str) -> str:

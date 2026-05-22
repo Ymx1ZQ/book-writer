@@ -34,9 +34,10 @@ h1 + p::first-letter {
 
 em { font-style: italic; }
 
-/* Game / terminal text (markdown backticks). monospace, serif fallback
-   so it never renders blank on a reader that lacks a monospace font. */
-code {
+/* Game / terminal text — markdown backticks, re-tagged from <code> to a
+   narratable <span class="game"> in build_epub.py (TTS / audiobook readers
+   skip <code>). monospace with a serif fallback. */
+.game {
   font-family: monospace, serif;
   color: inherit;
 }

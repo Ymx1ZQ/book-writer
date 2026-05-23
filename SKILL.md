@@ -32,6 +32,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `judge <manifest> <out>` | Cross-model chapter comparator → rank-only JSON (parallel-pipeline merge phase) | `/book judge manifest.json out.json` |
 | `integrate-anchors <json>` | Integrate winning-draft anchors from loser drafts (parallel-pipeline merge phase) | `/book integrate-anchors aggregated.json` |
 | `arbiter <book> <ch>` | Autonomous resolution of `*-PENDING.md` trade-offs (parallel-pipeline merge phase) | `/book arbiter book-1 ch01` |
+| `sweep <book>` | Archive terminal review artifacts (SMELL/REVIEW/COLDREAD/PROOFREAD/PENDING) for closed chapters → `chapters/<book>/archive/`. Auto-invoked from `writer.md` Session Start and the cycle scripts. | `/book sweep book-1` |
 
 ## The Pipeline
 
@@ -95,6 +96,7 @@ When a command is received:
    - `judge` → `instructions/judge.md`
    - `arbiter` → `instructions/arbiter.md`
    - `integrate-anchors` → `instructions/integrate-anchors.md`
+   - `sweep` → `instructions/sweep.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit all changes:

@@ -25,6 +25,7 @@ Argument: `<book>` (book-1, book-2, book-3).
 
 Before writing any chapter:
 
+0. **Terminal sweep** — run `bash <repo-root>/sweep-chapter-archive.sh <book>` to archive residual review artifacts (SMELL/REVIEW/COLDREAD/PROOFREAD/PENDING) for already-closed chapters. Silent if nothing to do. Any log output is informational only — proceed regardless. The script is idempotent and fail-safe (see `instructions/sweep.md` §Safety properties). This keeps `chapters/<book>/` from accumulating last-cycle residue across batches.
 1. Read `chapters/<book>/DEVPLAN.md` — find the next uncompleted chapter
 2. Read `chapters/<book>/state.md` — the ENTIRE most recent "After Chapter N" section
 3. If chapters exist, read the last 2 written chapter files (style/voice continuity)

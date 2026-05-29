@@ -53,7 +53,17 @@ Record, per scene or stretch, the verdict: **intended-heavy** (the project asked
 
 ## Category 0 — Register leak (runs first, register-independent)
 
-Before the flow pass, scan the whole chapter against the **Forbidden patterns** list extracted in Step 0 item 6 (`register-locks.md` §<this level>). This is a literal / near-literal pattern match, not a flow judgment:
+**Deterministic backbone — run this FIRST and treat its output as authoritative.** Before any LLM reading, run the deterministic linter (zero-LLM, fully reproducible — it does not miss literal tics the way an LLM scan can):
+
+```
+python3 ~/.claude/skills/book/scripts/register_leak_lint.py <chapter_file> --level <reality|ark|dome>
+```
+
+Pass the chapter's level (determined in Step 0). Every `LEAK …` line it prints is an **authoritative SAFE-CUT register-leak finding** — emit a Category-0 SMELL entry for each, verbatim location and pattern. The linter covers the machine-checkable subset of `register-locks.md` (the "X was the X" tautology family + compliance-vocabulary blocklist for Reality/Ark; Dome has no deterministic patterns). *(Rationale: a cold validation, project Phase 44 M3, showed the LLM scan alone missed `the lines were the lines` in a Reality chapter that this linter catches instantly — so the literal half of Category 0 must not rely on LLM judgment.)*
+
+**Then** do the LLM semantic scan below for the patterns the linter cannot catch (Mediterranean warmth leaking into the Dome, measurement-substitution that erases POV agency, apophatic chains of 4+). Together: deterministic for the literal, LLM for the semantic.
+
+The LLM semantic scan, against the **Forbidden patterns** list extracted in Step 0 item 6 (`register-locks.md` §<this level>) — a literal / near-literal pattern match, not a flow judgment:
 
 - **"X was the X" tautologies** (Reality) — `the cord was where the cord was`, `the kitchen kept its kitchen sounds`, `the plate was where she had set it`, `the kitchen was the same kitchen`, and any `<noun> … was … <same noun>` stasis construction. These are **Dome-narrator** tics; in a Reality chapter they read as the wrong tonal world.
 - **Apophatic chains of 4+** consecutive "She did not ___ / He did not ___" sentences in a Reality or Ark chapter (the sustained apophatic accumulation is Dome-only).

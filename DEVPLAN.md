@@ -739,6 +739,14 @@ The audit of the pipeline (2026-05-28) found the QC matrix exhausts the *enumera
 - [x] SKILL.md: add `adjacency` command-table row + routing-map entry; insert into "The Pipeline" order (adjacency runs at batch/window level, after per-chapter QC).
 - [x] `instructions/revise.md`: add `adjacency` to the `Source:` enumeration (no logic change — uniform by `Source:`).
 
+### M4 (B-i hardening): deterministic register-leak linter — the reliable backbone of Category 0
+
+> **Trigger:** the Phase-44 M3 cold validation empirically showed the `readability` LLM Category-0 scan reporting a Reality chapter "clean" while MISSING `the lines were the lines` (a leak a one-line grep caught instantly). Literal-pattern detection must not depend on LLM judgment.
+
+- [x] `scripts/register_leak_lint.py` — zero-LLM, deterministic. Implements the machine-checkable subset of `register-locks.md`: the "X was the X" stasis-tautology family (4 regex forms covering all documented examples — noun-repeat, where-the-X, kept-its-X, where-pronoun-had) + the compliance-vocabulary blocklist, gated per level (Reality/Ark check; Dome has none — its forbidden list is semantic). `--level` arg; exit 1 on any hit. `not`-guard avoids false positives like "was not the voice he had meant".
+- [x] `instructions/readability.md` Category 0: run the linter FIRST as the authoritative backbone (every `LEAK` line → SAFE-CUT entry), THEN the LLM semantic scan for what the linter cannot catch (warmth-in-Dome, agency-erasure, apophatic 4+). Deterministic for the literal, LLM for the semantic.
+
 **Operational:**
 - [x] `./install.sh --force` from the skill dev tree to deploy.
+- [x] Smoke test the linter: against pre-fix ch04 (git 7f32e4d) it must flag the documented tautologies; against current ch04 it must report 0; against a Dome chapter it must report "no deterministic patterns".
 - Orchestrator wiring (adjacency over [prev,current] at `run-merge-phase.sh` step 8.5a3) lives in project Phase 44 (the script is in the project repo).

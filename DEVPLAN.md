@@ -659,3 +659,49 @@ The M4 evidence was an **under-call**: the user's lived reaction to ch03 was BLO
 - [x] `./install.sh --force` + commit + push.
 
 **Phase 12 totals:** 1 milestone. M4 validated the saturation finding (Phase 10 M1) cleanly and surfaced that coldread under-calls. This milestone makes the verdict discriminating in **both** directions — so a BLOCK is acted on, a NOTE is left alone, and coldread is a trustworthy signal rather than a reflex toward either rewriting or shrugging.
+
+---
+
+## Phase 13 — Gap-coverage checks: readability/flow, motif, factcheck, sensitivity (2026-05-28)
+
+> **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 / 10 / 11 / 12 precedent.
+> **Paired with:** project `ground-truth` DEVPLAN **Phase 42** (pipeline wiring + clean QC re-run). This skill phase builds the four new detectors; Phase 42 wires them into the orchestrators and re-runs them on Book 1.
+
+**Status: COMPLETE (2026-05-29).** All four detectors (`readability`, `motif`, `factcheck`, `sensitivity`) authored, SKILL.md dispatch + pipeline order updated, `revise.md` `Source:` enumeration + `VERIFY` handling extended, deployed via `./install.sh --force`, and smoke-validated through the live Book-1 ch01–ch04 QC re-run (Phase 42 operational). M1–M6 done.
+
+The audit of the pipeline (2026-05-28) found the QC matrix exhausts the *enumerable* defects but leaves four machine-addressable gaps uncovered, plus the user's explicit new requirement: the book must stay **scorrevole** — a brick is a defect except where a heavy register is *deliberate*. Two further gaps (beat↔voice alignment, adaptive beta-reader "why would a reader care?") stay HUMAN by nature and are out of scope. Each new detector follows the existing two-channel routing (canon → DEVPLAN milestone via `fix`; prose → `SMELL.md` INLINE via `revise`) and the voice-floor protection doctrine — **none of these may flatten an intended voice.**
+
+> **Integration design (refined 2026-05-29 — chosen over separate artifact files).** The four detectors do **not** introduce new artifact files (no `READABILITY.md`/`MOTIF.md`/…). They append prose-side findings to the shared **`SMELL.md`** sink with a `Source: <detector>` tag (exactly as `coherence`/`continuity` already do), plus a per-detector transparency **audit section** appended to `SMELL.md` (mirroring sniff's "Stylistic Device Audit"). Canon-side findings append a phase to `DEVPLAN.md` for `/book fix`. Consequence: `revise` (consumes SMELL.md uniformly by `Source:`), `arbiter` (resolves `SMELL-PENDING.md`), and `sweep` (archives `SMELL.md`/`SMELL-PENDING.md`) need **zero logic changes** — only a one-line `Source:` enumeration mention in `revise.md`. This is strictly more consistent with `world/canon-hierarchy.md` two-channel doctrine than separate files would be.
+
+### M1: `instructions/readability.md` — register-aware flow pass (→ SMELL.md, `Source: readability`)
+
+- [ ] New detector. Reads `world/tones.md`, `world/prose-rules.md`, `world/writing-checklists.md`, and `characters/notes/voice-samples.md` to map which narrative levels/sections carry an **intended-heavy** register vs the **default** register.
+- [ ] Flags only *accidental* brick outside intended-heavy registers: run-on sentence-length streaks, clause-stacking / subordinate-clause depth, referential overload (antecedent density per paragraph), unbroken exposition blocks, paragraph mass, un-glossed-term density at reading speed.
+- [ ] Every finding tagged `Register: default | intended-heavy`. Only `default`-register findings become INLINE (SAFE-CUT / TRADE-OFF); `intended-heavy` stretches downgrade to ACCEPT/SAFE-KEEP so deliberate density is never penalised. Inherits voice-floor protection (a finding that would erase a voice signature is a TRADE-OFF, never auto-cut). Always emits a "Readability / Flow Audit" section in SMELL.md (sentence-length & paragraph-mass metrics per scene) for transparency, even at zero flags.
+
+### M2: `instructions/motif.md` — symbolic / motif coherence (→ SMELL.md prose / DEVPLAN canon)
+
+- [ ] New detector. Reads `plot/motif-tracking.md`, `plot/prestige-inventory.md`, and plant/payoff tracking. Per motif instance: checks direction (motif not used *inverted* vs its established meaning), that any evolution is intentional, and payoff alignment.
+- [ ] Two-channel routing: canon drift (motif meaning contradicts the tracker) → DEVPLAN milestone for `fix`; prose-side misuse → `SMELL.md` INLINE (`Source: motif`) for `revise`. Conservative: an ambiguous symbolic reading is SAFE-KEEP, not a flag. Emits a "Motif Coherence Audit" section listing every tracked motif's instances and verdict.
+
+### M3: `instructions/factcheck.md` — active real-world accuracy (→ SMELL.md / DEVPLAN / VERIFY-PENDING)
+
+- [ ] New detector that **extends, does not duplicate**, Phase 8's reactive in-prose factual-claim flag inside `sniff`. `sniff` stays the reactive guardrail; `factcheck` is the dedicated batch verifier: extract real-world claims → verify against `world/timeline.md` (tech-chains coherent with the in-world year), geography, physics/medicine/law/finance.
+- [ ] Auto-resolvable canon contradictions route to DEVPLAN/SMELL normally; non-machine-verifiable claims become `Flagging: VERIFY` entries surfaced to `SMELL-PENDING.md` for human/web confirmation rather than silent auto-edits. Emits a "Fact-Check Audit" section (claim → bucket: anchored / verified / VERIFY).
+
+### M4: `instructions/sensitivity.md` — stereotype / dated-language / representation (→ SMELL.md, advisory-first)
+
+- [ ] New detector, conservative and advisory-first: stereotypes, caricature, dated or ableist language, representation gaps. Findings default to `SMELL-PENDING.md` (TRADE-OFF) for human decision; only unambiguous dated-term swaps may auto-apply (SAFE-CUT). Reads `characters/notes/narrator-boundaries.md` to respect per-POV constraints. Emits a "Sensitivity Audit" section.
+
+### M5: SKILL.md — dispatch, routing, pipeline order
+
+- [ ] Add commands-table rows for `readability`, `motif`, `factcheck`, `sensitivity`; add their `instructions/<cmd>.md` entries to the Execution routing map.
+- [ ] Update "The Pipeline" writing-loop order to: `write → sniff → factcheck → review → motif → sensitivity → coldread-enum → coldread-filter → readability → proofread → revise → snapshot`. (Readability runs late, just before proofread, so it judges near-final prose; factcheck early next to sniff; motif/sensitivity in the editorial cluster.)
+
+### M6: consumer doc-touch — revise.md
+
+- [ ] `instructions/revise.md`: extend the `Source:` enumeration (currently `sniff` / `coherence` / `continuity`) to also list `readability` / `motif` / `factcheck` / `sensitivity`, and add `VERIFY` alongside the SMELL flagging values that surface to `SMELL-PENDING.md`. **No logic change** — processing is already uniform by `Source:`. `sweep.md` and `arbiter.md` are unchanged (they already operate on `SMELL.md` / `SMELL-PENDING.md` generically).
+
+**Operational (run after the milestones above):**
+- `./install.sh --force` from the skill dev tree to deploy (never edit the installed copy).
+- Smoke test each new subcommand once on `ground-truth` book-1 ch01; confirm each appends correctly-`Source`-tagged SMELL.md entries + its audit section, and the `Register:` tag (readability) behaves on a known intended-heavy passage.

@@ -28,7 +28,13 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `pdf <book> [ch]` | Render a chapter or a whole book to PDF | `/book pdf book-1 ch01` |
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 | `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
-| `coldread <book> [ch]` | First-time-reader developmental pass → COLDREAD.md (scene engine, propulsion, legibility — reads with NO canon loaded) | `/book coldread book-1 ch03` |
+| `factcheck <book> [ch]` | Active real-world accuracy: enumerate every external-world claim → verify each → SMELL.md (`Source: factcheck`) + VERIFY items to PENDING | `/book factcheck book-1 ch01` |
+| `motif <book> [ch]` | Symbolic / motif coherence: motif not inverted/drifted, evolution intentional, payoff lands → SMELL.md (`Source: motif`) + canon → DEVPLAN | `/book motif book-1 ch01` |
+| `sensitivity <book> [ch]` | Conservative representation / dated-language pass (advisory-first, diegetic-intent gated) → SMELL.md (`Source: sensitivity`) | `/book sensitivity book-1 ch01` |
+| `readability <book> [ch]` | Register-aware flow / "scorrevolezza" pass — flags the accidental brick (slog, clause-stacking, paragraph-mass) only outside intended-heavy registers → SMELL.md (`Source: readability`) | `/book readability book-1 ch01` |
+| `coldread-enum <book> [chNN]` | Paranoid defect cataloguer; canon-blind cold-read producing raw finding catalog → COLDREAD.md | `/book coldread-enum book-1 ch04` |
+| `coldread-filter <book> [chNN]` | Adversarial triage of coldread-enum output into SMELL.md entries | `/book coldread-filter book-1 ch04` |
+| `snapshot <book> [chNN]` | Generate or update reader-state snapshot for a chapter → `chapters/coldread-state/<book>-<chNN>.md` | `/book snapshot book-1 ch04` |
 | `judge <manifest> <out>` | Cross-model chapter comparator → rank-only JSON (parallel-pipeline merge phase) | `/book judge manifest.json out.json` |
 | `integrate-anchors <json>` | Integrate winning-draft anchors from loser drafts (parallel-pipeline merge phase) | `/book integrate-anchors aggregated.json` |
 | `arbiter <book> <ch>` | Autonomous resolution of `*-PENDING.md` trade-offs (parallel-pipeline merge phase) | `/book arbiter book-1 ch01` |
@@ -49,10 +55,16 @@ PRE-WRITING
 WRITING LOOP (repeat per batch)
   6. /book write book-1        → write 5 chapters
   7. /book sniff book-1        → adversarial skeptical-reader → SMELL.md
+ 7b. /book factcheck book-1    → active external-world claim verification → SMELL.md (Source: factcheck)
   8. /book review book-1       → editorial review → REVIEW.md
-  9. /book coldread book-1     → first-time-reader developmental pass → COLDREAD.md
+ 8b. /book motif book-1        → symbolic/motif coherence → SMELL.md (Source: motif) + canon → DEVPLAN
+ 8c. /book sensitivity book-1  → representation/dated-language (advisory) → SMELL.md (Source: sensitivity)
+  9. /book coldread-enum book-1 → paranoid defect catalog → COLDREAD.md
+ 9b. /book coldread-filter book-1 → triage to SMELL.md entries
+ 9c. /book readability book-1  → register-aware flow pass → SMELL.md (Source: readability)
  10. /book proofread book-1    → line-level review → PROOFREAD.md
- 11. /book revise book-1       → apply SMELL + REVIEW + PROOFREAD fixes to prose
+ 11. /book revise book-1       → apply SMELL (sniff+factcheck+motif+sensitivity+readability) + REVIEW + PROOFREAD fixes to prose
+ 11b. /book snapshot book-1    → refresh reader-state snapshot for next chapter
 
 BETWEEN BOOKS
  12. /book compact all         → post-cycle cleanup
@@ -92,15 +104,22 @@ When a command is received:
    - `pdf` → `instructions/pdf.md`
    - `epub` → `instructions/epub.md`
    - `sniff` → `instructions/sniff.md`
-   - `coldread` → `instructions/coldread.md`
+   - `factcheck` → `instructions/factcheck.md`
+   - `motif` → `instructions/motif.md`
+   - `sensitivity` → `instructions/sensitivity.md`
+   - `readability` → `instructions/readability.md`
+   - `coldread-enum` → `instructions/coldread-enum.md`
+   - `coldread-filter` → `instructions/coldread-filter.md`
+   - `snapshot` → `instructions/snapshot.md`
    - `judge` → `instructions/judge.md`
    - `arbiter` → `instructions/arbiter.md`
    - `integrate-anchors` → `instructions/integrate-anchors.md`
    - `sweep` → `instructions/sweep.md`
 3. **Follow the instruction file exactly.** The instruction file IS the skill — this dispatcher just routes to it.
 4. **Pass all remaining arguments** to the instruction file's process.
-5. **After the instruction completes**, commit all changes:
-   - Stage all modified and new files: `git add -A`
+5. **After the instruction completes**, commit changes — **scoped to this skill's outputs only** (Phase 41 M13 hygiene):
+   - The instruction file declares which files this skill produces/modifies. Stage ONLY those declared output paths via targeted `git add <path1> <path2> ...`.
+   - If the instruction does not explicitly declare outputs, use `git diff --name-only` on the working tree to enumerate files this skill *actually* touched, and stage those — DO NOT use `git add -A` (it captures dirty work unrelated to this skill; this caused the Phase 40 M7 commit-bundling incident).
    - Commit with message: `book <command> <args>: <one-line summary of what was done>`
    - Do NOT push (the caller decides when to push).
 

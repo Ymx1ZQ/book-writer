@@ -4,7 +4,7 @@ Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PR
 
 **Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the entry's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving any specific draft choice — and not defending prior decisions. This applies regardless of who authored the finding (past you, the writer-side review pass, an external reviewer): findings are signal; you decide the response on merit. No competition.
 
-**Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, OR `continuity` (each entry tags its origin via a `Source:` field). All three sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
+**Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, `continuity`, `factcheck`, `motif`, `sensitivity`, OR `readability` (each entry tags its origin via a `Source:` field). All these sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
 
 **Milestone format:** see `instructions/milestone-format.md`. `/book revise` parses only `- [ ]` items in REVIEW.md and PROOFREAD.md (and SMELL.md INLINE entries). Operational items in plain-bullet form are ignored.
 
@@ -31,7 +31,9 @@ Parse all entries. Each entry now carries TWO independent classifications (Phase
 - `Routing:` field — one of `INLINE`, `ANCHOR-NEEDED`, `ACCEPT` (which channel applies the fix)
 - `Flagging:` field — one of `SAFE-CUT`, `TRADE-OFF`, `SAFE-KEEP` (whether to apply at all)
 
-Each entry may also include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`); processing is uniform regardless of source.
+Each entry may also include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`, `factcheck`, `motif`, `sensitivity`, `readability`); processing is uniform regardless of source.
+
+`factcheck` may also emit a `Flagging: VERIFY` value (a claim the agent could not confirm). Treat `VERIFY` exactly like `TRADE-OFF`: **never auto-apply** — surface to `chapters/<book>/SMELL-PENDING.md` with `Status: pending — verification required` so a human/web check resolves it. `readability` entries carry an extra `Register:` field (`default` / `intended-heavy`); only `default`-register INLINE×SAFE-CUT entries auto-apply (an `intended-heavy` entry should already be SAFE-KEEP).
 
 Apply rules:
 - **INLINE × SAFE-CUT** — process like editorial SAFE-CUT (look for `Suggested action`, apply, mark Fixed).

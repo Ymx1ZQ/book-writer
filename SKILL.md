@@ -35,6 +35,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `coldread-enum <book> [chNN]` | Paranoid defect cataloguer; canon-blind cold-read producing raw finding catalog → COLDREAD.md | `/book coldread-enum book-1 ch04` |
 | `coldread-filter <book> [chNN]` | Adversarial triage of coldread-enum output into SMELL.md entries | `/book coldread-filter book-1 ch04` |
 | `snapshot <book> [chNN]` | Generate or update reader-state snapshot for a chapter → `chapters/coldread-state/<book>-<chNN>.md` | `/book snapshot book-1 ch04` |
+| `adjacency <book> [chNN] [chNN-chMM]` | Cross-chapter pass over a window of consecutive chapters: shape-repetition / idiolect-collision / dramatic-irony legibility → SMELL.md (`Source: adjacency`); structural findings → DEVPLAN for the user | `/book adjacency book-1 ch03` |
 | `judge <manifest> <out>` | Cross-model chapter comparator → rank-only JSON (parallel-pipeline merge phase) | `/book judge manifest.json out.json` |
 | `integrate-anchors <json>` | Integrate winning-draft anchors from loser drafts (parallel-pipeline merge phase) | `/book integrate-anchors aggregated.json` |
 | `arbiter <book> <ch>` | Autonomous resolution of `*-PENDING.md` trade-offs (parallel-pipeline merge phase) | `/book arbiter book-1 ch01` |
@@ -63,8 +64,9 @@ WRITING LOOP (repeat per batch)
  9b. /book coldread-filter book-1 → triage to SMELL.md entries
  9c. /book readability book-1  → register-aware flow pass → SMELL.md (Source: readability)
  10. /book proofread book-1    → line-level review → PROOFREAD.md
- 11. /book revise book-1       → apply SMELL (sniff+factcheck+motif+sensitivity+readability) + REVIEW + PROOFREAD fixes to prose
+ 11. /book revise book-1       → apply SMELL (sniff+factcheck+motif+sensitivity+readability+adjacency) + REVIEW + PROOFREAD fixes to prose
  11b. /book snapshot book-1    → refresh reader-state snapshot for next chapter
+ 11c. /book adjacency book-1 chNN → cross-chapter pass over [ch(NN-1), chNN]: shape/idiolect/irony-legibility → SMELL.md (structural → user). Runs once the chapter is final, against its predecessor.
 
 BETWEEN BOOKS
  12. /book compact all         → post-cycle cleanup
@@ -111,6 +113,7 @@ When a command is received:
    - `coldread-enum` → `instructions/coldread-enum.md`
    - `coldread-filter` → `instructions/coldread-filter.md`
    - `snapshot` → `instructions/snapshot.md`
+   - `adjacency` → `instructions/adjacency.md`
    - `judge` → `instructions/judge.md`
    - `arbiter` → `instructions/arbiter.md`
    - `integrate-anchors` → `instructions/integrate-anchors.md`

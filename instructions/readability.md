@@ -47,8 +47,26 @@ Before reading the chapter, read the project's tonal/style canon and build a map
 3. `characters/notes/voice-samples.md` — the POV character's voice signature. A naturally maximalist or recursive voice is an intended register, not a brick.
 4. `chapters/<book>/writing-notes.md` — per-chapter intentional techniques and register locks. **This is the strongest signal**: a stretch the writing-notes names as deliberately heavy is intended-heavy by default.
 5. `chapters/<book>/outline.md` — the chapter's beat entry; an outline tag like "deliberately disorienting / airless / claustrophobic prose here" marks an intended-heavy stretch.
+6. `world/register-locks.md` §<this chapter's level> — the **explicit forbidden-pattern catalog** for the chapter's narrative level (Dome / Ark / Reality). Extract the verbatim **Forbidden patterns** list (e.g. Reality forbids "X was the X" tautologies like *"the cord was where the cord was"* / *"the plate was where she had set it"*, apophatic chains of 4+, compliance-system vocabulary). This list gates **Category 0** below — it is a hard, level-specific blocklist, not a flow heuristic.
 
-Record, per scene or stretch, the verdict: **intended-heavy** (the project asked for weight here) or **default** (the project expects flow here). Findings only fire in **default** stretches.
+Record, per scene or stretch, the verdict: **intended-heavy** (the project asked for weight here) or **default** (the project expects flow here). The six flow categories only fire in **default** stretches. **Category 0 (register leak) is register-independent** — a forbidden cross-level pattern is a breach wherever it appears in a chapter of the wrong level, intended-heavy or not.
+
+## Category 0 — Register leak (runs first, register-independent)
+
+Before the flow pass, scan the whole chapter against the **Forbidden patterns** list extracted in Step 0 item 6 (`register-locks.md` §<this level>). This is a literal / near-literal pattern match, not a flow judgment:
+
+- **"X was the X" tautologies** (Reality) — `the cord was where the cord was`, `the kitchen kept its kitchen sounds`, `the plate was where she had set it`, `the kitchen was the same kitchen`, and any `<noun> … was … <same noun>` stasis construction. These are **Dome-narrator** tics; in a Reality chapter they read as the wrong tonal world.
+- **Apophatic chains of 4+** consecutive "She did not ___ / He did not ___" sentences in a Reality or Ark chapter (the sustained apophatic accumulation is Dome-only).
+- **Compliance-system vocabulary** in Reality (`compliance nudge`, `deniable band`, `within parameters`, `measurement-substitution-for-feeling` that erases POV agency) — those belong to the Dome.
+- Symmetrically, the level's own forbidden list from `register-locks.md` (Dome forbids Mediterranean-warmth leaks; Ark forbids apophatic chains + compliance language; etc.).
+
+A Category-0 hit is a **breach, not a trade-off**. It does NOT get the three-question / register-floor treatment the flow categories get — the intent is already encoded in `register-locks.md`, so the pattern is removed:
+
+- **Flagging: SAFE-CUT. Routing: INLINE.** (Never SAFE-KEEP, never TRADE-OFF.)
+- `Category: 0 — Register leak (<pattern> vs register-locks §<LEVEL>)`
+- Suggested action: rephrase to the level's own register (re-rhythm / concrete varied prose for Reality), preserving meaning — do not merely delete the sentence if it carries a beat.
+
+If `register-locks.md` is absent for the project, skip Category 0 and note it in the audit ("Register-leak scan: skipped — no register-locks.md").
 
 ## The six friction categories
 
@@ -118,13 +136,14 @@ Register map (from Step 0): <scene → intended-heavy | default>
 | Interior collapse (l.150-178) | intended-heavy (writing-notes §register-lock) | 38w | 9 | 14 sentences | SAFE-KEEP — deliberate airlessness |
 
 Stretches flagged: N. Stretches protected as intended-heavy: M.
+Register-leak scan (Category 0, vs register-locks §<LEVEL>): K hits.
 ```
 
 ## Steps for the executing agent
 
 1. Resolve the chapter file (as sniff Step 1).
-2. **Step 0 — build the register map** from the project tone/style/voice/writing-notes/outline files. This gates everything.
-3. Read the chapter once at reading-pace, noticing where you labor. Mark stretches.
+2. **Step 0 — build the register map** from the project tone/style/voice/writing-notes/outline files AND extract the chapter level's Forbidden-patterns list from `register-locks.md` (item 6). This gates everything.
+3. **Category 0 first — register-leak scan.** Match the whole chapter against the level's forbidden-pattern list; every hit is a SAFE-CUT / INLINE breach finding. Then read the chapter once at reading-pace, noticing where you labor. Mark stretches.
 4. For each labored stretch, compute the Step 0 register verdict; if intended-heavy, it is SAFE-KEEP — do not flag. If default, run the six categories and the three-question test.
 5. **Pre-step archive:** SMELL.md is shared. Do NOT archive/overwrite it — append. (Archival is handled once per cycle by sniff's Step 5 or by sweep; readability only appends its own `Source: readability` entries and its audit section. If a prior readability audit section exists from this same cycle, replace that section only.)
 6. Append entries + the Readability / Flow Audit section to `chapters/<book>/SMELL.md`.

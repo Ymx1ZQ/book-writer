@@ -705,3 +705,40 @@ The audit of the pipeline (2026-05-28) found the QC matrix exhausts the *enumera
 **Operational (run after the milestones above):**
 - `./install.sh --force` from the skill dev tree to deploy (never edit the installed copy).
 - Smoke test each new subcommand once on `ground-truth` book-1 ch01; confirm each appends correctly-`Source`-tagged SMELL.md entries + its audit section, and the `Register:` tag (readability) behaves on a known intended-heavy passage.
+
+## Phase 14 — Close the two cold-read defect-detection gaps: register-leak detection + cross-chapter adjacency (2026-05-29)
+
+> **Execution mode:** IDD fallback, per prior precedent.
+> **Paired with:** project `ground-truth` DEVPLAN **Phase 44** (wires the adjacency detector into `run-merge-phase.sh` over the [prev, current] window).
+
+**Trigger.** A human cold-read of Book-1 ch01–ch04 (project Phase 43) surfaced three defect classes; the user asked which the pipeline catches on its own. Audit answer: of the three, **one is prevented at write time but not detected post-hoc, and two are structurally invisible to the per-chapter QC matrix.**
+
+| Defect class | Example | Pipeline status BEFORE Phase 14 |
+|---|---|---|
+| 1. Register leak (cross-level narrator tic, e.g. "X was the X" tautology in a Reality chapter) | ch04 | **Prevented** at write time (`chapter-writer` loads `register-locks.md` as a hard constraint) but **undetected** post-hoc — `readability` read only `tones.md`, not the explicit forbidden-pattern list, so a leak that slips the writer ships clean (this is exactly why ch04's leaks survived the Phase 42 QC re-run; only the human caught them). |
+| 2. Idiolect collision | the same involuntary-body formula ("without deciding") reused verbatim across Noah / Lena / Roe, flattening three canon-distinct idiolects | **Invisible** — every analyst is per-chapter; none compares POV voice signatures across chapters. |
+| 3. Shape-repetition / dramatic-irony-not-landing | ch03 reads as a repeat of ch02 because the ch02→ch03 braid (Lena deletes Roe's record; `BA-009` is the shared junction) is unsignposted, so the first dramatic irony is inert | **Invisible** — no analyst reads consecutive chapters together or checks a planned `reader-journey.md` irony for legibility. |
+
+**Decision.** Class 1 → close the **detection** gap by wiring `register-locks.md` into the `readability` detector (B-i). Classes 2 & 3 → build a new **cross-chapter adjacency** detector (B-ii). Classes 2 & 3 remain *partly* human by nature (irony-landing is a reader judgment); the detector raises the floor — it flags the candidates a human would otherwise have to catch unaided, and routes the *structural* (un-auto-fixable) ones to a DEVPLAN/PENDING channel for the user, never auto-reshaping a chapter.
+
+### M1 (B-i): wire `register-locks.md` into `readability` — register-leak detection
+
+- [x] `instructions/readability.md` Step 0: additionally load `world/register-locks.md` §<this chapter's level> and extract its **Forbidden patterns** list (the explicit phrase/pattern catalog, e.g. Reality's "X was the X" tautologies + compliance-system vocabulary).
+- [x] Add **Category 0 — Register leak** ahead of the six flow categories: a literal/near-literal scan for this level's forbidden patterns. A hit is a **breach, not a trade-off** → `SAFE-CUT` / `INLINE` (the leak is removed; it is never SAFE-KEEP, because register-locks already encodes the intent). Distinct from the flow categories, which stay register-gated.
+- [x] The Flow Audit section gains a one-line "Register-leak scan: N hits against register-locks §<LEVEL>" so the scan is visible even at zero hits.
+
+### M2 (B-ii): new `instructions/adjacency.md` — cross-chapter detector
+
+- [x] New analyst. Reads a **window of consecutive chapters** (default: the just-written chapter + its immediate predecessor) plus `plot/reader-journey.md` (intended reader-knowledge / dramatic-irony per chapter), `characters/notes/voice-samples.md` + `narrator-boundaries.md` (per-POV distinct idiolects), and `plot/motif-tracking.md` (level per chapter).
+- [x] Flags three classes, each with a high burden of proof: **(a) shape repetition** — adjacent chapters share too-close a beat-skeleton without the rhyme being load-bearing; **(b) idiolect collision** — a signature device/phrasing reused verbatim across different POV characters where canon assigns each a distinct tic; **(c) dramatic-irony legibility** — where `reader-journey.md` declares an irony/reader-knowledge state for the pair, check the prose actually makes it legible to a first-time reader.
+- [x] **Two-channel + three-tier routing.** Prose-side micro-fixes (idiolect reword; a one-line bridge to light an irony) → `SMELL.md` (`Source: adjacency`), INLINE/SAFE-CUT or TRADE-OFF. **Structural** findings (deep beat-order reshape) are **never auto-applied** — they route to a `DEVPLAN.md` phase / `SMELL-PENDING.md` for the **user**, honoring the "don't hand-reshape QC-closed chapters" doctrine. Emits an "Adjacency Audit" section (window, per-pair verdicts).
+- [x] Conservative calibration: a load-bearing parallel (deliberate cross-caste mirror that *serves* an irony) is SAFE-KEEP, not a flag. The detector's job is to catch the *inert* rhyme and the *unlit* irony, not to sand away authored structure.
+
+### M3: SKILL.md + revise.md consumer touch
+
+- [x] SKILL.md: add `adjacency` command-table row + routing-map entry; insert into "The Pipeline" order (adjacency runs at batch/window level, after per-chapter QC).
+- [x] `instructions/revise.md`: add `adjacency` to the `Source:` enumeration (no logic change — uniform by `Source:`).
+
+**Operational:**
+- [x] `./install.sh --force` from the skill dev tree to deploy.
+- Orchestrator wiring (adjacency over [prev,current] at `run-merge-phase.sh` step 8.5a3) lives in project Phase 44 (the script is in the project repo).

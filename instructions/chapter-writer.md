@@ -35,6 +35,22 @@ Read the project's files. Paths are relative to the project root.
 **Load based on level:**
 Identify this chapter's narrative level from the outline. Then load files from the corresponding `world/level-*-<name>/` directory SELECTIVELY: list the files in the directory, then load only those whose `## Usage Tracker` contains items mapped to THIS chapter (matching Book and Ch). Skip files with no tracker items for this chapter — they waste context. Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
 
+### Register lock (Phase 41 M12)
+
+After identifying the chapter's level (Dome / Ark / Reality), load `world/register-locks.md` and extract the section for THIS chapter's level. Insert into your runtime context as a fenced **REGISTER LOCK FOR THIS CHAPTER** block:
+
+```
+REGISTER LOCK FOR THIS CHAPTER: <LEVEL>
+Positive register cues (produce these):
+- [from register-locks.md §<LEVEL>]
+Forbidden patterns (do NOT produce these):
+- [from register-locks.md §<LEVEL>]
+Per-scene checklist (measurable):
+- [from register-locks.md §<LEVEL>]
+```
+
+Treat this as a hard constraint, not advisory context. The "Forbidden patterns" list is derived from observed register leakage (Phase 40 M2 / Phase 41 M2 user feedback on ch04): these patterns make readers feel they are in the wrong tonal world and must not appear in chapters outside their proper level.
+
 **Load based on POV character:**
 - The POV character's sheet from `characters/foreground/` or `characters/midground/`
 - Sheets for other characters appearing in this chapter
@@ -425,6 +441,10 @@ wc -w chapters/<book>/ch<NN>.md
 - "Is the reader's attention being directed correctly — toward the mystery, away from unrevealed information?" (If a detail accidentally reveals something the reader shouldn't know yet = FAIL)
 - "Is there at least one detail that will mean something different on re-read?" (If not, consider adding one — this is what separates good from great)
 - "Does this chapter maintain or reinforce any false belief the reader currently holds?" (Check the plan's Reader Architecture section — if the chapter accidentally corrects a false belief too early = FAIL)
+
+**Register self-check (Phase 41 M12)**: pick three random paragraphs, one per scene. For each, ask: could this paragraph have been written for the wrong level (Reality / Ark / Dome)? If yes, flag the paragraph and rewrite using register cues for the correct level (per `world/register-locks.md`).
+
+Note self-grading limit: per `coldread-enum.md` design history, the writer with canon-in-head cannot fully validate. This Pass 9 self-check is upstream defense; the at-pipeline-level cross-validation is `coldread-enum` + `coldread-filter` at step 8.5.
 
 **Pass 10 — Simultaneity & Spectacle (ONLY for [RAPID CROSS-CUT] or climax chapters — skip otherwise):**
 - "Does each cross-cut section end with an action that the NEXT section (different level) visibly responds to?" (If cuts are parallel but not causal = FAIL — they're juxtaposition, not choreography)

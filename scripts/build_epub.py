@@ -46,7 +46,14 @@ def first_h1_title(md_text: str) -> str:
     for line in md_text.splitlines():
         m = re.match(r"^#\s+(.+?)\s*$", line)
         if m:
-            return m.group(1)
+            # Smart-quote straight apostrophes: TTS readers (ElevenReader)
+            # HTML-escape the U+0027 apostrophe in EPUB metadata fields
+            # (<title>, nav, toc.ncx) and read the escape literally as
+            # "Mariette ampersand-pound-x-27-s Fear". U+2019 is not
+            # HTML-escaped, so the title reads naturally. Chapter titles
+            # only contain possessive/contraction apostrophes (no opening
+            # quotes), so a global replace is safe.
+            return m.group(1).replace("'", "’")
     return ""
 
 
@@ -165,9 +172,11 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
 
 
 def render_book(book_dir: Path, out: Path) -> Path:
-    chapters = sorted(book_dir.glob("ch*.md"))
+    # Glob `ch[0-9][0-9].md` (exactly chNN.md) to exclude planning/auxiliary
+    # files like ch04-plan.md that would otherwise be rendered as chapters.
+    chapters = sorted(book_dir.glob("ch[0-9][0-9].md"))
     if not chapters:
-        sys.exit(f"error: no chapter files (ch*.md) found in {book_dir}")
+        sys.exit(f"error: no chapter files (chNN.md) found in {book_dir}")
 
     meta = load_meta(book_dir)
     title = meta.get("title", book_title(book_dir))

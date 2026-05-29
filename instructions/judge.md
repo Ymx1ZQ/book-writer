@@ -49,9 +49,17 @@ The current working directory is the project root.
 
 6. **Write strict JSON to `<output-path>`.** Use your Write tool. Do not print the JSON to stdout — only a one-line confirmation.
 
-## The 10 dimensions
+<!-- Rubric balance principle (Phase 41 M11)
+  5 dimensions reward DENSITY: memorable_lines, surprise, subtext, compression, ai_prose_penalty
+  6 dimensions reward CRAFT + COMPREHENSION: voice, sensory, pacing, tone, beats_execution, legibility
+  Preserve this balance — every density axis must be matched by a comprehension axis.
+  Otherwise variant selection drifts toward unreadable-but-impressive prose
+  (see Phase 40 M2 ch04 case: judges picked the densest variant; user could not follow it).
+-->
 
-### Canonical compliance (5)
+## The 11 dimensions
+
+### Canonical compliance + comprehension (6)
 
 1. **voice** — POV character voice match. Compare each draft's POV passages against the samples in `characters/notes/voice-samples.md`. Rank by faithfulness to the character's diction, syntactic tics, mental texture.
 
@@ -63,17 +71,24 @@ The current working directory is the project root.
 
 5. **beats_execution** — Quality of outline beats per `chapters/<book>/outline.md`. Each draft converged so all beats are present; rank by *execution quality* — which draft lands each beat with the most force, the cleanest setup, the strongest payoff.
 
+6. **legibility** — How well a first-time reader, with only the prior chapters and no canon files, can reconstruct what happens and why it matters. Measures four sub-axes (each 0-5, averaged, rounded to nearest 0.5):
+   (a) **Antecedent clarity** — count ambiguous pronouns where two or more candidate referents are reachable in the prior 10 sentences. Zero such → 5; many → 0. Anti-pattern: "He had built the prototype when he was sixteen" opening a section where two living male characters were in the prior section.
+   (b) **Canon-independence** — count plot-critical beats whose weight depends on facts only in `world/` / `characters/` / `plot/`. Zero → 5; many → 0. Anti-pattern: a name dropped expecting the reader to feel a loss for a person they were never introduced to.
+   (c) **Transition acclimation** — count section breaks where register or scene shifts without one sentence of grounding (where/when/whose POV). Zero → 5; many → 0. Anti-pattern: a flashback opening "She had said" without "years before" or a sensory anchor placing the scene.
+   (d) **Introduction discipline** — count new objects/terms/people introduced by name only without one anchoring detail. Zero → 5; many → 0. Anti-pattern: "He pulled the rig out" — "the rig" without a prior establishing detail.
+   Rank drafts by which best survives a canon-blind first reading.
+
 ### Brilliance (5)
 
-6. **memorable_lines** — Count and quality of lines that would survive being quoted out of context (epigraph, pull-quote, embedded in another text). Rank by N-of-strong-lines per draft.
+7. **memorable_lines** — Count and quality of lines that would survive being quoted out of context (epigraph, pull-quote, embedded in another text). Rank by N-of-strong-lines per draft.
 
-7. **surprise** — Instances of *intentional* deviation from the rules that work. A pause where pacing says push; an image not required by the checklist that lands; a structural choice that breaks expectation without breaking sense. Rank by intentionality + payoff. Sloppy deviation does not count.
+8. **surprise** — Instances of *intentional* deviation from the rules that work. A pause where pacing says push; an image not required by the checklist that lands; a structural choice that breaks expectation without breaking sense. Rank by intentionality + payoff. Sloppy deviation does not count.
 
-8. **subtext** — Density of unsaid-but-felt. Moments where a character reacts to something not on the page; emotional currents that surface only via implication; tension carried by what is withheld. Rank by depth + integration.
+9. **subtext** — Density of unsaid-but-felt. Moments where a character reacts to something not on the page; emotional currents that surface only via implication; tension carried by what is withheld. Rank by depth + integration.
 
-9. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word. A short sentence that says nothing is not compressed.
+10. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word. A short sentence that says nothing is not compressed.
 
-10. **ai_prose_penalty** — Count of generic LLM cadences: triadic rhythms ("X, Y, and Z" stacking three abstract nouns), "non solo X ma anche Y" frames, conclusory sentences that summarize the scene's emotional state for the reader, overuse of "the way..." constructions, abstract-noun-soup transitions, perfectly balanced paragraph endings. **Higher count = WORSE.** Rank with the cleanest draft (lowest count) at 1°.
+11. **ai_prose_penalty** — Count of generic LLM cadences: triadic rhythms ("X, Y, and Z" stacking three abstract nouns), "non solo X ma anche Y" frames, conclusory sentences that summarize the scene's emotional state for the reader, overuse of "the way..." constructions, abstract-noun-soup transitions, perfectly balanced paragraph endings. **Higher count = WORSE.** Rank with the cleanest draft (lowest count) at 1°.
 
 ## Anchor schema
 
@@ -108,6 +123,7 @@ Types:
     "pacing":            ["A","B","C"],
     "tone":              ["A","B","C"],
     "beats_execution":   ["A","B","C"],
+    "legibility":        ["A","B","C"],
     "memorable_lines":   ["A","B","C"],
     "surprise":          ["A","B","C"],
     "subtext":           ["A","B","C"],

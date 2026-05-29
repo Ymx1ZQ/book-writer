@@ -65,9 +65,11 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
 
 
 def render_book(book_dir: Path, out: Path) -> Path:
-    chapters = sorted(book_dir.glob("ch*.md"))
+    # Glob `ch[0-9][0-9].md` (exactly chNN.md) to exclude planning/auxiliary
+    # files like ch04-plan.md that would otherwise be rendered as chapters.
+    chapters = sorted(book_dir.glob("ch[0-9][0-9].md"))
     if not chapters:
-        sys.exit(f"error: no chapter files (ch*.md) found in {book_dir}")
+        sys.exit(f"error: no chapter files (chNN.md) found in {book_dir}")
 
     title = book_title(book_dir)
     subtitle = book_subtitle(book_dir)

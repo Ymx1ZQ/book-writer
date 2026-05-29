@@ -1,3 +1,24 @@
+# DEPRECATED — superseded by /book coldread-enum + /book coldread-filter + /book snapshot
+
+**Date deprecated**: 2026-05-24 (Phase 41)
+
+## Rationale
+
+This old `/book coldread` was a reader-experience-judgment persona (5 reads: scene engine, propulsion, legibility, monotone, emotional core; produces a developmental editor verdict). On book-1 ch04 it returned `0 BLOCK / 0 WEAKNESS / 2 NOTE` with "page-turn yes" verdict — catching 0.5/19 of user-reported reader-stumble bugs. Dumber model (deepseek-v4-flash) at same task returned `0/0/1 NOTE` — also 0.5/19. Architectural ceiling, not model-capability lever.
+
+The replacement is a three-skill chain:
+- `/book coldread-enum` — paranoid defect cataloguer (enumeration mode, canon-blind, snapshot-aware); catches 13-15/19 user-class bugs.
+- `/book coldread-filter` — adversarial triage of enum findings into SMELL.md entries.
+- `/book snapshot` — standalone snapshot generation (extracted from this old skill's §The reader-state snapshot section).
+
+The 5-reads framework (scene engine / propulsion / legibility / monotone / emotional core) was a sound interpretive framework but in practice the LLM never sparred — always concluded "the chapter pulls". The new architecture replaces interpretive judgment with structural enumeration + targeted filter.
+
+**Preserved in this archive for design archaeology only. Do not invoke. Do not edit.**
+
+See Phase 40 + Phase 41 in `DEVPLAN.md` for full design history.
+
+---
+
 # `/book coldread` — first-time-reader developmental pass
 
 Read the chapter the way a reader holding the physical book reads it: carrying forward what the earlier chapters left them with, and nothing else — no outline, no character sheets, no worldbuilding, no writing notes. Catch what every other check is structurally blind to: whether the chapter is *alive on the page* and *legible to someone who has only the book*.

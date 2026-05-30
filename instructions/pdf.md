@@ -13,10 +13,10 @@ Render Markdown chapters to a book-quality PDF using WeasyPrint.
 
 ## Output
 
-- single chapter → `chapters/<book>/pdf/chNN.pdf`
-- whole book → `chapters/<book>/pdf/<book>.pdf`
+- single chapter → `chapters/<book>/pub/chNN.pdf`
+- whole book → `chapters/<book>/pub/<book>.pdf`
 
-The `pdf/` subdirectory is created automatically. The user's project should add `chapters/*/pdf/` to its `.gitignore` (one-time project-side setup; not the skill's responsibility).
+The `pub/` subdirectory (shared with `/book epub` — rendered publication artifacts live together) is created automatically. The user's project should add `chapters/*/pub/` to its `.gitignore` (one-time project-side setup; not the skill's responsibility) — the artifacts are compiled output, regenerable from the Markdown sources.
 
 ## Steps
 

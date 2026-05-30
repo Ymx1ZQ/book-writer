@@ -13,8 +13,8 @@ Usage:
     build_epub.py <book_dir> [--chapter chNN] [--out OUT]
 
 Modes:
-    single chapter : --chapter chNN  -> <book_dir>/epub/chNN.epub
-    whole book     : (no --chapter)  -> <book_dir>/epub/<book_name>.epub
+    single chapter : --chapter chNN  -> <book_dir>/pub/chNN.epub
+    whole book     : (no --chapter)  -> <book_dir>/pub/<book_name>.epub
 """
 import argparse
 import re
@@ -210,7 +210,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Render book chapters to EPUB")
     ap.add_argument("book_dir", help="path to chapters/book-N")
     ap.add_argument("--chapter", help="single chapter id, e.g. ch01")
-    ap.add_argument("--out", help="output EPUB path (default: <book_dir>/epub/...)")
+    ap.add_argument("--out", help="output EPUB path (default: <book_dir>/pub/...)")
     args = ap.parse_args()
 
     book_dir = Path(args.book_dir).resolve()
@@ -218,10 +218,10 @@ def main() -> int:
         sys.exit(f"error: book directory not found: {book_dir}")
 
     if args.chapter:
-        out = Path(args.out) if args.out else book_dir / "epub" / f"{args.chapter}.epub"
+        out = Path(args.out) if args.out else book_dir / "pub" / f"{args.chapter}.epub"
         result = render_single(book_dir, args.chapter, out)
     else:
-        out = Path(args.out) if args.out else book_dir / "epub" / f"{book_dir.name}.epub"
+        out = Path(args.out) if args.out else book_dir / "pub" / f"{book_dir.name}.epub"
         result = render_book(book_dir, out)
 
     print(f"wrote {result}")

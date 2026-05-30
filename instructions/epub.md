@@ -13,10 +13,10 @@ Render Markdown chapters to an EPUB file suitable for upload to Amazon KDP (digi
 
 ## Output
 
-- single chapter → `chapters/<book>/epub/chNN.epub`
-- whole book → `chapters/<book>/epub/<book>.epub`
+- single chapter → `chapters/<book>/pub/chNN.epub`
+- whole book → `chapters/<book>/pub/<book>.epub`
 
-The `epub/` subdirectory is created automatically. The user's project should add `chapters/*/epub/` to its `.gitignore` (one-time project-side setup; not the skill's responsibility).
+The `pub/` subdirectory (shared with `/book pdf` — rendered publication artifacts live together) is created automatically. The user's project should add `chapters/*/pub/` to its `.gitignore` (one-time project-side setup; not the skill's responsibility) — the artifacts are compiled output, regenerable from the Markdown sources.
 
 ## Steps
 

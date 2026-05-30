@@ -4,6 +4,7 @@
 # dependencies = [
 #     "markdown",
 #     "weasyprint>=60",
+#     "pyyaml",
 # ]
 # ///
 """Render book chapters from Markdown to PDF.
@@ -12,8 +13,8 @@ Usage:
     build_pdf.py <book_dir> [--chapter chNN] [--out OUT]
 
 Modes:
-    single chapter : --chapter chNN  -> <book_dir>/pdf/chNN.pdf
-    whole book     : (no --chapter)  -> <book_dir>/pdf/<book_name>.pdf
+    single chapter : --chapter chNN  -> <book_dir>/pub/chNN.pdf
+    whole book     : (no --chapter)  -> <book_dir>/pub/<book_name>.pdf
 """
 import argparse
 import re
@@ -21,6 +22,7 @@ import sys
 from pathlib import Path
 
 import markdown
+import yaml
 from weasyprint import HTML, CSS
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -50,6 +52,21 @@ def book_subtitle(book_dir: Path) -> str:
     return f"Book {words.get(n, str(n))}"
 
 
+def load_meta(book_dir: Path) -> dict:
+    """Read optional meta.yaml. Keys: title, subtitle, author, language.
+    Symmetric with build_epub.py — the title page must not fall back to
+    outline.md's internal-doc H1 when real publication metadata exists."""
+    meta: dict = {}
+    meta_path = book_dir / "meta.yaml"
+    if not meta_path.is_file():
+        return meta
+    data = yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
+    for k in ("title", "subtitle", "author", "language"):
+        if k in data and data[k]:
+            meta[k] = str(data[k])
+    return meta
+
+
 def wrap(body: str) -> str:
     return f"<!doctype html><html><head><meta charset='utf-8'></head><body>{body}</body></html>"
 
@@ -71,14 +88,18 @@ def render_book(book_dir: Path, out: Path) -> Path:
     if not chapters:
         sys.exit(f"error: no chapter files (chNN.md) found in {book_dir}")
 
-    title = book_title(book_dir)
-    subtitle = book_subtitle(book_dir)
+    meta = load_meta(book_dir)
+    title = meta.get("title") or book_title(book_dir)
+    subtitle = meta.get("subtitle") or book_subtitle(book_dir)
+    author = meta.get("author")
     parts = [
         "<div class='titlepage'>",
         f"<div class='title'>{title}</div>",
     ]
     if subtitle:
         parts.append(f"<div class='subtitle'>{subtitle}</div>")
+    if author:
+        parts.append(f"<div class='author'>{author}</div>")
     parts.append("</div>")
     parts.append("<div class='chapter-break'></div>")
 
@@ -98,7 +119,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Render book chapters to PDF")
     ap.add_argument("book_dir", help="path to chapters/book-N")
     ap.add_argument("--chapter", help="single chapter id, e.g. ch01")
-    ap.add_argument("--out", help="output PDF path (default: <book_dir>/pdf/...)")
+    ap.add_argument("--out", help="output PDF path (default: <book_dir>/pub/...)")
     args = ap.parse_args()
 
     book_dir = Path(args.book_dir).resolve()
@@ -106,10 +127,10 @@ def main() -> int:
         sys.exit(f"error: book directory not found: {book_dir}")
 
     if args.chapter:
-        out = Path(args.out) if args.out else book_dir / "pdf" / f"{args.chapter}.pdf"
+        out = Path(args.out) if args.out else book_dir / "pub" / f"{args.chapter}.pdf"
         result = render_single(book_dir, args.chapter, out)
     else:
-        out = Path(args.out) if args.out else book_dir / "pdf" / f"{book_dir.name}.pdf"
+        out = Path(args.out) if args.out else book_dir / "pub" / f"{book_dir.name}.pdf"
         result = render_book(book_dir, out)
 
     print(f"wrote {result}")

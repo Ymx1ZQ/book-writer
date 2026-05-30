@@ -67,14 +67,18 @@ def book_title(book_dir: Path) -> str:
 
 
 def load_meta(book_dir: Path) -> dict:
-    """Read optional meta.yaml. Keys: title, author, identifier, language."""
+    """Read optional meta.yaml.
+
+    Keys: title, author, identifier, language, series, series_index.
+    series/series_index group the volumes as a trilogy in library apps.
+    """
     meta: dict = {}
     meta_path = book_dir / "meta.yaml"
     if not meta_path.is_file():
         return meta
     data = yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
-    for k in ("title", "author", "identifier", "language"):
-        if k in data and data[k]:
+    for k in ("title", "author", "identifier", "language", "series", "series_index"):
+        if k in data and data[k] is not None and str(data[k]) != "":
             meta[k] = str(data[k])
     return meta
 
@@ -92,6 +96,38 @@ def make_book(title: str, author: str, identifier: str, language: str) -> epub.E
     book.set_language(language)
     book.add_author(author)
     return book
+
+
+def add_series_metadata(book: epub.EpubBook, series: str, index: str | None) -> None:
+    """Group the volumes as a series so library apps shelve them as one trilogy.
+
+    Two conventions are emitted for maximum reader coverage:
+      - calibre:series / calibre:series_index — the legacy OPF <meta name/content>
+        form, read by Calibre, Kindle tools, KOReader, Moon+ Reader, and most
+        sideload tooling.
+      - EPUB3 belongs-to-collection (+ collection-type=series, group-position) —
+        the spec-standard form, read by Apple Books.
+    """
+    # Legacy calibre form.
+    book.add_metadata(None, "meta", "", {"name": "calibre:series", "content": series})
+    if index:
+        book.add_metadata(
+            None, "meta", "", {"name": "calibre:series_index", "content": index}
+        )
+    # EPUB3 collection form (refines chain off a shared id).
+    cid = "series-collection"
+    book.add_metadata(
+        "OPF", "meta", series, {"property": "belongs-to-collection", "id": cid}
+    )
+    book.add_metadata(
+        "OPF", "meta", "series",
+        {"refines": f"#{cid}", "property": "collection-type"},
+    )
+    if index:
+        book.add_metadata(
+            "OPF", "meta", index,
+            {"refines": f"#{cid}", "property": "group-position"},
+        )
 
 
 def add_default_css(book: epub.EpubBook) -> epub.EpubItem:
@@ -158,6 +194,8 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
     identifier = meta.get("identifier", deterministic_uuid(book_dir, ch))
 
     book = make_book(title, author, identifier, language)
+    if meta.get("series"):
+        add_series_metadata(book, meta["series"], meta.get("series_index"))
     add_default_css(book)
     chap = make_chapter_item(f"{ch}.xhtml", chapter_title, html_body)
     book.add_item(chap)
@@ -185,6 +223,8 @@ def render_book(book_dir: Path, out: Path) -> Path:
     identifier = meta.get("identifier", deterministic_uuid(book_dir, "book"))
 
     book = make_book(title, author, identifier, language)
+    if meta.get("series"):
+        add_series_metadata(book, meta["series"], meta.get("series_index"))
     add_default_css(book)
 
     items = []

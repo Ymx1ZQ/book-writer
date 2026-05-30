@@ -151,7 +151,7 @@ Evaluate how well the chapter manages the reader's knowledge, beliefs, and atten
 - **Prose rhythm:** Do section lengths compress as the sequence escalates? Measure the word count of each cross-cut section — is there a clear acceleration pattern?
 - **Rules-as-spectacle:** Does the reader feel the world's RULES creating the drama (not just characters reacting to events)? The mechanism should be the action, not the backdrop.
 
-**M. STYLE-RULE AUDIT (Rules 13-24 + Rule 0 stella polare + Rule 1 metaphor clause)**
+**M. STYLE-RULE AUDIT (Rules 13-25 + Rule 0 stella polare + Rule 1 metaphor clause)**
 
 A compact per-chapter check against the cinematic+bestseller style codification. Quote the offender for any violation.
 
@@ -169,6 +169,7 @@ A compact per-chapter check against the cinematic+bestseller style codification.
 - **Rule 22 — Chapter closing: single line or image:** count sentences in the final paragraph. >2 = HIGH. Is the closing a summary/contemplative wrap-up? If yes = HIGH. Quote the final paragraph.
 - **Rule 23 — Reader smarter than character:** is there at least one signal the POV character notices but does not process, that the reader can recognize as meaningful (now or on re-read)? If zero = NOTE.
 - **Rule 24 — Consequence, not explanation:** any narrator paragraph explaining HOW a mechanism works (not a character discovering it through action, and not a diegetic artifact like a cassette/letter)? Quote each. Any hit = HIGH. Character problem-solving in technical vocabulary (verb mode) is PASS; narrator exposition in technical vocabulary (subject mode) is FAIL.
+- **Rule 25 — Beat economy (discharged-function recurrence):** does a discrete narrative unit (an institutional exchange, a processing routine, a transit, a status-check) recur *within this chapter* after an earlier occurrence already discharged its function, at **low delta** — same participants/role + same outcome/non-event + ≤1 genuinely new element (escalation / new info / varied stakes)? Quote both occurrences. **GUARDS — do NOT flag if any holds:** the recurrence is (i) a registered motif/echo (`plot/motif-tracking.md`, `plot/chorus-poem-map.md`), (ii) a planted setup/payoff (`plot/prestige-inventory.md`), (iii) a voice-floor pillar (`writing-notes.md`), or (iv) doing **escalating thematic work** — each occurrence accumulates meaning the prior lacked (e.g. ritual sameness that builds dread). Fires ONLY on inertia-recurrence (function discharged; the re-render adds weight, not meaning). Finding = **TRADE-OFF** (subtractive of a beat → never SAFE-CUT). `Suggested action` names the earlier occurrence + the single new element + *"render only the delta; compress the established part to summary (~N→~M lines)"* — never "cut the beat." Severity MEDIUM. **Boundary (do not duplicate):** distinct from sniff §10.f (device saturation, Count≥12), coldread #9 TEMPO-INTERRUPTION (texture vs momentum), coldread #7 UNPREPARED-FORM (unprepared device), and Rule 19 (cross-chapter motif-phrase echo) — this is *within-chapter, beat-granularity, discharged-function* recurrence. The criterion is mechanical (2nd+ occurrence, low delta), NOT "was this beat necessary?" (the reader-experience framing proven to fail in deprecated `/book coldread`).
 
 ### 4. Cross-Chapter Analysis (batch review only)
 

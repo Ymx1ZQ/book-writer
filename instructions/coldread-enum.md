@@ -41,7 +41,7 @@ NO verdict, NO summary, NO ranking, NO "page-turn yes" line. Just the catalog.
 
 ## The 10 categories
 
-1. **AMBIGUOUS-PRONOUN** — A pronoun (he, she, it, they, this, that, "the X") where two or more reasonable referents exist in the prior 10 sentences of the chapter. Flag even if context resolves.
+1. **AMBIGUOUS-PRONOUN** — A pronoun (he, she, it, they, this, that, "the X") where two or more reasonable referents exist in the prior 10 sentences of the chapter. Flag even if context resolves. **Sub-attend to POV-default suppression (TIGHT trigger — precision matters here):** flag the first `he/she` of a passage ONLY when the most recent SUBJECT (the actor of the immediately preceding sentences) is a DIFFERENT same-gender character than the POV — so the reader attaches the pronoun to that character, not the POV default. (Recovers the ch04 *"He had built the prototype" → reads as the father* bug: the prior subject was the father.) Do NOT fire merely because of a section break if the POV is already the active subject going into it (that was a false-positive source — ch03 L39, where Roe was the prior subject). The competing referent must be genuinely more salient/recent than the POV.
 
 2. **UNSETUP-FACT** — A capability, system property, character trait, technology, or factual claim NOT established in the snapshot AND NOT established earlier in this chapter.
 
@@ -60,6 +60,8 @@ NO verdict, NO summary, NO ranking, NO "page-turn yes" line. Just the catalog.
 9. **TEMPO-INTERRUPTION** — A passage of texture (bodily routine, environmental cataloguing, descriptive density) that breaks the emotional or causal momentum of the surrounding scene.
 
 10. **UNEARNED-IMPORTANCE** — An object, person, or claim that the chapter treats as load-bearing without giving the reader a reason to feel its weight (and the snapshot does not provide that weight either).
+
+> **Removed: a "cognition-without-object" category was tried (catch the *"He had known [what]"* shape) and pulled.** On a restraint-driven prose it fires on the book's entire signature surface (every `she knew` / `it meant` / `had known`), and the enum cannot separate *confusingly* cryptic from *deliberately* cryptic — that separation is the irreducibly human judgment (the "poetic-cryptic" LLM-blind class). It manufactured ~50 false flags per chapter and buried the one real instance. The cognition-cryptic class stays **human-judged** (user cold-read → SMELL), not enumerated.
 
 ## Paranoia constraint (the unlock)
 

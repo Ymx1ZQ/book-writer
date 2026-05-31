@@ -64,6 +64,7 @@ For each chapter, scan every line and report issues with **exact quotes and line
 - **Em-dashes:** The project uses `—` (em-dash with no spaces). Flag any `--`, ` — ` (spaces around em-dash), or `–` (en-dash used as em-dash).
 - **Dialogue punctuation:** American convention. Periods and commas INSIDE quotation marks. `"I know," she said.` NOT `"I know", she said.`
 - **Quotation marks:** Double quotes for dialogue (`"..."`). Single quotes ONLY for quotes-within-quotes (`"She said 'don't' and left."`).
+- **Period-ended interrogatives — INTENTIONAL, do NOT flag.** A question punctuated with a period (`"What else." / "How long." / "What did the E stand for."`) is the book's deliberate flattened-interrogative device (`world/prose-rules.md §25`), NOT a missing question mark. Never "correct" it to `?`. The `?` is reserved for open vulnerability (`"Have you eaten?"`) and machine prompts (`"ARE YOU READY?"`); leave both exactly as written. This is a register device, not a punctuation error.
 - **Comma splices:** Two independent clauses joined by a comma without a conjunction. Flag unless clearly stylistic (Dome clinical voice sometimes uses comma splices for rhythm — flag only if accidental).
 - **Serial comma (Oxford comma):** Use it. `Red, green, and blue.` NOT `Red, green and blue.`
 - **Ellipses:** Three dots with no spaces (`...`). NOT `. . .` or `.. .`.

@@ -3,7 +3,7 @@ name: book
 description: >-
   Codex-side variant of the `book` skill. Exposes the `judge` subcommand: a
   cross-model chapter comparator for parallel-write book pipelines. Reads N
-  parallel drafts of the same chapter, ranks them on 10 dimensions (5
+  parallel drafts of the same chapter, ranks them on 11 dimensions (6
   canonical-compliance + 5 brilliance), and writes rank-only JSON to a
   user-provided output path for downstream Borda-count aggregation. One judge in
   a multi-model ensemble (codex / Anthropic / Gemini / DeepSeek). The JSON is the
@@ -53,7 +53,7 @@ The current working directory is the project root.
    - `characters/notes/voice-samples.md` — POV character voice samples
    - `chapters/<book>/outline.md` — outline beats for the specific chapter (the section matching `<chapter>`)
 
-3. **Rank the N drafts on each of the 10 dimensions below.** Strict ranking, no ties — if you genuinely cannot separate two drafts on a dimension, pick the one you would marginally favor and move on. Ties poison Borda aggregation.
+3. **Rank the N drafts on each of the 11 dimensions below.** Strict ranking, no ties — if you genuinely cannot separate two drafts on a dimension, pick the one you would marginally favor and move on. Ties poison Borda aggregation.
 
 4. **Produce an `overall_ranking`** — your holistic synthesis. This is NOT a numeric sum of per-dimension ranks; it is your best judgment of "which draft I would publish first, second, last." Per-dimension rankings inform but do not mechanically determine `overall_ranking`.
 
@@ -61,9 +61,9 @@ The current working directory is the project root.
 
 6. **Write strict JSON to `<output-path>`.** Use your write tool. Do not print the JSON to stdout — only a one-line confirmation.
 
-## The 10 dimensions
+## The 11 dimensions
 
-### Canonical compliance (5)
+### Canonical compliance + comprehension (6)
 
 1. **voice** — POV character voice match. Compare each draft's POV passages against the samples in `characters/notes/voice-samples.md`. Rank by faithfulness to the character's diction, syntactic tics, mental texture.
 
@@ -75,17 +75,19 @@ The current working directory is the project root.
 
 5. **beats_execution** — Quality of outline beats per `chapters/<book>/outline.md`. Each draft converged so all beats are present; rank by *execution quality* — which draft lands each beat with the most force, the cleanest setup, the strongest payoff.
 
+6. **legibility** — How well a first-time reader, with only the prior chapters and no canon files, can reconstruct what happens and why it matters. Four sub-axes (each 0-5, averaged, rounded to nearest 0.5): (a) **Antecedent clarity** — ambiguous pronouns with two-or-more reachable referents in the prior 10 sentences (zero → 5). (b) **Canon-independence** — plot-critical beats whose weight depends on facts only in `world/` / `characters/` / `plot/` (zero → 5). (c) **Transition acclimation** — section breaks where register or scene shifts without one grounding sentence (where / when / whose POV) (zero → 5). (d) **Introduction discipline** — new objects/terms/people introduced by name only without one anchoring detail (zero → 5). Rank drafts by which best survives a canon-blind first reading.
+
 ### Brilliance (5)
 
-6. **memorable_lines** — Count and quality of lines that would survive being quoted out of context (epigraph, pull-quote, embedded in another text). Rank by N-of-strong-lines per draft.
+7. **memorable_lines** — Count and quality of lines that would survive being quoted out of context (epigraph, pull-quote, embedded in another text). Rank by N-of-strong-lines per draft.
 
-7. **surprise** — Instances of *intentional* deviation from the rules that work. A pause where pacing says push; an image not required by the checklist that lands; a structural choice that breaks expectation without breaking sense. Rank by intentionality + payoff. Sloppy deviation does not count.
+8. **surprise** — Instances of *intentional* deviation from the rules that work. A pause where pacing says push; an image not required by the checklist that lands; a structural choice that breaks expectation without breaking sense. Rank by intentionality + payoff. Sloppy deviation does not count.
 
-8. **subtext** — Density of unsaid-but-felt. Moments where a character reacts to something not on the page; emotional currents that surface only via implication; tension carried by what is withheld. Rank by depth + integration.
+9. **subtext** — Density of unsaid-but-felt. Moments where a character reacts to something not on the page; emotional currents that surface only via implication; tension carried by what is withheld. Rank by depth + integration.
 
-9. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word. A short sentence that says nothing is not compressed.
+10. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word. A short sentence that says nothing is not compressed.
 
-10. **ai_prose_penalty** — Count of generic LLM cadences: triadic rhythms ("X, Y, and Z" stacking three abstract nouns), "non solo X ma anche Y" frames, conclusory sentences that summarize the scene's emotional state for the reader, overuse of "the way..." constructions, abstract-noun-soup transitions, perfectly balanced paragraph endings. **Higher count = WORSE.** Rank with the cleanest draft (lowest count) at 1°.
+11. **ai_prose_penalty** — Count of generic LLM cadences: triadic rhythms ("X, Y, and Z" stacking three abstract nouns), "non solo X ma anche Y" frames, conclusory sentences that summarize the scene's emotional state for the reader, overuse of "the way..." constructions, abstract-noun-soup transitions, perfectly balanced paragraph endings. **Higher count = WORSE.** Rank with the cleanest draft (lowest count) at 1°.
 
 ## Anchor schema
 
@@ -120,6 +122,7 @@ Types:
     "pacing":            ["A","B","C"],
     "tone":              ["A","B","C"],
     "beats_execution":   ["A","B","C"],
+    "legibility":        ["A","B","C"],
     "memorable_lines":   ["A","B","C"],
     "surprise":          ["A","B","C"],
     "subtext":           ["A","B","C"],
@@ -140,6 +143,7 @@ Types:
 
 Before writing to `<output-path>`, verify:
 - Valid JSON (matched brackets/quotes, no trailing commas)
+- **All 11 dimensions present** in `rankings_per_dimension` (voice, sensory, pacing, tone, beats_execution, legibility, memorable_lines, surprise, subtext, compression, ai_prose_penalty) — a missing dimension is an invalid judge output
 - Each per-dimension array contains every draft id exactly once
 - `overall_ranking` contains every draft id exactly once
 - All anchors reference a `from` id that is NOT the overall winner

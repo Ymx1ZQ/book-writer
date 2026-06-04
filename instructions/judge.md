@@ -41,7 +41,7 @@ The current working directory is the project root.
    - `characters/notes/voice-samples.md` — POV character voice samples
    - `chapters/<book>/outline.md` — outline beats for the specific chapter (the section matching `<chapter>`)
 
-3. **Rank the N drafts on each of the 10 dimensions below.** Strict ranking, no ties — if you genuinely cannot separate two drafts on a dimension, pick the one you would marginally favor and move on. Ties poison Borda aggregation.
+3. **Rank the N drafts on each of the 11 dimensions below.** Strict ranking, no ties — if you genuinely cannot separate two drafts on a dimension, pick the one you would marginally favor and move on. Ties poison Borda aggregation.
 
 4. **Produce an `overall_ranking`** — your holistic synthesis. This is NOT a numeric sum of per-dimension ranks; it is your best judgment of "which draft I would publish first, second, last." Per-dimension rankings inform but do not mechanically determine `overall_ranking`.
 

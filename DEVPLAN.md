@@ -750,3 +750,51 @@ The audit of the pipeline (2026-05-28) found the QC matrix exhausts the *enumera
 - [x] `./install.sh --force` from the skill dev tree to deploy.
 - [x] Smoke test the linter: against pre-fix ch04 (git 7f32e4d) it must flag the documented tautologies; against current ch04 it must report 0; against a Dome chapter it must report "no deterministic patterns".
 - Orchestrator wiring (adjacency over [prev,current] at `run-merge-phase.sh` step 8.5a3) lives in project Phase 44 (the script is in the project repo).
+
+## Phase 15 — Engineering-hygiene parity: tests, frontmatter, installer --check, CI (2026-06-10)
+
+Brings `book` to the engineering-hygiene bar the code-audit / devplan / deck
+skills reached this session. **Not** in scope: the broad multi-assistant
+installer (book is a Claude-Code-native 25-command pipeline; the codex side is
+deliberately just the `judge` lane — opencode/gemini can't run the pipeline, so
+forcing them would be cargo-culting). No flatten (already flat).
+
+### M1 — Test suite (the #1 gap: the largest skill has zero tests)
+
+> **Trigger:** `register_leak_lint.py` is a deterministic regex linter with an
+> exit-code contract and a documented motivating bug (`the lines were the lines`
+> slipped past the LLM) — a textbook unit-test target — yet nothing tests it,
+> and the two PEP723 build scripts and the installer have no smoke either.
+
+- [x] `tests/test_register_leak_lint.py` — pytest: a Reality fixture with `the X was the X` → exit 1 + the leak printed; a clean Reality fixture → exit 0; the `not`-guard negative case stays clean; a Dome chapter → "no deterministic patterns" (exit 0); the `--level` arg gating (Reality/Ark check, Dome skips).
+- [x] `tests/test_build_scripts.py` — the two PEP723 scripts parse and expose `--help` without importing heavy deps (invoke `python3 build_pdf.py --help` / `build_epub.py --help`, or assert the `# /// script` block + argparse usage parse); skip the real render if `uv` absent.
+- [x] `tests/test_install.sh` — bash smoke: install to a temp HOME with `--force`; assert `SKILL.md`, `instructions/`, `scripts/`, the codex `judge` variant landed, and the build scripts are executable.
+
+**Operational:**
+- [x] `pytest tests/ -q` green locally; `bash tests/test_install.sh` green.
+
+### M2 — Root SKILL.md frontmatter (agentskills.io standard)
+
+- [ ] Add YAML frontmatter (`name: book` + a `description` covering the pipeline + the `/book <command>` surface) to the root `SKILL.md`, matching the codex variant and the other skills. Body unchanged.
+
+**Operational:**
+- [ ] `./install.sh --force` redeploys; `/book help` still routes.
+
+### M3 — Installer hygiene parity (`--check` + SHA stamp)
+
+- [ ] `install.sh --check` — compare the installed claude payload (SKILL.md + instructions/ + scripts/) and the codex judge variant against source; report `OK`/`DRIFT` per side, exit 1 on drift or missing. No writes.
+- [ ] On install, stamp `.installed-from` with the source git short SHA (both claude + codex dests).
+- [ ] `tests/test_install.sh` extended: `--check` clean after install; drift detected on a hand-edited installed file.
+
+### M4 — CI: run the test suite on push
+
+- [ ] `.github/workflows/tests.yml` (`checkout@v5`, ubuntu-latest): install pytest, run `pytest tests/` + `bash tests/test_install.sh`. uv/weasyprint not required (build-script tests are `--help`/parse only). README CI note.
+
+**Operational:**
+- [ ] Push; confirm the run is green.
+
+## Out of scope for Phase 15
+
+- Multi-assistant installer beyond claude + codex(judge) (by design).
+- De-hardcoding `~/.claude/skills/book/` paths (book is Claude-native; defensible).
+- Content/prose-pipeline changes (separate review).

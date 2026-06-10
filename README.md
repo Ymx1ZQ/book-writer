@@ -124,6 +124,17 @@ Only `SKILL.md` is loaded into Claude's context on invocation (~60 lines). The r
 - [Claude Code](https://claude.ai/claude-code) CLI
 - A Claude model with sufficient context (Opus recommended for long chapters)
 
+## Tests
+
+```bash
+pytest tests/                # linter + build-script smoke
+bash tests/test_install.sh   # install smoke + --check drift
+```
+
+CI (GitHub Actions) runs the suite on every push and PR. The linter and
+install tests need no external tools; the build-script render smoke runs
+only when `uv` is present and skips otherwise.
+
 ## License
 
 MIT

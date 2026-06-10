@@ -788,10 +788,10 @@ forcing them would be cargo-culting). No flatten (already flat).
 
 ### M4 — CI: run the test suite on push
 
-- [ ] `.github/workflows/tests.yml` (`checkout@v5`, ubuntu-latest): install pytest, run `pytest tests/` + `bash tests/test_install.sh`. uv/weasyprint not required (build-script tests are `--help`/parse only). README CI note.
+- [x] `.github/workflows/tests.yml` (`checkout@v5`, ubuntu-latest): install pytest, run `pytest tests/` + `bash tests/test_install.sh`. uv/weasyprint not required (build-script tests are `--help`/parse only). README CI note.
 
 **Operational:**
-- [ ] Push; confirm the run is green.
+- [x] Push; confirm the run is green.
 
 ## Out of scope for Phase 15
 

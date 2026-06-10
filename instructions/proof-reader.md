@@ -172,7 +172,7 @@ For each chapter:
 
 The report is analysis; the corrections file is the actionable output. Create or update `chapters/<book>/PROOFREAD.md`.
 
-**This file is processed by `/book fix`** — same skill that handles editorial fixes from REVIEW.md.
+**This file is processed by `/book revise`** — same skill that handles editorial fixes from REVIEW.md.
 
 ```markdown
 # Book N — Proofreading Corrections
@@ -198,7 +198,7 @@ The report is analysis; the corrections file is the actionable output. Create or
 - Each checkbox has: line number, check category [P1-P8], quoted error, and the specific fix.
 - Fixes are ordered by line number within each chapter.
 - Only issues that require TEXT CHANGES become checkboxes. Rhythm suggestions that are advisory (not clear errors) can be noted but not checkboxed.
-- After writing, announce: *"Proofreading corrections written to PROOFREAD.md. Run `/book fix <book>` to apply."*
+- After writing, announce: *"Proofreading corrections written to PROOFREAD.md. Run `/book revise <book>` to apply."*
 
 ### 5. Summary
 
@@ -207,13 +207,12 @@ Book Proof Reader Complete
 Book: [book]
 Chapters proofread: X
 Total issues: X
-Devplan milestones created: X
 
 Most common issue type: [P1-P8]
 Cleanest chapter: Ch. NN (X issues)
 Roughest chapter: Ch. NN (X issues)
 
-Next step: /book fix <book> to apply fixes.
+Next step: /book revise <book> to apply fixes.
 ```
 
 ---
@@ -224,7 +223,7 @@ Run AFTER:
 - ✅ Chapter writing is complete (`/book chapter`)
 - ✅ Verification passes 1-9 are green
 - ✅ Editorial review is done (`/book review`)
-- ✅ Review fixes are applied (`/book fix`)
+- ✅ Review fixes are applied (`/book revise`)
 
 Run BEFORE:
 - Declaring a chapter "final"

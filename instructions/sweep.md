@@ -59,6 +59,6 @@ Destination: `chapters/<book>/archive/<TYPE>-<YYYYMMDD-HHMMSS>-final-<chapter>.m
 
 ## Related
 
-- `instructions/sniff.md`, `instructions/reviewer.md`, `instructions/coldread.md`, `instructions/proof-reader.md`, `instructions/revise.md` — pre-step rotate-on-write archival (interim cycles).
+- `instructions/sniff.md`, `instructions/reviewer.md`, `instructions/coldread-enum.md`, `instructions/coldread-filter.md`, `instructions/proof-reader.md`, `instructions/revise.md` — pre-step rotate-on-write archival (interim cycles).
 - `instructions/writer.md` §Session Start Step 0 — auto-invocation hook.
 - `run-coherence-cycle.sh`, `run-write-cycle.sh` — auto-invocation at clean exit.

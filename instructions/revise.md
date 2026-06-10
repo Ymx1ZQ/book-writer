@@ -37,7 +37,7 @@ Each entry may also include a `Source:` field indicating which detection skill w
 
 Apply rules:
 - **INLINE × SAFE-CUT** — process like editorial SAFE-CUT (look for `Suggested action`, apply, mark Fixed).
-- **INLINE × TRADE-OFF** — **DO NOT auto-apply** (Phase 9 M3). Surface to `chapters/<book>/SMELL-PENDING.md` with `Status: pending — manual decision required`. User reviews and applies (or marks `Status: ✓ Accepted (defer)`) manually before next cycle.
+- **INLINE × TRADE-OFF** — **DO NOT auto-apply** (Phase 9 M3). Surface to `chapters/<book>/SMELL-PENDING.md` with `Status: pending — decision required`. Resolved by `/book arbiter` in the orchestrated pipeline; left for the user when `/book revise` is run standalone (see the PENDING template below).
 - **INLINE × SAFE-KEEP** — note in revise summary as "acknowledged, no action"; mark in SMELL.md as `Status: ✓ Acknowledged (SAFE-KEEP)`.
 - **ANCHOR-NEEDED × SAFE-CUT or TRADE-OFF** — resolved upstream by `/book fix`. If revise finds entry without `Status:` line, mark `Status: ⚠️ Unresolved upstream` and skip. If marked `Status: ✅ Resolved upstream by /book fix`, skip silently. Any cascade lives in a paired INLINE entry — process that.
 - **ANCHOR-NEEDED × SAFE-KEEP** — rare; treat as ACCEPT.
@@ -161,12 +161,16 @@ Before session-complete summary, write user-facing decision surfaces for any TRA
 **Book:** <book>
 **Chapter:** <chNN>
 **Cycle ended:** YYYY-MM-DD
-**Decisions awaiting user input:** N
+**Decisions awaiting resolution:** N
 
-For each entry below: review the proposed fix, weigh Loss vs Gain, and either:
-(a) apply the fix to prose manually, OR
-(b) update Status to `✓ Accepted (defer)` to keep current text, OR
-(c) update Status to `✅ Fixed (manual)` after applying it yourself.
+**Who resolves these:** in the orchestrated/merge pipeline these `*-PENDING.md`
+entries are resolved autonomously by `/book arbiter` (Phase 42 — APPLY or
+ACCEPT-keep, no human-in-the-loop). When `/book revise` is run standalone
+(bare linear flow, no arbiter step), they are left for the user, who for each
+entry below reviews the proposed fix, weighs Loss vs Gain, and either:
+(a) applies the fix to prose manually, OR
+(b) updates Status to `✓ Accepted (defer)` to keep current text, OR
+(c) updates Status to `✅ Fixed (manual)` after applying it yourself.
 
 Items with no Status update by next cycle are re-emitted unchanged.
 

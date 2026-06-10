@@ -75,7 +75,7 @@ List these beats in working memory before step 3. They will modulate flagging cl
 
 **Calibration:** 3-7 beats per chapter is the target band. Fewer than 3 = either you're under-reading or the chapter genuinely has no load-bearing prose (rare; flag the chapter itself as a quality concern). More than 7 = you're being generous; tighten to the 3-7 truly load-bearing.
 
-### 3. Analyze — 8 Dimensions
+### 3. Analyze — 13 Dimensions
 
 **Flagging discipline (Phase 9 M1 — read before scanning).** Every candidate finding from the rule scans below must pass a three-question test before being added to REVIEW.md:
 
@@ -151,7 +151,7 @@ Evaluate how well the chapter manages the reader's knowledge, beliefs, and atten
 - **Prose rhythm:** Do section lengths compress as the sequence escalates? Measure the word count of each cross-cut section — is there a clear acceleration pattern?
 - **Rules-as-spectacle:** Does the reader feel the world's RULES creating the drama (not just characters reacting to events)? The mechanism should be the action, not the backdrop.
 
-**M. STYLE-RULE AUDIT (Rules 13-25 + Rule 0 stella polare + Rule 1 metaphor clause)**
+**M. STYLE-RULE AUDIT (Rules 13-28 + Rule 0 stella polare + Rule 1 metaphor clause)**
 
 A compact per-chapter check against the cinematic+bestseller style codification. Quote the offender for any violation.
 

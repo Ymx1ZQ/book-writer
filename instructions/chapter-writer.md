@@ -528,14 +528,23 @@ This step is incremental — 2 minutes per chapter. Skipping it causes the outli
 
 ---
 
-## Step 8: Mark Complete
+## Step 8: Mark machine-checked (NOT "done")
+
+Completing the machine pipeline yields a **machine-checked** chapter, not a
+reader-validated one (see SKILL.md "The human cold-read gate"). Mark it as
+such — never as plain "done"/"clean":
 
 Update `chapters/<book>/DEVPLAN.md`:
 ```
-- [x] Ch. NN — Title (Level / POV) ✅
+- [x] Ch. NN — Title (Level / POV) ✅ machine-checked — awaiting cold-read
 ```
 
-Announce: *"✅ Ch. N complete — [title] — [word count] words — [level]/[POV] — Cliffhanger: [type]"*
+The `awaiting cold-read` tag is the gate: a human flips it to final (removing
+the tag, or replacing it with `✅ cold-read`) only after reading the chapter at
+speed. Until then the chapter is NOT human-validated, and the orchestration
+(sweep, cycle "done" detection) must not treat it as fully closed.
+
+Announce: *"✅ Ch. N machine-checked — [title] — [word count] words — [level]/[POV] — Cliffhanger: [type] — awaiting human cold-read"*
 
 ---
 

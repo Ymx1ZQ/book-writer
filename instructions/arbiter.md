@@ -35,7 +35,7 @@ For each open item, evaluate the rules below in order. The **first matching rule
 
 2. **Voice-Signature alignment** — if the item's flags name a Voice-Signature property (e.g. Noah §Voice Signature: "never explains his own emotions") AND the current text violates that property (narrator label, telling-not-showing, premature interpretation) AND the proposed fix removes the violation: **APPLY**.
 
-3. **Voice-Floor protection** — if the item carries `Voice-floor: Yes` (an unqualified yes, not "borderline") meaning it sits in one of the chapter's 7 strongest beats per `writing-notes.md`: **DEFER**. Pillar beats outrank tightening wins.
+3. **Voice-Floor protection** — if the item carries `Voice-floor: Yes` (an unqualified yes, not "borderline") meaning it sits in one of the chapter's 3–7 voice-floor pillar beats per `writing-notes.md`: **DEFER**. Pillar beats outrank tightening wins.
 
    **Saturation carve-out.** Rule 3 protects *distinct* pillar beats. It does NOT fire when the item is an instance of a stylistic device that `chapters/<book>/SMELL.md` has raised a Category 10 §10.f `SATURATION` finding for. A line interchangeable with a dozen others is not a pillar beat, and deferring every instance of a saturated device is the exact failure mode the `SATURATION` finding exists to break. When this carve-out applies, skip rule 3 and continue to rules 4-6.
 
@@ -67,12 +67,12 @@ Two actions on ACCEPT-keep:
 
 1. **No prose change** in `chapters/<book>/<chapter>.md`.
 
-2. **Append a SAFE-KEEP entry** to the active source file's `## Acknowledged (SAFE-KEEP — no action)` section (for SMELL) or `## Acknowledged (No Action)` section (for REVIEW). The source file is named in the item's `Source:` field — e.g. SMELL.md, REVIEW.md, PROOFREAD.md (without the `-PENDING` suffix).
+2. **Append a SAFE-KEEP entry** to the active source file's `## Acknowledged (SAFE-KEEP — no action)` section (for SMELL) or `## Acknowledged (No Action)` section (for REVIEW). Map the active PENDING file to its source (SMELL-PENDING→SMELL.md, REVIEW-PENDING→REVIEW.md, …); the item's `Source:` field names the *detector* (sniff/coherence/factcheck/…), not the filename.
 
    - If the Acknowledged section does not exist in the source file, create it at the bottom (use exactly the heading the codex book-editor uses for that file type — see `chapters/<book>/SMELL.md` / `REVIEW.md` for live reference).
    - Entry format (SMELL):
      ```
-     - **<short title from the PENDING item>.** <one-paragraph rationale citing the rule that made the arbiter ACCEPT — e.g. "Rule 3 voice-floor protection: this beat is one of the chapter's pillar 7 per writing-notes; tightening costs more than it gains." Reference the original PENDING item by its `Source:` line so the convergence ledger trail is auditable.>
+     - **<short title from the PENDING item>.** <one-paragraph rationale citing the rule that made the arbiter ACCEPT — e.g. "Rule 3 voice-floor protection: this beat is one of the chapter's 3–7 voice-floor pillars per writing-notes; tightening costs more than it gains." Reference the original PENDING item by its `Source:` line so the convergence ledger trail is auditable.>
      ```
    - Entry format (REVIEW): same shape, written into REVIEW.md's Acknowledged (No Action) section.
 

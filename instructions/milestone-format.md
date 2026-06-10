@@ -121,4 +121,4 @@ This keeps the operational ledger consistent with the executable ledger; combine
 
 ## Used by
 
-`sniff.md`, `coherence-check.md`, `continuity-check.md`, `fix.md`, `revise.md`, `chapter-writer.md` — and by Claude when planning phases for the surrounding orchestration (write/coherence cycle scripts, deferred verifications).
+`sniff.md`, `factcheck.md`, `motif.md`, `sensitivity.md`, `readability.md`, `adjacency.md`, `coherence-check.md`, `continuity-check.md`, `fix.md`, `revise.md`, `chapter-writer.md` — and by Claude when planning phases for the surrounding orchestration (write/coherence cycle scripts, deferred verifications).

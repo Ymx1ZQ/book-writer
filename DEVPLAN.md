@@ -798,3 +798,34 @@ forcing them would be cargo-culting). No flatten (already flat).
 - Multi-assistant installer beyond claude + codex(judge) (by design).
 - De-hardcoding `~/.claude/skills/book/` paths (book is Claude-native; defensible).
 - Content/prose-pipeline changes (separate review).
+
+## Phase 16 — Content doc-correctness: wrong-consumer, dead refs, stale counts, PENDING contradiction, human-gate marker (2026-06-10)
+
+From the Phase-15 content audit. Documentation-correctness only — no prose-rule
+changes. Closes the 3 🔴 + the stale-count / cross-ref 🟡 the audit surfaced.
+
+### M1 — proof-reader routes to the wrong consumer (🔴)
+
+- [x] `proof-reader.md`: every `/book fix` → `/book revise` (PROOFREAD.md is applied by revise, not fix — `fix.md:139` never touches prose). Lines 175, 201, 216, 227; drop the spurious "Devplan milestones created: X" (210 — proofread writes no DEVPLAN milestones).
+
+### M2 — dead instruction reference in sweep (🔴)
+
+- [x] `sweep.md:62`: `instructions/coldread.md` → `coldread-enum.md` + `coldread-filter.md`. Fix `:15` "rotate-on-write" wording for coldread (coldread-enum overwrites COLDREAD.md, does not rotate).
+
+### M3 — PENDING/arbiter contradiction made consistent (🔴)
+
+- [x] Reconcile the two models: orchestrated/merge pipeline → PENDING resolved by `/book arbiter` (autonomous, Phase 42); bare `/book revise` run standalone → PENDING left for the user. Update `revise.md` ("User reviews and applies manually" → the two-path framing) and add an arbiter note to the SKILL.md writing-loop so the linear flow's PENDING producers have a documented consumer.
+
+### M4 — stale counts + arbiter field description (🟡)
+
+- [x] `reviewer.md`: "8 Dimensions" → "13 Dimensions" (A–M); "Rules 13-25" → "Rules 13-28" (26 exposition-economy, 27 reality-plausibility, 28 register-lock exist).
+- [x] `arbiter.md`: `Source:` field names the *detector* (sniff/coherence/…), not the filename — fix `:70`; "7 strongest beats"/"pillar 7" → "the 3–7 voice-floor pillar beats" (`:38`, `:75`) to match sniff/reviewer.
+- [x] `judge.md`: model id `claude-opus-4-7` → `claude-opus-4-8` (`:117`, `:145`).
+- [x] `milestone-format.md` "Used by" list: add factcheck, motif, adjacency, sensitivity, readability.
+
+### M5 — human cold-read marker in chapter-writer (🔴, paired with ground-truth)
+
+- [x] `chapter-writer.md` Step 8 "Mark Complete": the close marker becomes `- [x] Ch. NN — Title (Level / POV) ✅ machine-checked — awaiting cold-read`, and the step states a chapter is NOT human-validated until a human removes the `awaiting cold-read` tag (per SKILL.md:96). Defines the convention the ground-truth scripts consume.
+
+**Operational:**
+- [x] `pytest tests/` + `bash tests/test_install.sh` still green (no code changed); `./install.sh --force` redeploy.

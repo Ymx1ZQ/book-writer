@@ -79,7 +79,8 @@ WRITING LOOP (repeat per batch)
  10. /book proofread book-1    → line-level review → PROOFREAD.md
  11. /book revise book-1       → apply SMELL (sniff+factcheck+motif+sensitivity+readability+adjacency) + REVIEW + PROOFREAD fixes to prose
  11b. /book snapshot book-1    → refresh reader-state snapshot for next chapter
- 11c. /book adjacency book-1 chNN → cross-chapter pass over [ch(NN-1), chNN]: shape/idiolect/irony-legibility → SMELL.md (structural → user). Runs once the chapter is final, against its predecessor.
+ 11c. /book adjacency book-1 chNN → cross-chapter pass over [ch(NN-1), chNN]: shape/idiolect/irony-legibility → SMELL.md (structural → user). Runs once the chapter is final, against its predecessor. Its SMELL micro-fixes are consumed by the NEXT cycle's revise (adjacency runs after this chapter's revise by design — it needs the chapter final).
+ 11d. /book arbiter book-1 chNN → resolve any `*-PENDING.md` trade-offs this cycle produced (autonomous, Phase 42). In the orchestrated pipeline this runs every cycle; in a bare hand-run linear flow the PENDING files are instead left for the user.
 
 BETWEEN BOOKS
  12. /book compact all         → post-cycle cleanup

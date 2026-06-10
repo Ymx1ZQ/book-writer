@@ -114,7 +114,7 @@ Types:
 ```json
 {
   "judge_id": "claude-default | openrouter-deepseek | openrouter-gemini",
-  "model": "claude-opus-4-7 | deepseek-v4-pro | gemini-3.1-pro",
+  "model": "claude-opus-4-8 | deepseek-v4-pro | gemini-3.1-pro",
   "book": "book-1",
   "chapter": "ch01",
   "rankings_per_dimension": {
@@ -142,7 +142,7 @@ Types:
 
 | Detect | judge_id | model |
 |---|---|---|
-| `$ANTHROPIC_BASE_URL` unset (or empty) | `claude-default` | `claude-opus-4-7` |
+| `$ANTHROPIC_BASE_URL` unset (or empty) | `claude-default` | `claude-opus-4-8` |
 | `$ANTHROPIC_MODEL` contains `deepseek` | `openrouter-deepseek` | `deepseek-v4-pro` |
 | `$ANTHROPIC_MODEL` contains `gemini` | `openrouter-gemini` | `gemini-3.1-pro` |
 

@@ -12,6 +12,7 @@ REPO_URL="${BOOK_REPO_URL:-https://github.com/Ymx1ZQ/book-writer.git}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 FORCE=false
+CHECK=false
 CLEANUP_DIR=""
 
 cleanup_temp() {
@@ -30,6 +31,9 @@ Install the `book` skill into ~/.claude/skills/book/.
 OPTIONS:
   --force   Overwrite existing installation without prompting; also skip the
             interactive dependency-warning prompt.
+  --check   Compare the installed payload (claude + codex judge variant) against
+            the source (no writes); exit 1 and report DRIFT on a difference or
+            missing install.
   --help    Show this help message
 
 REMOTE INSTALL (no clone needed):
@@ -44,6 +48,7 @@ EOF
 while [ $# -gt 0 ]; do
     case "$1" in
         --force) FORCE=true; shift ;;
+        --check) CHECK=true; shift ;;
         --help|-h) usage; exit 0 ;;
         *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
     esac
@@ -69,6 +74,32 @@ else
 fi
 
 DEST="$HOME/.claude/skills/book"
+CODEX_DEST="$HOME/.codex/skills/book"
+
+# --- Drift check (no writes) ---
+
+if [ "$CHECK" = true ]; then
+    STATUS=0
+    check_path() {  # <src> <dest> <label>
+        if [ ! -e "$2" ]; then
+            echo "DRIFT: $3 not installed at $2"; STATUS=1; return
+        fi
+        local out
+        out="$(diff -r --exclude=__pycache__ --exclude='*.pyc' --exclude=.installed-from "$1" "$2" 2>&1)" || true
+        if [ -n "$out" ]; then
+            echo "DRIFT: $3 differs from source ($2):"; echo "$out" | head -10; STATUS=1
+        else
+            echo "OK: $3 matches source ($2)"
+        fi
+    }
+    check_path "$SRC_ROOT/SKILL.md"      "$DEST/SKILL.md"      "claude SKILL.md"
+    check_path "$SRC_ROOT/instructions"  "$DEST/instructions"  "claude instructions/"
+    [ -d "$SRC_ROOT/scripts" ] && check_path "$SRC_ROOT/scripts" "$DEST/scripts" "claude scripts/"
+    if [ -f "$SRC_ROOT/codex/SKILL.md" ]; then
+        check_path "$SRC_ROOT/codex/SKILL.md" "$CODEX_DEST/SKILL.md" "codex judge SKILL.md"
+    fi
+    exit "$STATUS"
+fi
 
 # --- Dependency probes (UX layer; the skill installs even if missing) ---
 
@@ -124,6 +155,10 @@ cp -r "$SRC_ROOT/instructions" "$DEST/instructions"
 [ -f "$DEST/scripts/build_pdf.py" ] && chmod +x "$DEST/scripts/build_pdf.py"
 [ -f "$DEST/scripts/build_epub.py" ] && chmod +x "$DEST/scripts/build_epub.py"
 
+# Stamp the source git short SHA so "what version is deployed?" has an answer.
+SRC_SHA="$(git -C "$SRC_ROOT" rev-parse --short HEAD 2>/dev/null || true)"
+[ -n "$SRC_SHA" ] && printf '%s\n' "$SRC_SHA" > "$DEST/.installed-from"
+
 echo ""
 echo "Installed book skill → $DEST"
 
@@ -131,11 +166,11 @@ echo "Installed book skill → $DEST"
 # The `book` pipeline is a Claude Code skill; under Codex the skill exposes only
 # the `judge` subcommand (the codex lane of the parallel-pipeline judge ensemble).
 if [ -f "$SRC_ROOT/codex/SKILL.md" ]; then
-    CODEX_DEST="$HOME/.codex/skills/book"
     rm -rf "$CODEX_DEST"
     mkdir -p "$CODEX_DEST"
     cp "$SRC_ROOT/codex/SKILL.md" "$CODEX_DEST/SKILL.md"
     [ -d "$SRC_ROOT/codex/agents" ] && cp -r "$SRC_ROOT/codex/agents" "$CODEX_DEST/agents"
+    [ -n "$SRC_SHA" ] && printf '%s\n' "$SRC_SHA" > "$CODEX_DEST/.installed-from"
     echo "Installed book skill (codex variant — judge subcommand) → $CODEX_DEST"
 fi
 

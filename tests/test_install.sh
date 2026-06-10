@@ -40,6 +40,11 @@ assert_exec "$D/scripts/build_epub.py"    "claude: build_epub.py executable"
 CD="$H/.codex/skills/book"
 assert_file "$CD/SKILL.md"                "codex: judge variant SKILL.md installed"
 
+echo "=== --check (M3) ==="
+assert_run 0 "OK" "--check clean after fresh install" -- --check
+echo "hand-edit" >> "$D/SKILL.md"
+assert_run 1 "DRIFT" "--check detects a hand-edited installed file" -- --check
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [ "$FAIL" -eq 0 ]

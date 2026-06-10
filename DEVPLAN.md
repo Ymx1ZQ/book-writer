@@ -782,9 +782,9 @@ forcing them would be cargo-culting). No flatten (already flat).
 
 ### M3 — Installer hygiene parity (`--check` + SHA stamp)
 
-- [ ] `install.sh --check` — compare the installed claude payload (SKILL.md + instructions/ + scripts/) and the codex judge variant against source; report `OK`/`DRIFT` per side, exit 1 on drift or missing. No writes.
-- [ ] On install, stamp `.installed-from` with the source git short SHA (both claude + codex dests).
-- [ ] `tests/test_install.sh` extended: `--check` clean after install; drift detected on a hand-edited installed file.
+- [x] `install.sh --check` — compare the installed claude payload (SKILL.md + instructions/ + scripts/) and the codex judge variant against source; report `OK`/`DRIFT` per side, exit 1 on drift or missing. No writes.
+- [x] On install, stamp `.installed-from` with the source git short SHA (both claude + codex dests).
+- [x] `tests/test_install.sh` extended: `--check` clean after install; drift detected on a hand-edited installed file.
 
 ### M4 — CI: run the test suite on push
 

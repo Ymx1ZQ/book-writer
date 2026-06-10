@@ -1,3 +1,16 @@
+---
+name: book
+description: >-
+  Unified writing pipeline for multi-book fiction projects. One entry point
+  (`/book <command>`) over 25 commands spanning project setup, coherence
+  fixing, batched chapter writing, a multi-pass review stack (sniff, factcheck,
+  motif, sensitivity, readability, cold-read enumerate/filter, proofread,
+  adjacency), revision, PDF/EPUB export, and a parallel-write merge phase
+  (judge / integrate-anchors / arbiter). Genre-agnostic — tone, rules,
+  structure, and genre come from the project's own files (CLAUDE.md, world/,
+  characters/), never from the skill.
+---
+
 # Book — Unified Writing Pipeline
 
 Single entry point for all book-writing operations. Genre-agnostic — reads tone, rules, structure, and genre from the project's own files (CLAUDE.md, world/, characters/).

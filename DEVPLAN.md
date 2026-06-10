@@ -775,10 +775,10 @@ forcing them would be cargo-culting). No flatten (already flat).
 
 ### M2 — Root SKILL.md frontmatter (agentskills.io standard)
 
-- [ ] Add YAML frontmatter (`name: book` + a `description` covering the pipeline + the `/book <command>` surface) to the root `SKILL.md`, matching the codex variant and the other skills. Body unchanged.
+- [x] Add YAML frontmatter (`name: book` + a `description` covering the pipeline + the `/book <command>` surface) to the root `SKILL.md`, matching the codex variant and the other skills. Body unchanged.
 
 **Operational:**
-- [ ] `./install.sh --force` redeploys; `/book help` still routes.
+- [x] `./install.sh --force` redeploys; `/book help` still routes.
 
 ### M3 — Installer hygiene parity (`--check` + SHA stamp)
 

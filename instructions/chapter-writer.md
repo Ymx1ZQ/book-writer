@@ -35,6 +35,16 @@ Read the project's files. Paths are relative to the project root.
 **Load based on level:**
 Identify this chapter's narrative level from the outline. Then load files from the corresponding `world/level-*-<name>/` directory SELECTIVELY: list the files in the directory, then load only those whose `## Usage Tracker` contains items mapped to THIS chapter (matching Book and Ch). Skip files with no tracker items for this chapter — they waste context. Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
 
+### Level register (which canon directories this chapter may load)
+
+The chapter header's `**Level:**` value (e.g. `Reality` / `Dome` / `Ark`) decides which level-scoped canon is legal for this chapter:
+
+- **Legal:** `world/level-<N>-<this level>/` plus every level-neutral file — `characters/**`, `plot/**`, and top-level `world/*.md`.
+- **Barred:** every other `world/level-*-<name>/` directory. A Dome chapter does not load `world/level-0-reality/*` because the POV cannot see it, and the same holds in every direction.
+- **Declared exception:** files the book's outline header promotes into the always-loaded set (§Context Tags) are loaded by authorial declaration and are not re-judged here.
+
+The register is a POV constraint on what the writer is allowed to know, so it outranks any pointer aimed the other way: a barred file is reported, never auto-added, whatever a beat (2.6.a) or a tracker row (2.6.c) says. Distinct from the tonal Register lock below, which constrains prose, not file loading.
+
 ### Register lock (Phase 41 M12)
 
 After identifying the chapter's level (Dome / Ark / Reality), load `world/register-locks.md` and extract the section for THIS chapter's level. Insert into your runtime context as a fenced **REGISTER LOCK FOR THIS CHAPTER** block:
@@ -273,7 +283,7 @@ Announce upon completion of Step 2.5:
 
 ## Step 2.6: Pre-Drafting Context Symmetry Check (MANDATORY)
 
-The chapter's `**context:**` list (in the outline) and its scene beats must stay symmetric: every file in `context:` must justify itself with at least one beat reference; every beat that needs a file must list that file. Drift in either direction is an invention surface (orphan = wasted context window; gap = the writer fills silence with plausible-but-uncanonicalized invention). This check runs after Step 2.5 and before Step 3.
+The chapter's `**context:**` list (in the outline) must stay symmetric with two things: its scene beats (every file in `context:` justifies itself with at least one beat reference; every beat that needs a file lists it) and the Usage Tracker rows mapped to this chapter (every file holding a row for this Book+Ch is reachable). Drift is an invention surface in each direction — orphan = wasted context window; missing beat file = the writer fills silence with plausible-but-uncanonicalized invention; missing tracker file = planned canon that never reaches a reader. This check runs after Step 2.5 and before Step 3.
 
 ### 2.6.a — Beat-side scan (missing files) (HARD `MUST`)
 
@@ -294,7 +304,18 @@ For every file in `**context:**` (excluding always-loaded), verify at least one 
 
 User confirms before drafting proceeds. Drafting MAY proceed with documented orphans.
 
-### 2.6.c — Post-draft audit
+### 2.6.c — Tracker-side scan (unreachable rows) (HARD `MUST`)
+
+Every canon file holding a `## Usage Tracker` row for THIS Book+Ch must be reachable by this chapter, or the row cannot be rendered and Step 5.5 cannot tick it — the writer never opens the file.
+
+Collect the owning files mechanically: `grep -rlF "| B<N> | <NN> |" characters/ world/ plot/`, then confirm per hit that the row sits under a `## Usage Tracker` section. Ignore span rows (`B1 | 01-30`) — they document arc-wide application and require no per-chapter inclusion. Compare that set against three reachable sources: the chapter's `**context:**` list, the always-loaded set, and the texture-palette proxy (both declared in the outline header §Context Tags, per 2.6.e). Match on path suffix — context lists are written relative to `world/`.
+
+Files reachable through none of the three, split by the level register (Step 1):
+
+- **Level-legal** → AUTO-ADD: append them to the chapter's `**context:**` field in the outline, exactly as 2.6.a does for beats. Announce: *"✅ Pre-drafting context symmetry: auto-added N files to `**context:**` (<list>) to match tracker rows mapped to this chapter."* Then load them (Step 1 has already run) and add their rows to the plan file's `## Usage Targets` — they are pre-planned elements for this chapter like any other.
+- **Level-barred** (a Level-0 file holding a row for a Dome or Ark chapter, and every other cross-level case) → do NOT add. Report in the pre-draft summary, naming both hypotheses and resolving neither: the row targets the wrong chapter, OR the content is filed in the wrong file. The register outranks the tracker. Drafting proceeds without the file; the row stays `planned`.
+
+### 2.6.d — Post-draft audit
 
 After Step 5 (Verify), the agent generates `chapters/<book>/ch<NN>-context-audit.md` (ephemeral; project should gitignore via `chapters/*/ch*-context-audit.md` pattern). For each file in `**context:**`, the audit maps the file to the beat / line-range where it was actually used in prose. The audit also lists any file used in prose but not in `**context:**` (drift). One-line summary at the top of the file:
 
@@ -304,9 +325,9 @@ context drift: -N file(s) planned-but-unused (<list>); +M file(s) used-but-unpla
 
 Drift entries feed back into the symmetry check for the next chapter — used-but-unplanned files become candidates for next chapter's `**context:**`; planned-but-unused files become orphan candidates.
 
-### 2.6.d — Always-loaded set awareness
+### 2.6.e — Always-loaded set awareness
 
-Read the outline header's "Always-loaded reference" paragraph (typically lists `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, plus trilogy-wide foreground character files and any book-specific promotions). Exclude every file in this paragraph from BOTH the missing (2.6.a) and orphan (2.6.b) checks. Always-loaded references are out of scope for per-chapter symmetry — they are loaded by default and need no per-chapter justification.
+Read the outline header's "Always-loaded reference" paragraph (typically lists `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, plus trilogy-wide foreground character files and any book-specific promotions). Exclude every file in this paragraph from the missing (2.6.a), orphan (2.6.b) and tracker (2.6.c) checks. Always-loaded references are out of scope for per-chapter symmetry — they are loaded by default and need no per-chapter justification. Same exclusion for the header's "Texture-palette proxy" paragraph: those files are loaded transitively through `writing-notes.md`, so their rows are reachable without a `context:` entry. Both paragraphs are parsed from THIS book's outline header at run time — never carried over from another book.
 
 Announce upon completion of Step 2.6:
 *"✅ Pre-drafting context symmetry check passed. Proceeding to write."*
@@ -475,13 +496,17 @@ If any pass fails: revise and re-check. Max 2 revision cycles.
 
 ## Step 5.5: Update Usage Trackers (MANDATORY)
 
-Open every file loaded in Step 1 that has a `## Usage Tracker` section.
+Open **every file holding a `## Usage Tracker` row for THIS Book+Ch** — the set 2.6.c collected, re-derived here if the plan is stale. This is deliberately NOT "the files Step 1 loaded": a file with a row for this chapter that Step 1 never opened has a row that can neither be rendered nor ticked.
+
+Where the two sets differ, report the difference in the Step 5.5 announcement instead of skipping it silently — the difference is a tracker↔context violation 2.6.c should have caught: *"⚠️ Step 5.5: N file(s) hold rows for this chapter but were not loaded in Step 1 (<list>) — tracker↔context gap; auto-add pending in the outline."* Rows in a level-barred file (the 2.6.c conflict) stay `planned` and are named in the same line.
 
 For each tracker item matching THIS chapter (same Book and Ch) that was SHOWN in the draft prose, change Status from `planned` to `written`. If an item didn't make it into the draft, leave it as `planned`. Do NOT change items in other chapters' rows.
 
 **Rules:**
 - NEVER update status for items not rendered in prose — the detail must be visible in the chapter text.
 - Status reflects what's actually in the draft, not what was planned.
+- **Channel match.** The mark is valid only if the prose renders the element in the channel the row names. A row promising coolant as *smell and memory* is not satisfied by burn and stain — the object is there, the named channel is not, so the row stays `planned`. Same test for the Detail column: a row marked `scene` is not satisfied by a one-clause accent.
+- A `written` mark is a claim that `/book fidelity` re-reads against the prose (class (d)). Marking optimistically does not save work; it moves the finding downstream.
 
 ---
 

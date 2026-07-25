@@ -1,6 +1,6 @@
 # `/book fidelity` — planned-vs-rendered check
 
-Compare a chapter's outline entry (the plan of record) against the chapter prose (what was actually rendered), with `chapters/<book>/outline-deviation.md` as the ledger of legitimate differences between them. Catch the class of defect where plan and prose silently diverge: a planned beat that never made the page, a rendered beat nobody planned, a ledger entry that no longer describes the prose it ratified.
+Compare a chapter's outline entry (the plan of record) against the chapter prose (what was actually rendered), with `chapters/<book>/outline-deviation.md` as the ledger of legitimate differences between them. Catch the class of defect where plan and prose silently diverge: a planned beat that never made the page, a rendered beat nobody planned, a ledger entry that no longer describes the prose it ratified, a tracker row marked `written` for an element the prose does not contain.
 
 The skill already has the **write-time half** of this contract: `chapter-writer.md` Step 2.5.d (the outline-deviation contract) and Step 7 item 8 (the writer's own silent-cut self-check). Fidelity is that self-check's **independent post-hoc verifier** — per the canon-hierarchy doctrine that no single skill validates its own output, the writer's word that the contract was respected is never the last word. Fidelity re-derives the comparison from scratch, assuming nothing about whether Step 7 ran or ran honestly.
 
@@ -14,9 +14,9 @@ The skill already has the **write-time half** of this contract: `chapter-writer.
 | Motif semantic charge across chapters | `motif.md` |
 | Cross-chapter shape / voice / irony across a window | `adjacency.md` |
 | Craft judgment of the rendered prose | `reviewer.md` |
-| **"Did the prose render what the outline planned? Is everything substantive in the prose either planned or ledgered? Does the ledger still describe the prose?"** | **THIS check** |
+| **"Did the prose render what the outline planned? Is everything substantive in the prose either planned or ledgered? Does the ledger still describe the prose? Is every `written` tracker mark true of the prose?"** | **THIS check** |
 
-**Milestone format:** see `instructions/milestone-format.md`. Two-channel routing (`world/canon-hierarchy.md` convention, as `motif.md`/`factcheck.md` already apply it): prose-side findings → `SMELL.md` (`Source: fidelity`, consumed by `/book revise`); outline/ledger-side findings → `DEVPLAN.md` milestones (consumed by `/book fix`).
+**Milestone format:** see `instructions/milestone-format.md`. Two-channel routing (`world/canon-hierarchy.md` convention, as `motif.md`/`factcheck.md` already apply it): prose-side findings → `SMELL.md` (`Source: fidelity`, consumed by `/book revise`); outline-, ledger- and tracker-side findings (including a false `written` mark to revert) → `DEVPLAN.md` milestones (consumed by `/book fix`).
 
 ## Usage
 
@@ -32,6 +32,7 @@ The skill already has the **write-time half** of this contract: `chapter-writer.
 1. The chapter's § of `chapters/<book>/outline.md`, **verbatim** (header to next chapter header) — every beat, plant assignment, motif assignment, cliffhanger. This is the plan of record.
 2. The chapter prose `chapters/<book>/<chNN>.md`, **verbatim**.
 3. `chapters/<book>/outline-deviation.md` **if it exists** — the append-only legitimate-deviations ledger (per the `chapter-writer.md` Step 2.5.d contract). It may not exist: the file is created only when a deviation is first logged, so absence means "no deviations ever ratified", not an error.
+4. Every canon file holding a `## Usage Tracker` row for this Book+Ch — collected the way `chapter-writer.md` 2.6.c collects them (`grep -rlF "| B<N> | <NN> |" characters/ world/ plot/`, span rows like `B1 | 01-30` ignored), NOT restricted to the chapter's `context:` list. Class (d) only; the rows' Status column is the claim under test.
 
 **Graph triage (optional — see `instructions/graph-recall.md` for gating):** only when `graphify-out/graph.json` exists AND the freshness gate passes, run a cheap planned-vs-rendered diff BEFORE the verbatim reads, against the chapter's node pair — planned node `chapters_book_N_outline_chNN`, rendered node `chapters_book_N_chNN`:
 
@@ -42,7 +43,7 @@ graphify query "chapters_book_N_chNN — beats, plants, cliffhanger actually ren
 
 Both queries pass `--budget 4000`: per-chapter node detail sits deep in the traversal output and the default 2000-token cap truncates it (project-side Phase 80 M5 re-extraction finding). The pair diff yields a **candidate list** that prioritizes the verbatim comparison — it never replaces it: findings are asserted only from the verbatim reads (the disk text is the truth). Graph absent, stale, or either node missing → skip triage; the check runs **identically** on file reads alone (an empty query result is never evidence of absence, per `instructions/graph-recall.md` fallback ladder).
 
-## The three finding classes
+## The four finding classes
 
 ### (a) Planned-not-rendered (silent cut)
 
@@ -61,7 +62,18 @@ A substantive prose beat with no outline basis and no deviation entry. Two legit
 
 An `outline-deviation.md` entry that no longer matches the prose it describes: the entry says a scene moved to ch07 but ch07's prose never received it; a plant's recorded destination disagrees with where the prose actually planted it; a ledgered cut was later restored without a new entry. The ledger is append-only, so the fix is a **corrective append** (plus any outline-annotation update) — never a rewrite of ledger history. Ledger-side → `DEVPLAN.md` milestone consumed by `/book fix`. If the drift exposes a plant with no valid destination, name it as orphaned.
 
-**Acknowledged rule (load-bearing):** entries already recorded in `outline-deviation.md` are ACKNOWLEDGED. A beat cut-and-ledgered is legitimate — never re-flagged as (a); a beat added-and-ledgered is legitimate — never re-flagged as (b). The ledger is the contract instrument; fidelity verifies against it, it does not second-guess ratified deviations. Only class (c) touches an existing entry, and only when the entry no longer describes the prose.
+**Acknowledged rule (load-bearing):** entries already recorded in `outline-deviation.md` are ACKNOWLEDGED. A beat cut-and-ledgered is legitimate — never re-flagged as (a); a beat added-and-ledgered is legitimate — never re-flagged as (b). The ledger is the contract instrument; fidelity verifies against it, it does not second-guess ratified deviations. Only class (c) touches an existing entry, and only when the entry no longer describes the prose. The ledger does not reach class (d): a ratified deviation explains why a beat is absent, it never makes a `written` tracker mark true.
+
+### (d) Marked-written-not-rendered
+
+A `## Usage Tracker` row for this Book+Ch whose Status reads `written` while the element is absent from the prose. `chapter-writer.md` Step 5.5 sets `planned` → `written` and no later step ever re-reads the mark, so this is the first and only verification the forward direction gets. Measured baseline on the one chapter audited exhaustively: 17% of its 12 marks false, 33% counting partials; 21 false marks across the book.
+
+For each `written` row, locate the element in the prose and apply the **channel test**: the mark is true only when the prose renders the element in the channel the row names. Coolant promised as *smell and memory* is not delivered by burn and stain — the object is present, the named channel is not. A row whose Detail column says `scene` is not satisfied by a one-clause accent.
+
+- **Absent** → tracker-side: a `DEVPLAN.md` milestone for `/book fix` reverting that row to `planned`, naming file, row text and chapter. Add a `SMELL.md` entry as well only when the element is one this chapter should carry (then classes (a)'s routing rules apply to the weave).
+- **Partial** (right object, wrong channel or weight) → one `SMELL.md` entry, `Flagging: TRADE-OFF`, whose suggested action names both resolutions: complete the channel in prose, or revert the row to `planned`. Never auto-decided.
+
+A row still `planned` is not a class (d) finding — under-ticking is bookkeeping noise, over-ticking is a false claim that canon reached the page. Tracker rows are per-element; do not re-flag as (d) an element already flagged as (a) from the outline side — reference the (a) entry instead.
 
 ## Flagging discipline (per `reviewer.md` conventions)
 
@@ -77,14 +89,14 @@ Standard SMELL.md format with `Source: fidelity` and a `Class:` field:
 ## #N — <one-line, e.g. "ch04: outline plant 'ledger stamp' never rendered — no deviation entry">
 
 - **Source:** fidelity
-- **Class:** (a) planned-not-rendered   ← (a) | (b) rendered-not-planned | (c) deviation-ledger drift
-- **Planned (outline):** outline.md §Ch04 — "<the beat/plant/cliffhanger, quoted>"   (— for class (b): none)
-- **Rendered (prose):** <absent | ch04.md line NNN — "<quote>">
-- **Ledger:** <no outline-deviation.md entry | the drifted entry, quoted (class c)>
+- **Class:** (a) planned-not-rendered   ← (a) | (b) rendered-not-planned | (c) deviation-ledger drift | (d) marked-written-not-rendered
+- **Planned (outline):** outline.md §Ch04 — "<the beat/plant/cliffhanger, quoted>"   (— for class (b): none; for class (d): the tracker row, quoted, with its owning file)
+- **Rendered (prose):** <absent | ch04.md line NNN — "<quote>">   (class (d) partial: name the channel delivered vs the channel promised)
+- **Ledger:** <no outline-deviation.md entry | the drifted entry, quoted (class c) | — (class d)>
 - **Story debt:** <orphaned plant / unprepared payoff in chNN / broken cliffhanger promise / unratified canon fact>
 - **Routing:** INLINE   (or: → DEVPLAN for a ledger-side resolution)
 - **Flagging:** SAFE-CUT | TRADE-OFF | SAFE-KEEP
-- **Suggested action:** <(a) the one-line weave that renders the element, OR the retroactive deviation entry text (→ DEVPLAN); (b) BOTH options — "ratify: append '<entry text>' to outline-deviation.md (→ DEVPLAN milestone for /book fix)" OR "trim: <the cut>" — adjudicated via SMELL-PENDING, never auto-decided here; (c) the corrective ledger append>
+- **Suggested action:** <(a) the one-line weave that renders the element, OR the retroactive deviation entry text (→ DEVPLAN); (b) BOTH options — "ratify: append '<entry text>' to outline-deviation.md (→ DEVPLAN milestone for /book fix)" OR "trim: <the cut>" — adjudicated via SMELL-PENDING, never auto-decided here; (c) the corrective ledger append; (d) partials — BOTH "complete the channel: <the weave>" and "revert the row to `planned` (→ DEVPLAN milestone for /book fix)">
 ```
 
 ### Fidelity Audit section (always present)
@@ -92,35 +104,37 @@ Standard SMELL.md format with `Source: fidelity` and a `Class:` field:
 ```markdown
 ## Fidelity Audit (Source: fidelity)
 
-Chapter: ch04. Outline elements enumerated: N. Ledger entries touching ch04: M. Graph triage: <fresh — pair diff used | skipped (absent/stale/no node)>.
+Chapter: ch04. Outline elements enumerated: N. Ledger entries touching ch04: M. Tracker rows for ch04 marked `written`: W (files: <list>). Graph triage: <fresh — pair diff used | skipped (absent/stale/no node)>.
 
-| Planned element / prose beat | Rendered | Ledger | Verdict |
+| Planned element / prose beat / tracker row | Rendered | Ledger | Verdict |
 |---|---|---|---|
 | cold-open at dispensary | ch04.md l.1-40 | — | clean |
 | plant: ledger stamp | ABSENT | no entry | #N (a) flagged |
 | scene: corridor interview | moved to ch05 | Ch.04 entry 2026-05-02 | acknowledged |
 | (prose) rooftop exchange, l.210 | present | no entry | #M (b) flagged |
+| (tracker) micro-details.md "coolant — smell + memory" `written` | object only, l.88 | — | #P (d) flagged, partial |
 
-Findings: A class (a) / B class (b) / C class (c). Acknowledged deviations: D. Ledger-side milestones → DEVPLAN Phase NN.
+Findings: A class (a) / B class (b) / C class (c) / D class (d). Acknowledged deviations: E. Ledger- and tracker-side milestones → DEVPLAN Phase NN.
 ```
 
 ## DEVPLAN milestone format (ledger-side findings)
 
-Per `instructions/milestone-format.md`, same shape sniff uses for ANCHOR-NEEDED (see `sniff.md` §"DEVPLAN milestone format"): append `## Phase <NN+1> — Fidelity ledger fixes (<book> <chNN>) (<date>)`, one `- [ ]` milestone per finding carrying the retroactive `outline-deviation.md` entry text (append-only, dated), the outline annotation to apply (`[moved to chXX]` / cut marker), and any orphaned-plant reassignment target derived per the §Autonomous-decision principle — never "user picks A or B?".
+Per `instructions/milestone-format.md`, same shape sniff uses for ANCHOR-NEEDED (see `sniff.md` §"DEVPLAN milestone format"): append `## Phase <NN+1> — Fidelity ledger fixes (<book> <chNN>) (<date>)`, one `- [ ]` milestone per finding carrying the retroactive `outline-deviation.md` entry text (append-only, dated), the outline annotation to apply (`[moved to chXX]` / cut marker), and any orphaned-plant reassignment target derived per the §Autonomous-decision principle — never "user picks A or B?". Class (d) milestones carry instead: the owning file, the row quoted verbatim, and the single edit `written` → `planned`.
 
 ## Steps for the executing agent
 
 1. Resolve the chapter prose file and its outline §. Either missing → print the error and exit.
 2. Graph triage only when fresh per `instructions/graph-recall.md`: query the planned/rendered node pair with `--budget 4000`; hold the diff as a candidate list. Node missing or result empty → skip triage silently.
-3. Read the outline § verbatim; enumerate every beat, plant assignment, motif assignment, and cliffhanger. Read `outline-deviation.md` if present; extract the entries touching this chapter.
-4. Read the prose verbatim. Run classes (a), (b), (c), applying the acknowledged rule and the substantive-beat bar.
+3. Read the outline § verbatim; enumerate every beat, plant assignment, motif assignment, and cliffhanger. Read `outline-deviation.md` if present; extract the entries touching this chapter. Collect the tracker files per Input 4; extract the rows for this Book+Ch marked `written`.
+4. Read the prose verbatim. Run classes (a), (b), (c), (d), applying the acknowledged rule, the substantive-beat bar, and the class (d) channel test.
 5. Append SMELL.md entries (`Source: fidelity` — append, never overwrite) + the Fidelity Audit section to `chapters/<book>/SMELL.md`.
-6. Ledger-side findings → append the DEVPLAN phase.
-7. Print: `fidelity: <book> <chNN> — A planned-not-rendered / B rendered-not-planned / C ledger-drift; D acknowledged. E entries → SMELL.md; F milestones → DEVPLAN Phase NN.`
+6. Ledger-side and tracker-side findings → append the DEVPLAN phase.
+7. Print: `fidelity: <book> <chNN> — A planned-not-rendered / B rendered-not-planned / C ledger-drift / D false-written (of W marks checked); E acknowledged. F entries → SMELL.md; G milestones → DEVPLAN Phase NN.`
 
 ## Calibration (load-bearing)
 
 - **Independent verifier, both ways.** Never assume the writer's Step 7 self-check ran or ran honestly — re-derive everything. But also never punish the latitude the contract grants: the outline is a plan, not a transcript.
 - **The ledger closes findings.** Acknowledged = closed. Re-flagging a ratified deviation is the check failing, not the chapter.
 - **Never auto-decide class (b).** Ratify-vs-trim is an authorial call; the check's job is to make the call impossible to skip, not to make it.
+- **Class (d) checks the writer's own claim.** The `written` mark was set by the session that wrote the prose (`chapter-writer.md` Step 5.5) and is re-read nowhere else in the skill. Treat every mark as unverified until the element is located on the page, in the channel the row names.
 - **Coordinate with Chekhov.** Plant/payoff existence across the book is `coherence-check.md` §Chekhov's; fidelity checks THIS chapter against ITS plan. If Chekhov already flagged the missing plant, reference its entry in the audit table instead of duplicating.

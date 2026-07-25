@@ -40,7 +40,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 | `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
 | `factcheck <book> [ch]` | Active real-world accuracy: enumerate every external-world claim → verify each → SMELL.md (`Source: factcheck`) + VERIFY items to PENDING | `/book factcheck book-1 ch01` |
-| `fidelity <book> <ch>` | Planned-vs-rendered check: chapter outline § vs prose vs outline-deviation.md ledger — silent cuts, unplanned beats, ledger drift → SMELL.md (`Source: fidelity`) + ledger-side → DEVPLAN | `/book fidelity book-1 ch04` |
+| `fidelity <book> <ch>` | Planned-vs-rendered check: chapter outline § vs prose vs outline-deviation.md ledger — silent cuts, unplanned beats, ledger drift, false `written` tracker marks → SMELL.md (`Source: fidelity`) + ledger-/tracker-side → DEVPLAN | `/book fidelity book-1 ch04` |
 | `motif <book> [ch]` | Symbolic / motif coherence: motif not inverted/drifted, evolution intentional, payoff lands → SMELL.md (`Source: motif`) + canon → DEVPLAN | `/book motif book-1 ch01` |
 | `sensitivity <book> [ch]` | Conservative representation / dated-language pass (advisory-first, diegetic-intent gated) → SMELL.md (`Source: sensitivity`) | `/book sensitivity book-1 ch01` |
 | `readability <book> [ch]` | Register-aware flow / "scorrevolezza" pass — flags the accidental brick (slog, clause-stacking, paragraph-mass) only outside intended-heavy registers → SMELL.md (`Source: readability`) | `/book readability book-1 ch01` |

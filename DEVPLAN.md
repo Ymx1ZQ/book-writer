@@ -662,7 +662,13 @@ The M4 evidence was an **under-call**: the user's lived reaction to ch03 was BLO
 
 ---
 
-## Phase 13 — Gap-coverage checks: readability/flow, motif, factcheck, sensitivity (2026-05-28)
+## Phase 13 ✅ — Gap-coverage checks: readability/flow, motif, factcheck, sensitivity (2026-05-28)
+
+> Close-out note 2026-07-25: these checkboxes were left unticked when the work
+> shipped (May 2026). Verified today item-by-item: all four instruction files
+> exist with their Audit sections, register/VERIFY/advisory-first/two-channel
+> features present, SKILL.md rows + pipeline order in place, revise.md Source
+> enumeration extended. Ticked retroactively after verification.
 
 > **Execution mode:** IDD fallback, per Phase 3 / 8 / 9 / 10 / 11 / 12 precedent.
 > **Paired with:** project `ground-truth` DEVPLAN **Phase 42** (pipeline wiring + clean QC re-run). This skill phase builds the four new detectors; Phase 42 wires them into the orchestrators and re-runs them on Book 1.
@@ -675,32 +681,32 @@ The audit of the pipeline (2026-05-28) found the QC matrix exhausts the *enumera
 
 ### M1: `instructions/readability.md` — register-aware flow pass (→ SMELL.md, `Source: readability`)
 
-- [ ] New detector. Reads `world/tones.md`, `world/prose-rules.md`, `world/writing-checklists.md`, and `characters/notes/voice-samples.md` to map which narrative levels/sections carry an **intended-heavy** register vs the **default** register.
-- [ ] Flags only *accidental* brick outside intended-heavy registers: run-on sentence-length streaks, clause-stacking / subordinate-clause depth, referential overload (antecedent density per paragraph), unbroken exposition blocks, paragraph mass, un-glossed-term density at reading speed.
-- [ ] Every finding tagged `Register: default | intended-heavy`. Only `default`-register findings become INLINE (SAFE-CUT / TRADE-OFF); `intended-heavy` stretches downgrade to ACCEPT/SAFE-KEEP so deliberate density is never penalised. Inherits voice-floor protection (a finding that would erase a voice signature is a TRADE-OFF, never auto-cut). Always emits a "Readability / Flow Audit" section in SMELL.md (sentence-length & paragraph-mass metrics per scene) for transparency, even at zero flags.
+- [x] New detector. Reads `world/tones.md`, `world/prose-rules.md`, `world/writing-checklists.md`, and `characters/notes/voice-samples.md` to map which narrative levels/sections carry an **intended-heavy** register vs the **default** register.
+- [x] Flags only *accidental* brick outside intended-heavy registers: run-on sentence-length streaks, clause-stacking / subordinate-clause depth, referential overload (antecedent density per paragraph), unbroken exposition blocks, paragraph mass, un-glossed-term density at reading speed.
+- [x] Every finding tagged `Register: default | intended-heavy`. Only `default`-register findings become INLINE (SAFE-CUT / TRADE-OFF); `intended-heavy` stretches downgrade to ACCEPT/SAFE-KEEP so deliberate density is never penalised. Inherits voice-floor protection (a finding that would erase a voice signature is a TRADE-OFF, never auto-cut). Always emits a "Readability / Flow Audit" section in SMELL.md (sentence-length & paragraph-mass metrics per scene) for transparency, even at zero flags.
 
 ### M2: `instructions/motif.md` — symbolic / motif coherence (→ SMELL.md prose / DEVPLAN canon)
 
-- [ ] New detector. Reads `plot/motif-tracking.md`, `plot/prestige-inventory.md`, and plant/payoff tracking. Per motif instance: checks direction (motif not used *inverted* vs its established meaning), that any evolution is intentional, and payoff alignment.
-- [ ] Two-channel routing: canon drift (motif meaning contradicts the tracker) → DEVPLAN milestone for `fix`; prose-side misuse → `SMELL.md` INLINE (`Source: motif`) for `revise`. Conservative: an ambiguous symbolic reading is SAFE-KEEP, not a flag. Emits a "Motif Coherence Audit" section listing every tracked motif's instances and verdict.
+- [x] New detector. Reads `plot/motif-tracking.md`, `plot/prestige-inventory.md`, and plant/payoff tracking. Per motif instance: checks direction (motif not used *inverted* vs its established meaning), that any evolution is intentional, and payoff alignment.
+- [x] Two-channel routing: canon drift (motif meaning contradicts the tracker) → DEVPLAN milestone for `fix`; prose-side misuse → `SMELL.md` INLINE (`Source: motif`) for `revise`. Conservative: an ambiguous symbolic reading is SAFE-KEEP, not a flag. Emits a "Motif Coherence Audit" section listing every tracked motif's instances and verdict.
 
 ### M3: `instructions/factcheck.md` — active real-world accuracy (→ SMELL.md / DEVPLAN / VERIFY-PENDING)
 
-- [ ] New detector that **extends, does not duplicate**, Phase 8's reactive in-prose factual-claim flag inside `sniff`. `sniff` stays the reactive guardrail; `factcheck` is the dedicated batch verifier: extract real-world claims → verify against `world/timeline.md` (tech-chains coherent with the in-world year), geography, physics/medicine/law/finance.
-- [ ] Auto-resolvable canon contradictions route to DEVPLAN/SMELL normally; non-machine-verifiable claims become `Flagging: VERIFY` entries surfaced to `SMELL-PENDING.md` for human/web confirmation rather than silent auto-edits. Emits a "Fact-Check Audit" section (claim → bucket: anchored / verified / VERIFY).
+- [x] New detector that **extends, does not duplicate**, Phase 8's reactive in-prose factual-claim flag inside `sniff`. `sniff` stays the reactive guardrail; `factcheck` is the dedicated batch verifier: extract real-world claims → verify against `world/timeline.md` (tech-chains coherent with the in-world year), geography, physics/medicine/law/finance.
+- [x] Auto-resolvable canon contradictions route to DEVPLAN/SMELL normally; non-machine-verifiable claims become `Flagging: VERIFY` entries surfaced to `SMELL-PENDING.md` for human/web confirmation rather than silent auto-edits. Emits a "Fact-Check Audit" section (claim → bucket: anchored / verified / VERIFY).
 
 ### M4: `instructions/sensitivity.md` — stereotype / dated-language / representation (→ SMELL.md, advisory-first)
 
-- [ ] New detector, conservative and advisory-first: stereotypes, caricature, dated or ableist language, representation gaps. Findings default to `SMELL-PENDING.md` (TRADE-OFF) for human decision; only unambiguous dated-term swaps may auto-apply (SAFE-CUT). Reads `characters/notes/narrator-boundaries.md` to respect per-POV constraints. Emits a "Sensitivity Audit" section.
+- [x] New detector, conservative and advisory-first: stereotypes, caricature, dated or ableist language, representation gaps. Findings default to `SMELL-PENDING.md` (TRADE-OFF) for human decision; only unambiguous dated-term swaps may auto-apply (SAFE-CUT). Reads `characters/notes/narrator-boundaries.md` to respect per-POV constraints. Emits a "Sensitivity Audit" section.
 
 ### M5: SKILL.md — dispatch, routing, pipeline order
 
-- [ ] Add commands-table rows for `readability`, `motif`, `factcheck`, `sensitivity`; add their `instructions/<cmd>.md` entries to the Execution routing map.
-- [ ] Update "The Pipeline" writing-loop order to: `write → sniff → factcheck → review → motif → sensitivity → coldread-enum → coldread-filter → readability → proofread → revise → snapshot`. (Readability runs late, just before proofread, so it judges near-final prose; factcheck early next to sniff; motif/sensitivity in the editorial cluster.)
+- [x] Add commands-table rows for `readability`, `motif`, `factcheck`, `sensitivity`; add their `instructions/<cmd>.md` entries to the Execution routing map.
+- [x] Update "The Pipeline" writing-loop order to: `write → sniff → factcheck → review → motif → sensitivity → coldread-enum → coldread-filter → readability → proofread → revise → snapshot`. (Readability runs late, just before proofread, so it judges near-final prose; factcheck early next to sniff; motif/sensitivity in the editorial cluster.)
 
 ### M6: consumer doc-touch — revise.md
 
-- [ ] `instructions/revise.md`: extend the `Source:` enumeration (currently `sniff` / `coherence` / `continuity`) to also list `readability` / `motif` / `factcheck` / `sensitivity`, and add `VERIFY` alongside the SMELL flagging values that surface to `SMELL-PENDING.md`. **No logic change** — processing is already uniform by `Source:`. `sweep.md` and `arbiter.md` are unchanged (they already operate on `SMELL.md` / `SMELL-PENDING.md` generically).
+- [x] `instructions/revise.md`: extend the `Source:` enumeration (currently `sniff` / `coherence` / `continuity`) to also list `readability` / `motif` / `factcheck` / `sensitivity`, and add `VERIFY` alongside the SMELL flagging values that surface to `SMELL-PENDING.md`. **No logic change** — processing is already uniform by `Source:`. `sweep.md` and `arbiter.md` are unchanged (they already operate on `SMELL.md` / `SMELL-PENDING.md` generically).
 
 **Operational (run after the milestones above):**
 - `./install.sh --force` from the skill dev tree to deploy (never edit the installed copy).
@@ -829,3 +835,380 @@ changes. Closes the 3 🔴 + the stale-count / cross-ref 🟡 the audit surfaced
 
 **Operational:**
 - [x] `pytest tests/` + `bash tests/test_install.sh` still green (no code changed); `./install.sh --force` redeploy.
+
+## Phase 17 ✅ — Graph-assisted recall (graphify) + per-command model guidance (2026-07-25)
+
+Two goals from the user: (1) each pipeline step should run on the right model tier
+(Opus vs Sonnet) — script-side wiring lives in the project repo (ground-truth
+DEVPLAN Phase 80); the skill documents the per-command recommendation. (2) The
+skill should use a project's graphify knowledge graph, where one exists, to
+replace bulk canon loading with targeted queries — cutting per-step token cost
+and giving steps step-by-step recall of plants, threads, tracker assignments,
+and cross-references.
+
+Evidence base (measured on ground-truth, ~587k-word corpus): `chapter-writer`
+Step 1 loads 130-140k tok before drafting (ch01 `context:` tag alone = 31 files
+≈ 80k tok); `coherence all` worst-case ≈ 385k tok; `motif` re-reads all prior
+chapters (unbounded); `continuity` is 100% relational. Graph queries over
+`graphify-out/graph.json` (1,928 nodes / 2,920 edges) answer the relational
+part at near-zero token cost.
+
+**Design invariants (all milestones):**
+- **Opt-in per project.** Graph use activates ONLY if `graphify-out/graph.json`
+  exists in the project root. Absent → every instruction behaves exactly as
+  today. The skill stays project-agnostic; no ground-truth specifics hardcoded.
+- **Index mode vs answer mode.** Index mode (default, staleness-tolerant): the
+  query returns file/§ pointers; the agent reads the pointed-to sections from
+  disk — the graph navigates, the file is the truth. Answer mode
+  (staleness-strict): the query result is consumed directly (plant/payoff
+  tables, thread lists); allowed only when the freshness gate passes.
+- **Freshness gate.** Compare `built_at_commit` in graph.json against
+  `git rev-parse HEAD`; if they differ, list changed `.md` files under `world/
+  characters/ plot/ chapters/`. Empty diff → fresh. Non-empty → answer-mode
+  queries require an incremental graph update first (`/graphify --update`
+  flow) or fall back to file loading; index-mode queries may proceed but every
+  pointer into a changed file must be re-read from disk (already the rule).
+- **Never-substitute list.** `world/prose-rules.md`, `characters/notes/
+  voice-samples.md`, `world/register-locks.md`, `characters/notes/
+  narrator-boundaries.md`, `chapters/*/writing-notes.md`, and any numeric canon
+  anchor (prices, frequencies, allocation math) are ALWAYS read verbatim from
+  disk. The graph may point at them, never paraphrase them.
+- **Canon-blind exclusions.** `coldread-enum.md` and `snapshot.md` MUST NOT
+  gain graph access — their measured detector value (Phase 40: 0.5/19 → 13/19)
+  depends on not having canon. `judge.md`, `arbiter.md`, `reviewer.md`,
+  `integrate-anchors.md` keep their verbatim loads (voice/rule fidelity).
+
+### M1 — `instructions/graph-recall.md`: shared doctrine file
+
+- [x] New instruction file defining: opt-in detection, index/answer modes, the
+  freshness gate (exact git + jq commands), the never-substitute list, the
+  canon-blind exclusion list, fallback behavior (graph absent/stale/query
+  returns nothing → load files as today), and the query grammar with examples
+  (`graphify query`, `graphify path`, `graphify explain`). Consumed via
+  cross-reference by M2-M5; single source of truth, no restating in consumers.
+
+### M2 — chapter-writer: two-tier context load (highest ROI, ~60k tok/chapter)
+
+- [x] `chapter-writer.md` Step 1: when the graph is present, BEFORE loading the
+  `context:` tag files, run (a) `graphify query "usage-tracker items assigned
+  to <book> ch<NN>"` and (b) `graphify query "what must <book> ch<NN> set up
+  and pay off"` (plants due, motif assignment, echo/reader-journey state).
+  Load IN FULL only: the always-load verbatim set (unchanged), the POV
+  character sheets, and the `context:` files that carry a tracker row / plant /
+  motif hit for this chapter. Remaining `context:` files: read only the §
+  sections the graph points to. Graph absent → Step 1 unchanged. The Step 2.6
+  symmetry check stays (the `context:` tag remains the authored artifact; the
+  graph prunes the load, it does not edit the tag).
+
+### M3 — coherence-check: graph-first for the relational checks
+
+- [x] `coherence-check.md` §1: when the graph is fresh (answer mode), check J
+  (Chekhov/plants — currently loads ALL outlines across all books) runs on
+  `graphify query "every prestige-inventory plant and its payoff chapter"` +
+  `graphify explain` on plants with no payoff edge; check K (context tags &
+  Usage Trackers — currently loads all `world/level-*/`) runs on the
+  tracker-assignment query and opens only the files the graph names; checks
+  B/C/D use graph triage (threads never resolved, knowledge routes,
+  character-trait contests) and open sheets only on flagged hits. Checks E/L/M
+  (verbatim values) unchanged. Graph absent/stale → §1 load table unchanged.
+
+### M4 — continuity-check: three queries replace the cross-book file sweep
+
+- [x] `continuity-check.md` §1: graph-fresh path = `open threads and ticking
+  clocks at end of <book-N>` / `plants placed in <book-N> paying off in
+  <book-N+1>` / `character positions at end of <book-N> vs opening of
+  <book-N+1>`, then verify each finding against `state.md` (which remains
+  PRIMARY input and the write-target). Graph absent → unchanged.
+
+### M5 — motif: bounded traversal replaces the unbounded prior-chapter re-read
+
+- [x] `motif.md` Step 0 item 4: graph-fresh path = `graphify query "<motif>
+  established meaning, instances by chapter, intended evolution"` +
+  `graphify path <motif> <payoff-chapter>`; re-read from disk only the prior-
+  chapter §§ the graph cites for the motifs actually present in the target
+  chapter. Graph absent → unchanged.
+
+### M6 — SKILL.md + README: graph dependency + per-command model table
+
+- [x] SKILL.md: document graphify as an OPTIONAL per-project accelerator
+  (pointer to `graph-recall.md`); add a "Recommended model per command" table —
+  Opus: `chapter/write`, `revise`, `integrate-anchors`, `judge`, `arbiter`,
+  `review`, `sniff`, `coldread-filter`, `setup`; Sonnet: `coherence`,
+  `continuity`, `fix`, `proofread`, `factcheck`, `motif`, `sensitivity`,
+  `readability`, `adjacency`, `coldread-enum`, `snapshot`, `compact`, `sweep`.
+  Rationale one-liner per tier (creative/judgment vs detection/mechanical);
+  note that scripted enforcement lives in the project pipeline (ground-truth
+  Phase 80) and interactive users pick via `/model`.
+- [x] README.md: replace the single "Opus recommended" line with a pointer to
+  the SKILL.md table.
+
+### M7 — adjacency: graph-first for designed-echo and irony checks (user-requested)
+
+- [x] `adjacency.md` "Inputs": when the graph is fresh AND carries per-chapter
+  granularity (probe: a query for the reader-journey state of the target
+  chapter returns a per-chapter node — granularity added by ground-truth
+  Phase 80 M5), class (a) shape-repetition runs on `graphify query "is the
+  rhyme between ch<NN> and ch<MM> a designed echo"` (echo-choreography +
+  motif-tracking chapter map) and class (c) irony legibility on `graphify
+  query "dramatic irony live across ch<NN> and ch<MM>"` (reader-journey
+  per-chapter rows) — replacing the `reader-journey.md` + `echo-choreography.md`
+  + `motif-tracking.md` loads (~15k tok). Class (b) idiolect collision keeps
+  `voice-samples.md` + `narrator-boundaries.md` verbatim (never-substitute
+  list). Probe fails or graph absent/stale → Inputs unchanged.
+
+**Operational:**
+- Frontmatter/reference lint: `pytest tests/` + `bash tests/test_install.sh` green; new file carries standard frontmatter; `sweep.md`-style dead-ref check passes for `graph-recall.md` cross-refs. — done 2026-07-25 (14 pytest + 9 install checks green; all `instructions/graph-recall.md` refs resolve. NOTE: "standard frontmatter" wording predated the Phase 18 codification — instruction files carry NO frontmatter by convention; deviation resolved convention-side, see Phase 18)
+- Deploy with `./install.sh --force` after approval of the applied edits. — done 2026-07-25 (--check clean; covers Phase 17 + 18)
+
+## Out of scope for Phase 17
+
+- Draft-variant model diversity in `run-parallel-write.sh` (experiment, project-side, deferred).
+- Codex-lane model routing (codex CLI has its own config).
+
+## Phase 18 ✅ — Frontmatter convention: codify + enforce (2026-07-25)
+
+From the Phase 17 deviation: the Phase 17 operational bullet assumed "new file
+carries standard frontmatter", but the skill's actual convention (established
+Phase 15 M2) is that ONLY the root `SKILL.md` carries YAML frontmatter
+(agentskills.io: `name` + `description`, consumed by the loader);
+`instructions/*.md` carry none (H1 title + lead paragraph). Nothing states
+this rule anywhere and nothing enforces it, so the wrong assumption can drift
+back in — the next contributor (human or agent) writing an instruction file
+has no source to check and no test to fail.
+
+### M1 — codify the convention
+
+- [x] `README.md`: short "File conventions" note under the layout/development
+  section: root `SKILL.md` is the ONLY frontmatter carrier (`name` +
+  `description`, agentskills.io standard, per Phase 15 M2);
+  `instructions/*.md` files start with an H1 title + lead paragraph, no YAML
+  frontmatter; cross-references between instruction files use the
+  `instructions/<file>.md` path form.
+- [x] `DEVPLAN.md` Phase 17 operational bullet: append a pointer noting the
+  "standard frontmatter" wording predated this codification and the deviation
+  was resolved convention-side (Phase 18), so the record is self-explaining.
+
+### M2 — enforce it mechanically
+
+- [x] `tests/test_frontmatter.py` (pytest): (a) `SKILL.md` begins with `---`
+  and its YAML block parses with non-empty `name` and `description`; (b) NO
+  file under `instructions/` (recursive, `archive/` included) begins with
+  `---`; (c) every `instructions/*.md` non-archive file begins with an H1
+  (`# `) line. Sweep run confirms all current files already comply — the test
+  encodes the status quo, it does not require edits.
+
+**Operational:**
+- `pytest tests/` + `bash tests/test_install.sh` green with the new test file. — done 2026-07-25 (17 pytest + 9 install checks)
+- Deploy folded into the pending Phase 17 `./install.sh --force` run (single redeploy for both phases). — done 2026-07-25
+
+## Phase 19 ✅ — adjacency query budget + planned-vs-rendered fidelity check (2026-07-25)
+
+Two user requests. (1) The M5 re-extraction showed per-chapter node detail
+sits deep in `graphify query`'s default 2000-token output — adjacency's graph
+queries need a larger budget. (2) Every chapter should have BOTH a planned
+node (outline: what it must do) and a rendered node (prose: what it did), and
+the skill should CHECK the two against each other. The skill already has the
+write-time half (chapter-writer Step 7 silent-cut self-check + the append-only
+`outline-deviation.md` contract); this phase adds the independent post-hoc
+verifier — per the canon-hierarchy doctrine that no single skill validates its
+own output. Companion project work (per-chapter planned nodes for B1/B2):
+ground-truth Phase 81.
+
+### M1 — adjacency: pass --budget 4000
+
+- [x] `adjacency.md` graph block: both class (a) and class (c) queries (and
+  the granularity probe) gain `--budget 4000` so per-chapter node detail
+  survives the traversal output cap. One-line rationale referencing the M5
+  finding.
+
+### M2 — `instructions/fidelity.md`: the planned-vs-rendered check
+
+- [x] New detection command `/book fidelity <book> <chNN>`. Inputs: the
+  chapter's outline § (verbatim), the chapter prose (verbatim),
+  `chapters/<book>/outline-deviation.md` (the legitimate-deviations ledger),
+  and — graph-fresh only, per `graph-recall.md` — the planned node
+  (`chapters_book_N_outline_chNN`) vs rendered node (`chapters_book_N_chNN`)
+  pair as triage before the verbatim reads. Finding classes:
+  (a) **planned-not-rendered** — outline beat/plant/cliffhanger/motif
+  assignment absent from prose AND absent from outline-deviation.md
+  (chapter-writer's silent-cut class, verified independently);
+  (b) **rendered-not-planned** — substantive prose beat with no outline basis
+  and no deviation entry (flag for retroactive outline-deviation.md entry or
+  prose trim — never auto-decide which);
+  (c) **deviation-ledger drift** — outline-deviation.md entries that no longer
+  match the prose they describe.
+  Entries recorded in outline-deviation.md are ACKNOWLEDGED — never re-flagged.
+  Routing per canon-hierarchy two-channel: prose-side findings → SMELL.md
+  entries (consumed by `/book revise`); outline/ledger-side findings →
+  DEVPLAN milestones (consumed by `/book fix`). Severity discipline and
+  flagging thresholds per reviewer.md conventions; graph absent/stale → the
+  check runs identically on file reads alone.
+
+### M3 — registration
+
+- [x] `SKILL.md`: command table row (+1 to the command count wherever stated),
+  "Recommended model per command" table → Sonnet tier (detection), graphify
+  section consumer list gains fidelity.
+- [x] `README.md`: pipeline/command-count mentions updated if any state a
+  number.
+- [x] `graph-recall.md`: consumers list gains `fidelity.md`.
+
+**Operational:**
+- `pytest tests/` (frontmatter test auto-covers the new instruction file) +
+  `bash tests/test_install.sh` green (17 + 9, 2026-07-25); `./install.sh --force` redeploy — done 2026-07-25 (single deploy for 19+20+21, --check clean)
+
+## Phase 20 ✅ — Write-side graph freshness: mutating commands refresh the graph (2026-07-25)
+
+User request: when a skill command CHANGES files, the graph should be updated.
+Phase 17 added the read side (consumers gate on freshness and fall back);
+Phase 80 M3 added the cycle-boundary backstop (merge-phase terminal refresh).
+Missing: the write side — the mutating commands themselves leaving the graph
+fresh for the next consumer, so intra-cycle queries stop degrading to file
+loads. With per-command refresh in place the boundary refresh becomes a cheap
+no-op (no changed files), not a redundancy.
+
+### M1 — graph-recall.md §Keeping the graph fresh (doctrine)
+
+- [x] New section defining the write-side rule: any command whose edits touch
+  graph-covered sources (`world/`, `characters/`, `plot/`, `chapters/`) ends
+  with a refresh step. Gate: `graphify-out/graph.json` exists (same opt-in as
+  the read side). Mechanics: run the incremental update flow (`/graphify .
+  --update` — re-extracts only changed files; the session itself is the
+  extractor, cost is proportional to the edit, typically 1-10 files). Bound:
+  if the changed-file count exceeds 25, SKIP the inline refresh and leave it
+  to the cycle-boundary backstop, logging one line — a bulk rewrite must not
+  trigger a mid-command mega-extraction. Ordering: refresh runs AFTER the
+  command's own commit, so graph artifacts never enter the command's commit.
+  Soft-fail: a failed refresh never fails the command — consumers are
+  protected by the read-side freshness gate.
+
+### M2 — refresh step in the six mutating commands
+
+- [x] Append the refresh step (one short block cross-referencing
+  `graph-recall.md` §Keeping the graph fresh, never restating) to:
+  `fix.md` (canon mutations), `revise.md` (prose), `chapter-writer.md`
+  (new prose + state/outline updates — after Step 8's commit),
+  `compact.md` (canon rewrites — the likeliest >25-file skip case),
+  `integrate-anchors.md` (prose), `arbiter.md` (prose on APPLY — refresh
+  only when it actually applied edits).
+- [x] Explicitly NOT added to: `coldread-enum.md`/`snapshot.md` (canon-blind
+  wall stays absolute — snapshot's output file going briefly stale in the
+  graph is accepted), detection commands (read-only), `setup.md`/`init.md`
+  (graph does not exist yet at project creation).
+
+### M3 — SKILL.md note
+
+- [x] One line in the graphify section: mutating commands refresh the graph
+  after their commit (pointer to graph-recall.md §Keeping the graph fresh).
+
+**Operational:**
+- Sequencing: executes AFTER the Phase 19 agent lands (both touch
+  graph-recall.md / SKILL.md); single `./install.sh --force` deploy covers
+  19 + 20 + 21. — done 2026-07-25 (--check clean)
+- `pytest tests/` + `bash tests/test_install.sh` green. — done 2026-07-25 (17 + 9)
+
+## Phase 21 ✅ — Cost/quality optimization: last graph consumers + model-string refresh (2026-07-25)
+
+From the user-requested deep cost/quality review (2026-07-25). Verified pricing
+(claude-api reference, cached 2026-06-24): Opus 5 $5/$25 per MTok, Sonnet 5
+$3/$15 ($2/$10 intro through 2026-08-31), Haiku 4.5 $1/$5 — so the Phase 80
+Opus/Sonnet routing saves ~40-60% per routed step (correcting the earlier
+"1/5th" claim in conversation). The two remaining un-graphed heavy loaders are
+sniff (~92k tok/chapter: whole level directory) and reviewer (~85k tok/session:
+rubric + up to 10 full drafts). Same invariants as Phase 17 (opt-in, index/answer
+modes, never-substitute list, fallback).
+
+### M1 — sniff: claim-driven canon lookup
+
+- [x] `sniff.md`: when the graph is fresh (per `graph-recall.md`), replace the
+  "load `world/level-N/*.md` wholesale" step with claim-driven lookup — per
+  suspicious assertion, `graphify query "<asserted fact> canon status"
+  --budget 4000` → read only the pointed-to file §§ (index mode). Category 7
+  (character behavior) gets graph triage on the character's established
+  constraints, opening the sheet only on a hit. NEVER substituted: §5/§5.a
+  plausibility checks keep their verbatim anchor-value reads (prices,
+  frequencies, allocation math), and `writing-notes.md` stays a full read
+  (never-substitute list). Graph absent/stale → step unchanged.
+
+### M2 — reviewer: graph triage for plants/object-permanence/echo checks
+
+- [x] `reviewer.md`: checks K and M (plants landing, object permanence,
+  echo-not-repetition — today driving multi-chapter re-reads) gain a
+  graph-fresh triage path: plant/payoff + object-location queries name the
+  prior-chapter §§ to re-read; only those are opened instead of whole prior
+  drafts. Rules 0-28 application, `prose-rules.md`, `voice-samples.md`,
+  `writing-notes.md`, and the TARGET chapter full read are untouched (verbatim
+  set). Graph absent/stale → unchanged.
+
+### M3 — judge.md model-string refresh (July 2026 landscape)
+
+- [x] `judge.md:117` example `model` values and the `:145` lane self-id table:
+  `claude-opus-4-8` → `claude-opus-5` (the claude-default lane now runs
+  `--model opus` per ground-truth Phase 80; alias resolves to Opus 5);
+  `gemini-3.1-pro` → `gemini-3.6-flash`; deepseek row unchanged
+  (`deepseek-v4-pro` is the current DeepSeek 4). Detection logic (env-var
+  sniffing) unchanged — only the canonical strings emitted.
+
+### M4 — stale model mentions sweep
+
+- [x] Grep SKILL.md + README.md + instructions/ for hardcoded model IDs;
+  update any stale ones to aliases or current IDs (keep aliases wherever the
+  text means "the current tier model").
+
+**Operational:**
+- `pytest tests/` + `bash tests/test_install.sh` green (17 + 9, 2026-07-25); single
+  `./install.sh --force` redeploy. — done 2026-07-25 (--check clean)
+
+## Phase 22 ✅ — The skill enforces beat↔context symmetry and not tracker↔context symmetry (2026-07-25)
+
+Source: the `ground-truth` corpus, 2026-07-25. Eleven findings passes over Book 1's nine drafted chapters, plus a mechanical whole-corpus scan, produced numbers that are not a property of that project — every outline, tracker row and draft in it was written by this skill, so each figure below is a measurement of this skill's behavior:
+
+- **445 tracker rows across three books name a chapter whose `context:` list does not contain the owning file.** The row cannot reach a reader: the writer never opens the file. 66 of them are on chapters already drafted; 379 sit on chapters not yet written, where the repair is currently free.
+- **Two canon files are in no `context:` list in the entire trilogy.** Everything in them is dead by construction.
+- **102 rows were rendered and never ticked**, and **21 rows are ticked `written` with the element absent from the prose.** Both directions of the ledger are wrong, and nothing in the skill checks either.
+- Of the 269 rows still `planned` on drafted chapters, only 101 were real losses. The outline elements the prose genuinely failed to render across nine chapters number **8**. The drafting held; the bookkeeping did not.
+
+### M1 — Step 2.6 checks one symmetry and the corpus needs two
+
+`chapter-writer.md` §2.6 enforces **beat ↔ context**: every file in `**context:**` must be justified by a beat, every beat that needs a file must list it. It even auto-adds the missing files (2.6.a). Nothing enforces **tracker ↔ context**, and that is the direction that decides whether canon reaches a reader. `init.md:176` states only the outbound half — *"Only add a file to `context:` if it has tracker items mapped to that chapter"* — so a file holding rows for Ch.07 while absent from Ch.07's context list violates no rule the skill knows.
+
+- [x] Add 2.6.c, tracker↔context symmetry: for the chapter being written, every canon file holding a Usage Tracker row for this Book+Ch must appear in the chapter's `**context:**` list, in the always-loaded set, or in the texture-palette proxy. Missing → AUTO-ADD, exactly as 2.6.a already does for beats, with the same announcement line.
+- [x] Add the reciprocal statement to `init.md`: writing a tracker row for chapter X and adding the owning file to X's `**context:**` are one action. A row whose file X does not load is not a plan.
+- [x] Guard the auto-add against the level register (M4). A tracker row must never cause a Level-0 file to be added to a Dome or Ark chapter's context list.
+
+### M2 — `init.md` does not scaffold §Context Tags, so books diverge
+
+In `ground-truth`, Book 1's `outline.md` declares an always-loaded set **and** a `**Texture-palette proxy:**` paragraph; Books 2 and 3 declare the always-loaded set and no palette. Same skill, same project, three books, two shapes. A structure that appears in one book and not the others was emitted once and not the other twice.
+
+- [x] `init.md` — specify the §Context Tags block as a required outline header section with named parts: the always-loaded reference list, the texture-palette proxy paragraph (or an explicit statement that this book has none), and the context-list discipline paragraph. Scaffold it for **every** book the command creates, not the first.
+- [x] State that each book derives its own two lists from its own `writing-notes.md`, and that copying another book's list is wrong — the sets differ per book by design.
+- [x] Anything reading these lists must parse them from the outline. A consumer that hardcodes a copy becomes a fourth hand-maintained list, which is the defect.
+
+### M3 — Step 5.5 can only tick rows in files Step 1 happened to load
+
+`chapter-writer.md` Step 5.5 opens **"every file loaded in Step 1 that has a `## Usage Tracker` section."** Step 1 loads the context list plus the always-loaded set. A file holding a row for this very chapter but absent from its context list is therefore never opened: its row cannot be rendered and cannot be ticked. Both measured failures come out of that one sentence — the 445 unreachable rows, and the part of the 102 unticked rows whose owning file the chapter never loaded (3 of ch08's 7, to take the case that was counted).
+
+- [x] Change Step 5.5's scope from *files loaded in Step 1* to *every file holding a row for this Book+Ch*. With M1 in place the two sets are identical for a compliant chapter; keeping them distinct means a stale outline silently drops rows again.
+- [x] Where the two sets differ, Step 5.5 reports the difference rather than skipping it quietly — that difference is precisely a tracker↔context violation M1 should have caught earlier.
+
+### M4 — the level register is enforced by convention only
+
+Dome chapters do not load `world/level-0-reality/*` because the POV cannot see it. That exclusion is load-bearing and written nowhere the skill can apply it, so 69 rows in `ground-truth` sit in files the target chapter's level bars — including four Level-0 files carrying `### Dome` subsections authored for Dome chapters by name, and five Level-0 files holding rows for Ark chapters.
+
+- [x] Document the register rule in the skill: a chapter's `**Level:**` determines which level-scoped canon directories are legal for it; character and plot files are level-neutral.
+- [x] Make M1's auto-add register-aware: file legal for the level → add it; file barred → report a conflict naming both hypotheses (the row targets the wrong chapter, or the content is filed in the wrong file) and resolve neither. The register outranks the tracker.
+- [x] Note the corollary for canon authors: a `### Dome` subsection inside a Level-0 file is unreachable from every chapter that wants it. Level-scoped content belongs in the level's own directory.
+
+### M5 — nothing ever re-reads a `written` mark
+
+Step 5.5 sets `planned` → `written` and no step revisits it. Measured on the one chapter small enough to audit exhaustively (12 marks, all checked): **17% false, 33% counting partials.** Across Book 1, 21 marks name an element that is not in the prose. A recurring signature: the row names a **sensory modality** rather than a fact — canon promised coolant as *smell and memory*, the prose delivered burn and stain, and the mark was set on the object without checking the channel.
+
+- [x] `fidelity.md` already re-derives planned-vs-rendered independently. Add the `written`-mark direction to it explicitly as a fourth finding class: a row marked `written` whose element is absent from the prose.
+- [x] Add the modality trap to Step 5.5's rules: the mark is valid only if the prose renders the element **in the channel the row names**. Rendering the right object through the wrong sense is not a rendered element.
+
+### Verification
+
+- Re-run the `ground-truth` measurements after M1–M5 deploy. The counts that must move: 445 unreachable → 0 for compliant chapters, and no new `written` mark surviving a fidelity pass. — pending
+- `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force` redeploy. — done 2026-07-25 (17 passed / 9 passed; `--check` clean)
+
+**Where the corresponding data repair lives:** `ground-truth` `DEVPLAN.md` Phases 87 and 88. Those fix one corpus. This phase is why it will not have to be done again — and the ordering matters: deploy M2 before repairing Books 2 and 3's outlines by hand, so the repaired files match what the skill will emit from then on.

@@ -160,6 +160,24 @@ Each file is created with a header, a brief instruction comment, and empty secti
 [1-2 paragraphs covering everything: personality, function, 1 distinguishing detail.]
 ```
 
+**Outline header template — `chapters/book-N/outline.md`, scaffolded for EVERY book, not just the first:**
+
+```markdown
+### Context Tags
+
+Each chapter `context:` field lists conditional files beyond the always-loaded set. The chapter-writer loads every file listed; for files with a `## Usage Tracker`, it targets the rows mapped to that chapter and marks them `written` after drafting.
+
+**Always-loaded reference (not listed per chapter):** [comma-separated paths — the files every chapter of THIS book needs: cross-level world files, the book's ubiquitous character sheets, `chapters/book-N/writing-notes.md`] — load at session start.
+
+**Texture-palette proxy:** [the files reached transitively through this book's `writing-notes.md` §Chapter Texture Palette; tracker rows in them need no per-chapter `context:` entry] — or, when the book has none, write exactly: none for this book.
+
+**Context-list discipline.** Each chapter's `**context:**` list is authoritative and symmetric: every file listed has at least one beat that references it; every beat that needs a file lists it; every file holding a tracker row for that chapter is reachable through the list, the always-loaded set, or the palette above. Re-evaluate on any beat or tracker change. Files needed by most chapters belong in the always-loaded set, not repeated per chapter.
+```
+
+- All three named parts — always-loaded reference, texture-palette proxy, context-list discipline — are required in every book's outline header. A book with no palette says so in the paragraph; an absent paragraph is indistinguishable from an unfinished one, which is how books drift into different shapes.
+- Each book derives its own two lists from its own `chapters/book-N/writing-notes.md` and its own chapter set. Copying another book's list is wrong — the sets differ per book by design (a character ubiquitous in book 2 may not appear in book 1).
+- Consumers of these lists (`/book chapter` Step 2.6, `/book coherence` class K) parse them from the outline header at run time. A consumer that hardcodes a copy becomes one more hand-maintained list to keep in sync, which is the defect this section removes.
+
 **Key template principles:**
 - **All files with discrete elements** (character files, world files, plot tracking files) include a `## Usage Tracker` section with the same TABLE format mapping elements to specific chapters:
 
@@ -173,7 +191,8 @@ Each file is created with a header, a brief instruction comment, and empty secti
   - One format everywhere: character files, world files, plot files. No exceptions.
   - Keep files under ~150 lines of content before the tracker. If larger, split by topic so the chapter writer loads only what's relevant
 
-- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Only add a file to `context:` if it has tracker items mapped to that chapter.
+- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Only add a file to `context:` if it has tracker items mapped to that chapter — and, reciprocally, writing a tracker row for chapter X and adding the owning file to X's `**context:**` are one action, done in the same edit. A row whose file chapter X does not load is not a plan: the writer never opens the file, so the row cannot be rendered and cannot be ticked. The only files exempt are those already reachable through the outline header's always-loaded set or texture-palette proxy (§Context Tags below).
+- **Level register.** A chapter's `**Level:**` decides which level-scoped canon it may load: its own `world/level-<N>-<name>/`, plus the level-neutral `characters/`, `plot/` and top-level `world/*.md`. Every other level's directory is barred — that level's POV cannot see it. The register outranks the tracker: a row aimed at a Dome chapter from inside a Level-0 file does not make that file loadable, so the row is unreachable and `/book chapter` reports it instead of auto-adding it. Corollary for canon authors: a `### Dome` subsection inside a Level-0 file is unreachable from every chapter that wants it. Level-scoped content belongs in that level's own directory.
 - No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
 - Each concept has ONE canonical file. When generating level context files, technology files, and thematic files, check for overlap. If two files would describe the same mechanism, pick one as canonical and cross-ref from the other.
 - **Word budgets (prose excluding tracker tables):**

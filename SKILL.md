@@ -1,14 +1,12 @@
 ---
 name: book
 description: >-
-  Unified writing pipeline for multi-book fiction projects. One entry point
-  (`/book <command>`) over 25 commands spanning project setup, coherence
-  fixing, batched chapter writing, a multi-pass review stack (sniff, factcheck,
-  motif, sensitivity, readability, cold-read enumerate/filter, proofread,
-  adjacency), revision, PDF/EPUB export, and a parallel-write merge phase
-  (judge / integrate-anchors / arbiter). Genre-agnostic — tone, rules,
-  structure, and genre come from the project's own files (CLAUDE.md, world/,
-  characters/), never from the skill.
+  Unified writing pipeline for multi-book fiction projects. One entry point (`/book
+  <command>`) over ~29 commands: project setup, coherence fixing, batched chapter writing,
+  a multi-pass review stack (sniff, factcheck, sensitivity, readability, cold-read,
+  proofread, adjacency…), revision, PDF/EPUB export, and a parallel-write merge phase
+  (judge / integrate-anchors / arbiter). Genre-agnostic — tone, rules, structure and genre
+  come from the project's own files (CLAUDE.md, world/, characters/), never from the skill.
 ---
 
 # Book — Unified Writing Pipeline
@@ -42,6 +40,7 @@ Single entry point for all book-writing operations. Genre-agnostic — reads ton
 | `epub <book> [ch]` | Render a chapter or a whole book to EPUB (Kindle/KDP) | `/book epub book-1` |
 | `sniff <book> [ch]` | Adversarial skeptical-reader pass → SMELL.md (catches plausibility / nose-wrinkle issues coherence/review/proof don't) | `/book sniff book-1 ch01` |
 | `factcheck <book> [ch]` | Active real-world accuracy: enumerate every external-world claim → verify each → SMELL.md (`Source: factcheck`) + VERIFY items to PENDING | `/book factcheck book-1 ch01` |
+| `fidelity <book> <ch>` | Planned-vs-rendered check: chapter outline § vs prose vs outline-deviation.md ledger — silent cuts, unplanned beats, ledger drift → SMELL.md (`Source: fidelity`) + ledger-side → DEVPLAN | `/book fidelity book-1 ch04` |
 | `motif <book> [ch]` | Symbolic / motif coherence: motif not inverted/drifted, evolution intentional, payoff lands → SMELL.md (`Source: motif`) + canon → DEVPLAN | `/book motif book-1 ch01` |
 | `sensitivity <book> [ch]` | Conservative representation / dated-language pass (advisory-first, diegetic-intent gated) → SMELL.md (`Source: sensitivity`) | `/book sensitivity book-1 ch01` |
 | `readability <book> [ch]` | Register-aware flow / "scorrevolezza" pass — flags the accidental brick (slog, clause-stacking, paragraph-mass) only outside intended-heavy registers → SMELL.md (`Source: readability`) | `/book readability book-1 ch01` |
@@ -121,6 +120,7 @@ When a command is received:
    - `epub` → `instructions/epub.md`
    - `sniff` → `instructions/sniff.md`
    - `factcheck` → `instructions/factcheck.md`
+   - `fidelity` → `instructions/fidelity.md`
    - `motif` → `instructions/motif.md`
    - `sensitivity` → `instructions/sensitivity.md`
    - `readability` → `instructions/readability.md`
@@ -139,6 +139,19 @@ When a command is received:
    - If the instruction does not explicitly declare outputs, use `git diff --name-only` on the working tree to enumerate files this skill *actually* touched, and stage those — DO NOT use `git add -A` (it captures dirty work unrelated to this skill; this caused the Phase 40 M7 commit-bundling incident).
    - Commit with message: `book <command> <args>: <one-line summary of what was done>`
    - Do NOT push (the caller decides when to push).
+
+## Optional: graph-assisted recall (graphify)
+
+If the consuming project keeps a graphify knowledge graph (`graphify-out/graph.json` in the project root), several instructions replace bulk canon loading with targeted graph queries — see `instructions/graph-recall.md` for the full doctrine (opt-in detection, index vs answer mode, the freshness gate, the never-substitute list, canon-blind exclusions, fallback ladder). Consumers: `chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`. Write side: mutating commands (`fix`, `revise`, `chapter`, `compact`, `integrate-anchors`, `arbiter` on APPLY) refresh the graph after their commit — see `instructions/graph-recall.md` §Keeping the graph fresh. Without the graph, every command behaves exactly as documented — the graph is a per-project accelerator, never a dependency.
+
+## Recommended model per command
+
+| Tier | Commands | Rationale |
+|---|---|---|
+| **Opus** | `chapter` / `write`, `revise`, `integrate-anchors`, `judge`, `arbiter`, `review`, `sniff`, `coldread-filter`, `setup` | Creative drafting and judgment calls — these need the strongest prose + evaluation model. |
+| **Sonnet** | `coherence`, `continuity`, `fix`, `proofread`, `factcheck`, `fidelity`, `motif`, `sensitivity`, `readability`, `adjacency`, `coldread-enum`, `snapshot`, `compact`, `sweep` | Detection and mechanical passes are rubric-driven — the rubric carries the quality, not the model. |
+
+Unlisted commands (`help`, `init`, `pdf`, `epub`) are mechanical/scripted and run fine on either tier. Scripted enforcement of this table lives in the consuming project's pipeline (ground-truth DEVPLAN Phase 80), not in this skill; interactive users pick the tier via `/model` before running the command.
 
 ## Milestone Format
 

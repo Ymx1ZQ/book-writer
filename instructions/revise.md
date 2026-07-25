@@ -222,6 +222,10 @@ Next: [what to do if items remain — typically "triage ANCHOR-NEEDED into proje
        DEVPLAN, then re-run /book sniff after the worldbuilding lands"]
 ```
 
+### 7. Graph Refresh (post-commit)
+
+If `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after this session's commit lands — chapter prose and `state.md` edits are graph-covered sources. Follow `instructions/graph-recall.md` §Keeping the graph fresh (incremental update; >25-changed-file skip bound; soft-fail — a failed refresh never fails the session). Graph absent → skip silently.
+
 ---
 
 ## Rules

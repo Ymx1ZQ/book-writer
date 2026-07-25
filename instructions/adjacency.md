@@ -44,6 +44,15 @@ The default and orchestrator-wired form is the **two-chapter window [predecessor
 4. `plot/motif-tracking.md` — the chapter→level map (Dome / Ark / Reality) and the foregrounded motif per chapter. Two same-level consecutive chapters carry the highest shape-repetition risk; differing foregrounded motifs are evidence the rhyme is *intended* contrast.
 5. `plot/echo-choreography.md` — whether a cross-chapter rhyme is a *designed* echo (load-bearing) rather than accidental.
 
+**Graph-assisted inputs (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists in the project root AND the freshness gate passes, run the granularity probe first: `graphify query "reader-journey state of <book> ch<NN>" --budget 4000` for the target chapter. Only if the probe returns a **per-chapter node** (the graph carries per-chapter granularity — a companion re-extraction ships it project-side, but the probe gates regardless), replace inputs 2, 4, and 5 with two queries (answer mode):
+
+- Class (a) shape repetition: `graphify query "is the rhyme between ch<NN> and ch<MM> a designed echo" --budget 4000` — the echo-choreography + motif-tracking chapter map.
+- Class (c) irony legibility: `graphify query "dramatic irony live across ch<NN> and ch<MM>" --budget 4000` — the reader-journey per-chapter rows.
+
+All three queries pass `--budget 4000` because per-chapter node detail sits deep in the traversal output and the default 2000-token cap truncates it before the per-chapter rows surface (project-side Phase 80 M5 re-extraction finding).
+
+Input 3 (`voice-samples.md` + `narrator-boundaries.md`) stays verbatim regardless — never-substitute list per `graph-recall.md`; class (b) always runs on the disk files. Probe fails (no per-chapter node), graph absent, or graph stale → inputs 1–5 apply unchanged.
+
 ## Reader persona for the executing agent
 
 You are reading the window the way a first-time reader does: **in order, once, at speed, carrying the first chapter's shape into the second.** When the second chapter's beats arrive in the same order, with the same emotional cadence, you feel "haven't I just done this?" — UNLESS the text gives you a reason the return is meaningful (you now know something a character doesn't; you are watching the same machine grind a different caste). You do not supply that reason yourself; if the prose does not light it, it is not lit.
@@ -128,8 +137,8 @@ Structural findings routed to user channel: <none | DEVPLAN Phase NN>.
 ## Steps for the executing agent
 
 1. Resolve the window (default: most-recent chapter + predecessor). If the window has <2 chapters (e.g. ch01), print `adjacency: window has no predecessor — nothing to compare` and exit 0.
-2. Read all window chapters + the five input files.
-3. Map each chapter's beat-skeleton; build the per-POV idiolect-signature list; pull the window's `reader-journey.md` irony/knowledge rows.
+2. Read all window chapters + the five input files (on the graph path, inputs 2/4/5 are replaced by the two queries — see Inputs).
+3. Map each chapter's beat-skeleton; build the per-POV idiolect-signature list; pull the window's `reader-journey.md` irony/knowledge rows (or the irony-query result on the graph path).
 4. Run classes (a), (b), (c) with the high burden of proof. For (a), apply the **load-bearing-rhyme gate** before flagging.
 5. **Pre-step archive:** SMELL.md is shared — append only (do not overwrite). If a prior adjacency audit section from this same cycle exists, replace that section only.
 6. Append prose-side entries + the Adjacency Audit to `chapters/<book>/SMELL.md`. Route any structural finding to a `## Phase <NN+1> — Adjacency structural finding (<book> <window>)` in `DEVPLAN.md` (flagged FOR USER, not for `fix`) and a pointer line in `SMELL-PENDING.md`.

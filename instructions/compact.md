@@ -187,6 +187,10 @@ Prose compression:
 Total estimated token reduction: ~X words
 ```
 
+### 7. Graph Refresh (post-commit)
+
+If `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after the compact's commit lands, per `instructions/graph-recall.md` §Keeping the graph fresh. Compact is the likeliest command to hit the >25-changed-file bound — a broad-scope run that exceeds it skips the inline refresh, logs the one-line deferral, and leaves the rebuild to the cycle-boundary backstop. Soft-fail; graph absent → skip silently.
+
 ---
 
 ## Rules

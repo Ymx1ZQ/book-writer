@@ -36,6 +36,7 @@ Coherence tracks whether plants pay off; sniff tracks whether a *device* is over
 2. `plot/prestige-inventory.md` and any plant/payoff tracking — motifs that double as plants.
 3. `world/` symbolic anchors if the project keeps them (objects/colors/sounds with assigned meaning).
 4. Prior chapters' use of each motif (read the earlier `chapters/<book>/chNN.md` occurrences, or the snapshots in `chapters/coldread-state/`) to know the **accumulated** reader association entering this chapter.
+   **Graph-fresh path (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists AND the freshness gate passes, bound this re-read: for each motif actually present in the target chapter, run `graphify query "<motif> established meaning, instances by chapter, intended evolution"` and `graphify path "<motif>" "<payoff-chapter>"`, then re-read from disk ONLY the prior-chapter §§ the graph cites (index mode — the disk text is the truth). Graph absent or stale → the unbounded prior-chapter re-read above stays the fallback.
 
 Build, per motif: *established meaning*, *meaning the reader holds entering this chapter*, *intended state/evolution at this chapter* (per the tracker).
 

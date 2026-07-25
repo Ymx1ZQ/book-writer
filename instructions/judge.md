@@ -114,7 +114,7 @@ Types:
 ```json
 {
   "judge_id": "claude-default | openrouter-deepseek | openrouter-gemini",
-  "model": "claude-opus-4-8 | deepseek-v4-pro | gemini-3.1-pro",
+  "model": "claude-opus-5 | deepseek-v4-pro | gemini-3.6-flash",
   "book": "book-1",
   "chapter": "ch01",
   "rankings_per_dimension": {
@@ -142,11 +142,11 @@ Types:
 
 | Detect | judge_id | model |
 |---|---|---|
-| `$ANTHROPIC_BASE_URL` unset (or empty) | `claude-default` | `claude-opus-4-8` |
+| `$ANTHROPIC_BASE_URL` unset (or empty) | `claude-default` | `claude-opus-5` |
 | `$ANTHROPIC_MODEL` contains `deepseek` | `openrouter-deepseek` | `deepseek-v4-pro` |
-| `$ANTHROPIC_MODEL` contains `gemini` | `openrouter-gemini` | `gemini-3.1-pro` |
+| `$ANTHROPIC_MODEL` contains `gemini` | `openrouter-gemini` | `gemini-3.6-flash` |
 
-Emit these canonical values verbatim — do NOT emit OpenRouter slugs like `google/gemini-3.1-pro-preview` or full provider paths. The downstream aggregator keys on `judge_id`; non-canonical values break the dedup of anchor pools and the Borda consensus computation.
+Emit these canonical values verbatim — do NOT emit OpenRouter slugs like `google/gemini-3.6-flash` or full provider paths. The downstream aggregator keys on `judge_id`; non-canonical values break the dedup of anchor pools and the Borda consensus computation.
 
 ## Self-check before writing
 

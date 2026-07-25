@@ -42,6 +42,16 @@ Arguments: `<completed-book>` `<next-book>` (e.g., `book-1 book-2` or `book-2 bo
 - `plot/sauveterre-plant.md` — plant/payoff status
 - `world/temporal-echoes.md` — echo progression
 
+**Graph-assisted path (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists in the project root AND the freshness gate passes (answer mode per `graph-recall.md` §Freshness gate), run three queries in place of the cross-book file sweep:
+
+```bash
+graphify query "open threads and ticking clocks at end of <completed-book>"
+graphify query "plants placed in <completed-book> paying off in <next-book>"
+graphify query "character positions at end of <completed-book> vs opening of <next-book>"
+```
+
+They pre-populate checks B+C, E, and A respectively. Every finding MUST then be verified against `chapters/<completed-book>/state.md`, which remains the PRIMARY input and the write-target — the graph proposes, `state.md` decides. `voice-samples.md` (never-substitute per `graph-recall.md`) is still loaded verbatim for check D. Graph absent or stale → this section applies unchanged.
+
 ### 2. Check Categories
 
 #### A. Character Positions

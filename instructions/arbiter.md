@@ -118,3 +118,7 @@ Then print to stdout a short status line per PENDING file (count of apply/defer 
 - No new PENDING items were created (the arbiter never surfaces new trade-offs)
 
 If any check fails, fix before exiting.
+
+## Graph refresh (post-commit — APPLY outcomes only)
+
+If at least one item resolved as APPLY (chapter prose actually changed) and `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after the arbiter's commit lands, per `instructions/graph-recall.md` §Keeping the graph fresh (incremental update; >25-changed-file skip bound; soft-fail — a failed refresh never fails the run). A pure ACCEPT-keep run changes no prose — skip the refresh entirely. This is graph maintenance only: the no-graph-consumption rule for this command is unchanged. Graph absent → skip silently.

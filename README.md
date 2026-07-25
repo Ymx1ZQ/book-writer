@@ -122,12 +122,23 @@ Only `SKILL.md` is loaded into Claude's context on invocation (~60 lines). The r
 ## Requirements
 
 - [Claude Code](https://claude.ai/claude-code) CLI
-- A Claude model with sufficient context (Opus recommended for long chapters)
+- A Claude model with sufficient context — see the "Recommended model per command" table in `SKILL.md` for the per-command Opus/Sonnet recommendation
+
+## File Conventions
+
+- Root `SKILL.md` is the ONLY file carrying YAML frontmatter (`name` +
+  `description`, agentskills.io standard — consumed by the skill loader).
+- `instructions/*.md` files carry NO frontmatter: they start with an H1 title
+  followed by a lead paragraph.
+- Cross-references between instruction files use the `instructions/<file>.md`
+  path form.
+
+Enforced by `tests/test_frontmatter.py`.
 
 ## Tests
 
 ```bash
-pytest tests/                # linter + build-script smoke
+pytest tests/                # linter + build-script smoke + frontmatter convention
 bash tests/test_install.sh   # install smoke + --check drift
 ```
 

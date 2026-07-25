@@ -66,6 +66,16 @@ Scope options:
 **For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
 **For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q and T only run if chapter drafts exist for the scope.
 
+**Graph-assisted load (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists in the project root AND the freshness gate passes (answer mode per `graph-recall.md` §Freshness gate), the relational checks replace their bulk loads:
+
+| Check | Graph-fresh path (replaces that check's load-table row) |
+|---|---|
+| J — Chekhov | `graphify query "every prestige-inventory plant and its payoff chapter"` + `graphify explain "<plant>"` on each plant the query returns with no payoff edge. Replaces loading ALL outlines across all books. Classification rules in check J apply to the query output unchanged. |
+| K — Context Tags & Trackers | The tracker-assignment query (`graphify query "usage-tracker items assigned to <book> ch<NN>"`, per chapter in scope); open ONLY the files the graph names. Replaces loading all `world/level-*-<name>/` files. |
+| B / C / D | Graph triage first — query for threads introduced and never resolved (B), knowledge routes across levels (C), character-trait contradictions (D) — then open plot files / character sheets only on flagged hits. |
+
+Checks E, L, M consume verbatim numeric values (never-substitute list per `graph-recall.md`) — their load rows are unchanged. Graph absent or stale → the load table above applies unchanged.
+
 ### 2. Check Categories (20 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
@@ -136,7 +146,7 @@ Using `world/technology-comparison.md` as primary reference:
 
 ##### Multi-book awareness
 
-When scope is a single book, this check MUST still load the outlines of ALL books (`chapters/book-*/outline.md`) plus all files in `plot/`. The scoped book is the **focus** — you audit its plants in detail — but payoffs can land in ANY book of the series.
+When scope is a single book, this check MUST still load the outlines of ALL books (`chapters/book-*/outline.md`) plus all files in `plot/`. The scoped book is the **focus** — you audit its plants in detail — but payoffs can land in ANY book of the series. (Graph-fresh path: the all-books outline load is replaced by the plant/payoff query per §1 Graph-assisted load; the classification rules below apply to the query output unchanged.)
 
 Classification rules:
 - A plant in Book N with payoff in Book N → normal plant/payoff. Check it.
@@ -154,6 +164,8 @@ A complete inventory of introduced elements and their payoff status:
 - **Retroactive plants:** Things that appear in a later book that SHOULD have been planted in an earlier book but weren't.
 
 #### K. Context Tag & Usage Tracker Audit
+
+(Graph-fresh path: per §1 Graph-assisted load, run the tracker-assignment query and open only the files it names; the audit rules below are unchanged.)
 
 **Context tags:**
 - For each chapter in scope, verify a `context:` field exists in the chapter header. If a chapter mentions a temporal echo, flashback, thematic concept, or countdown beat but lacks the corresponding file in its `context:` tag, flag as WARNING.

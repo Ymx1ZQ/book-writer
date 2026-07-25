@@ -55,6 +55,22 @@ Treat this as a hard constraint, not advisory context. The "Forbidden patterns" 
 - The POV character's sheet from `characters/foreground/` or `characters/midground/`
 - Sheets for other characters appearing in this chapter
 
+### Graph-assisted context load (optional — see `instructions/graph-recall.md`)
+
+If `graphify-out/graph.json` exists in the project root (per `graph-recall.md` §Opt-in detection), run these two queries BEFORE loading the `context:` tag files below:
+
+```bash
+graphify query "usage-tracker items assigned to <book> ch<NN>"
+graphify query "what must <book> ch<NN> set up and pay off"
+```
+
+The first returns the tracker rows pre-planned for this chapter; the second returns plants due, the motif assignment, and the echo/reader-journey state. Then prune the `context:` tag load (index mode — every pointer is read from disk):
+
+- Load IN FULL, unchanged: the always-load set above (never-substitute per `graph-recall.md`), the POV character sheets, and every `context:` file that carries a tracker row / plant / motif hit for THIS chapter per the query results.
+- For each remaining `context:` file: read only the § sections the graph points to, from disk.
+
+The `context:` tag stays the authored artifact — the graph prunes the LOAD, it never edits the tag, and the Step 2.6 symmetry check runs unchanged against the full tag. Graph absent → this subsection is a no-op and Step 1 proceeds exactly as written. Empty query result or stale graph → `graph-recall.md` §Fallback ladder (load the files as below).
+
 **Load from `context:` tag (MANDATORY):**
 Read the `context:` field from this chapter's header in the outline. Load every file listed there in addition to the always-loaded set. These are the conditional context files for this chapter — determined during outline planning, not at the writer's discretion. If a file in the context tag does not exist, stop and report.
 
@@ -545,6 +561,12 @@ speed. Until then the chapter is NOT human-validated, and the orchestration
 (sweep, cycle "done" detection) must not treat it as fully closed.
 
 Announce: *"✅ Ch. N machine-checked — [title] — [word count] words — [level]/[POV] — Cliffhanger: [type] — awaiting human cold-read"*
+
+---
+
+## Step 9: Graph Refresh (post-commit)
+
+If `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after the chapter's commit lands (SKILL.md dispatch step 5) — the new prose, `state.md`, outline, and tracker edits are graph-covered sources. Follow `instructions/graph-recall.md` §Keeping the graph fresh (incremental update; >25-changed-file skip bound; soft-fail — a failed refresh never blocks the chapter). Graph absent → skip silently.
 
 ---
 

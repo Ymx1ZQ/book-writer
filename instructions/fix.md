@@ -132,6 +132,10 @@ Per-book:
 Total remaining: X milestones
 ```
 
+### 4. Graph Refresh (post-commit)
+
+If `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after this session's commit lands — the applied fixes touched graph-covered sources (world/, characters/, plot/, outlines). Follow `instructions/graph-recall.md` §Keeping the graph fresh (incremental update; >25-changed-file skip bound; soft-fail — a failed refresh never fails the session). Graph absent → skip silently.
+
 ---
 
 ## Rules

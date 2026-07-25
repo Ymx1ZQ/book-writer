@@ -86,3 +86,7 @@ Before returning:
 - The revised `chapters/<book>/<chapter>.md` reads end-to-end without seams from the integrations
 
 Report at the end: counts of integrate / partial / skip, total word delta, path to the log.
+
+## Graph refresh (post-commit)
+
+If `graphify-out/graph.json` exists in the project root, refresh the knowledge graph after this pass's commit lands — the integrated chapter is a graph-covered source. Follow `instructions/graph-recall.md` §Keeping the graph fresh (incremental update; >25-changed-file skip bound; soft-fail — a failed refresh never fails the pass). This is graph maintenance only: the verbatim-load rule for this command (no graph consumption) is unchanged. Graph absent → skip silently.

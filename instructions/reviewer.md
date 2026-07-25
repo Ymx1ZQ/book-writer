@@ -75,6 +75,18 @@ List these beats in working memory before step 3. They will modulate flagging cl
 
 **Calibration:** 3-7 beats per chapter is the target band. Fewer than 3 = either you're under-reading or the chapter genuinely has no load-bearing prose (rare; flag the chapter itself as a quality concern). More than 7 = you're being generous; tighten to the 3-7 truly load-bearing.
 
+### 2.6. Graph-Assisted Triage for Checks K and M (optional — see `instructions/graph-recall.md`)
+
+Check K (plant density, false-belief management, misdirection cross-references) and check M Rules 16 and 19 (object permanence, echo-not-repetition) are the ones that drive re-reads of prior-chapter drafts — up to 10 whole files — to trace where a plant, object, or motif phrase originated. If `graphify-out/graph.json` exists in the project root AND the freshness gate passes (`graph-recall.md` §Opt-in detection + §Freshness gate), triage those re-reads through the graph instead (index mode — the query results are pointers; the disk read of the pointed-to §§ is the truth):
+
+- **Plant/payoff (check K):** `graphify query "every prestige-inventory plant touching <book> ch<NN>" --budget 4000` (plus `graphify explain "<plant>"` for a specific plant) → open ONLY the prior-chapter §§ the result cites, not the whole prior drafts.
+- **Object location (Rule 16):** `graphify query "where was <object> introduced and last located" --budget 4000` → open only the cited prior-chapter §§.
+- **Motif original (Rule 19):** `graphify query "<motif phrase> occurrences across chapters" --budget 4000` → open only the cited § of the original occurrence to compare its effect against the return.
+
+**Explicitly untouched (verbatim set):** the application of Rules 0-28 itself, the Step 1 full reads of `world/prose-rules.md`, `characters/notes/voice-samples.md`, and `chapters/<book>/writing-notes.md`, and the full read of every TARGET chapter in the review session. The graph prunes only the prior-chapter re-reads that checks K and M trigger — it substitutes nothing in the rubric or the review set.
+
+**Fallback:** graph absent or stale → this step is a no-op; checks K and M re-read prior drafts exactly as before. An empty query result is never evidence of absence — fall back to the file re-read for that item (`graph-recall.md` §Fallback ladder).
+
 ### 3. Analyze — 13 Dimensions
 
 **Flagging discipline (Phase 9 M1 — read before scanning).** Every candidate finding from the rule scans below must pass a three-question test before being added to REVIEW.md:
@@ -139,7 +151,7 @@ After reading each chapter, ask: "Do I care about this person?" If the answer is
 
 **K. READER ARCHITECTURE test**
 Evaluate how well the chapter manages the reader's knowledge, beliefs, and attention:
-- **Plant density:** How many details in this chapter will pay off later? (Target: ≥1 per chapter. If `plot/prestige-inventory.md` exists, cross-reference.) Flag chapters with 0 plants — they're missed opportunities.
+- **Plant density:** How many details in this chapter will pay off later? (Target: ≥1 per chapter. If `plot/prestige-inventory.md` exists, cross-reference; prior-chapter re-reads go through the step 2.6 graph triage when active.) Flag chapters with 0 plants — they're missed opportunities.
 - **False belief management:** Is the reader's incorrect understanding being maintained where it should be? Or does the chapter accidentally reveal something too early? Quote any line that risks spoiling a later reveal.
 - **Re-read reward density:** How many details would hit differently on a second reading? (Target: ≥1 per chapter.) Quote the best re-read detail. Flag chapters with 0.
 - **Misdirection health:** If the project has active misdirections (e.g., a false villain, a trusted character who will betray), is the chapter reinforcing or weakening them? A misdirection that weakens before the planned reveal is a structural failure.
@@ -160,10 +172,10 @@ A compact per-chapter check against the cinematic+bestseller style codification.
 - **Rule 13 — Cut, don't transition:** any banned transition phrase in the chapter? (`later that day`, `a few hours later`, `after that`, `eventually`, `meanwhile`, `più tardi`, `dopo`, `in seguito`, `frattanto`, `eventualmente`). Quote each. Any hit = HIGH.
 - **Rule 14 — Dialogue from desire, not information:** any exchange where a character delivers worldbuilding to another character without intent/stakes? Any `as you know…` construction? Quote the worst offender. Any hit = HIGH.
 - **Rule 15 — Dialogue tags invisible:** count variant tags (whispered / muttered / exclaimed / retorted / gasped / snapped / hissed / breathed / mormorò / sussurrò / esclamò / ribatté / ansimò / sibilò). Report count. >2 per chapter = MEDIUM.
-- **Rule 16 — Object permanence:** does the chapter touch/use/notice a prior-introduced object OR plant a new object? Quote the object beat. Neither present = NOTE.
+- **Rule 16 — Object permanence:** does the chapter touch/use/notice a prior-introduced object OR plant a new object? Quote the object beat. Neither present = NOTE. (Locating where an object was introduced or last placed goes through the step 2.6 graph triage when active.)
 - **Rule 17 — Temporal precision:** any vague time reference (`a while later`, `in the afternoon`, `soon`) where a precise one would fit? Quote each. Pattern of vagueness = MEDIUM.
 - **Rule 18 — Sentence length as pulse:** for climax chapters, measure opening vs closing avg sentence length. Report both. <30% reduction from opening to closing = HIGH.
-- **Rule 19 — Echo, not repetition:** any motif phrase returning from an earlier chapter? Does it carry a new meaning, or is it identical in effect? Quote the recurrence + its original. Identical effect on return = MEDIUM.
+- **Rule 19 — Echo, not repetition:** any motif phrase returning from an earlier chapter? Does it carry a new meaning, or is it identical in effect? Quote the recurrence + its original. Identical effect on return = MEDIUM. (Finding the original occurrence goes through the step 2.6 graph triage when active.)
 - **Rule 20 — Silence as tool:** does this chapter contain a dramatic peak (revelation, body blow, betrayal, death, crossing, discovery)? If yes, is there at least one silent beat (white-space break or single-line paragraph isolated between longer paragraphs) after the peak? No silent beat on a peak chapter = HIGH.
 - **Rule 21 — Chapter opening: image + tension within 150 words:** read the first 150 words. Is there concrete image AND tension? Quote the opening sentence. Banned opener (stative `was X`, `It was Y`, `The Z did W as usual`) = HIGH.
 - **Rule 22 — Chapter closing: single line or image:** count sentences in the final paragraph. >2 = HIGH. Is the closing a summary/contemplative wrap-up? If yes = HIGH. Quote the final paragraph.

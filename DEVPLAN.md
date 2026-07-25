@@ -1212,3 +1212,148 @@ Step 5.5 sets `planned` → `written` and no step revisits it. Measured on the o
 - `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force` redeploy. — done 2026-07-25 (17 passed / 9 passed; `--check` clean)
 
 **Where the corresponding data repair lives:** `ground-truth` `DEVPLAN.md` Phases 87 and 88. Those fix one corpus. This phase is why it will not have to be done again — and the ordering matters: deploy M2 before repairing Books 2 and 3's outlines by hand, so the repaired files match what the skill will emit from then on.
+
+## Phase 23 ✅ — The three registers: tracker, context list, plant table (2026-07-26)
+
+Source: the `ground-truth` corpus, 2026-07-26, and the author's reading of a fix applied there — *"non credo che il lettore che in ch2 legge una frase che può voler dire niente poi se la ricorda 19 capitoli dopo."* He was right, and diagnosing why exposed a second defect underneath the one Phase 22 closed.
+
+**Three registers record one fact and none of them is checked against the others.**
+
+| Register | Lives in | Says |
+|---|---|---|
+| Usage Tracker | the canon file that owns the element | this element belongs in B1 Ch.07 |
+| `context:` list | the chapter's outline header | to write B1 Ch.07, load these files |
+| §Inline Plant Tracking | one table in the book's outline | this thing recurs at #1 Ch.05, #2 Ch.12, #3 Ch.14, #4 Ch.19 |
+
+Phase 22 bound the first two. This phase binds the third, and repairs the reason the first binding was ineffective in the file that already had it.
+
+### M1 — Check K states a loading mechanism that does not exist, and exempts most of the corpus on the strength of it — **premise false; direction reversed by Phase 24**
+
+`coherence-check.md` §K already carries the tracker↔context rule: *"verify the target chapter's `context:` field includes this file. If not, flag as WARNING."* The next sentence cancels it for the directory where most canon lives:
+
+> *"Files inside `world/level-*-<name>/` directories are loaded selectively by the chapter writer based on tracker items — they do NOT need context tags."*
+
+`chapter-writer.md` Step 1 has no such path. It loads the `context:` list plus the always-loaded set, and nothing reads tracker rows to decide what to open. The sentence describes a behavior the writer does not have and uses it to exempt `world/level-0-reality/` (20+ files), `level-1-ark/` and `level-2-dome/` from the only check that would have caught the 536 unreachable rows measured in `ground-truth`.
+
+- [x] Delete the carve-out. Level-directory files reach a chapter the same way every other file does.
+- [x] State the rule positively in its place, with the reachability set Phase 22 M1 defines: a tracker row is valid only if its file is in the chapter's `context:` list, the always-loaded set, or the texture-palette proxy.
+- [x] Audit the rest of `coherence-check.md` for other claims about what the chapter-writer does. A check that reasons from a wrong model of the writer fails silently and reports success.
+
+**Audit result (2026-07-26) — the premise above is wrong on one point.** `chapter-writer.md` Step 1 §Load based on level DID carry a tracker-driven selective load: *"load files from the corresponding `world/level-*-<name>/` directory SELECTIVELY … only those whose `## Usage Tracker` contains items mapped to THIS chapter"*. That sentence is where check K's carve-out came from, and it contradicts Phase 22's 2.6.c, which reaches the same files by auto-adding them to `context:`. Two load models for one directory, and the check trusted the one no longer enforced. Step 1 now routes level-scoped canon through the reachability set and forbids the directory scan, so deleting the carve-out leaves a single model. Claims audited:
+
+| Claim in `coherence-check.md` | Verdict |
+|---|---|
+| K: level-dir files are loaded selectively from tracker rows, so they need no context tag | ~~**Wrong** — rewritten; Step 1 realigned (above)~~ **Correct.** Re-verdicted by Phase 24 |
+| K: a `context:` entry with no tracker row for that chapter is unnecessary loading; exclude "always-loaded files (tones.md, prose-rules.md, etc.)" | **Wrong twice** — beat-referenced files are legitimate per 2.6.a, and the exclusion set must be parsed from the book's §Context Tags, not hardcoded (Phase 22 M2). Rewritten, deduplicated into R |
+| R: a `context:` file with zero beat references is an orphan | **Incomplete** — a file 2.6.c auto-added for a tracker row has no beat; coherence would order the removal of what the next draft re-adds. Tracker row now counts as justification; palette excluded |
+| S: a beat's canonical file must be in `context:` or the always-loaded set | **Incomplete** — 2.6.a excludes the texture-palette proxy too (2.6.e). Third route added |
+| N: "use chapter Step 3.5 check #15 as the spec" | **Correct** — Step 3.5 #15 is the interior-labeling grep |
+| S: "Step 2.6.a runs the same scan as a HARD `MUST`" | **Correct** |
+| O: `outline-deviation.md` is created by chapter-writer Step 2.5.d on cut/split/merge | **Correct** |
+| K: every chapter header carries a `context:` field the writer loads | **Correct** — Step 1 §Load from `context:` tag (MANDATORY) |
+| K: a `context:` file holding discrete details should have a `## Usage Tracker` | **Correct** — `init.md` §Key template principles |
+| Routing: "`/book fix` does not touch chapter prose by design" | **Correct** — `fix.md` §3 and its Rules |
+| §4.5: operational items close from `/book fix` §2.5, `/book continuity` §4.5, `/book compact` §4.5 | **Two correct, one wrong** — compact's section is §5.5. Corrected |
+| L, M, G, T: writer-side twins (2.5.a, 2.5.b) referenced only as doctrine, no behavioral claim | **No claim to check** |
+
+**Correction (Phase 24, 2026-07-26) — M1's premise was false and its resolution went the wrong way.** The milestone was written on my claim that §K's carve-out described a mechanism the writer did not have. It had it: `chapter-writer.md:36` at `f1b6cd9` loaded the chapter's own `world/level-*-<name>/` directory selectively, by tracker row, and §K described that accurately. The contradiction M1 detected was real but sat elsewhere — Phase 22's 2.6.c required a `context:` entry for every tracker row without exempting the directory the selective path already covered. M1 resolved it by deleting the selective load; measured in `ground-truth`, that made 226 of 314 rows reported unreachable false positives. The checkboxes above stay ticked because they were implemented as written; Phase 24 restores the selective load as the fourth route of the reachability set and keeps the two parts of M1 that were right — the level-register conflict verdict, and the removal of §K's silence about `world/` root files, which had left `world/the-word.md` unreachable from all seven chapters that render it.
+
+### M2 — Chekhov cannot see a plant that lives only in tracker rows
+
+§J loads `plot/prestige-inventory.md`, `plot/motif-tracking.md` and every outline. It does not read §Inline Plant Tracking, and it does not read the Usage Trackers. In `ground-truth` the Dome's filtered spectrum existed as three tracker rows at B1 Ch.02 and no plant row, while the outline's Hex-code row already carried `#4 Ch.21 — spectral glass color`: the payoff was tracked and the thing it pays off was not. §J is the check that owns plant→payoff and it had no way to look.
+
+- [x] Add both sources to §J's load row and reconcile them: an element with tracker rows across three or more chapters is a plant and needs a §Inline Plant Tracking row; a plant-table instance at Ch.N with no tracker row for that chapter is an instance nothing owns.
+- [x] Flag the specific shape found: a payoff instance whose enabling element has no row of its own. That is the retroactive-plant class §J already defines, reached from the register side rather than the prose side.
+
+### M3 — One instance is not a plant
+
+A plant mentioned once, nineteen chapters before its payoff, is not planted. The corpus states the working convention itself: every plant in `ground-truth`'s table carries three or four instances (Hand-to-ribs 05/12/14/19; Dek 06/08/16/19; Niva 11/14/16/19/24), with consecutive gaps of two to eight chapters.
+
+- [x] §J flags a payoff with fewer than two prior instances.
+- [x] §J flags a gap larger than the project's own measured maximum. **Derive the bound from the book's existing table, do not decree a number** — the convention differs per project and a hardcoded figure is wrong in the second project that uses it.
+- [x] Say what the fix is when the check fires: add instances, not a better single sentence. An abstract sentence cannot be made memorable enough to cross twenty chapters alone.
+
+### M4 — The writer collects plant instances due this chapter, alongside tracker rows
+
+Phase 22 added §2.6.c, the tracker-side scan. Plant instances assigned to the chapter being written are the same kind of obligation from the third register and nothing collects them.
+
+- [x] Extend §2.6.c to collect §Inline Plant Tracking instances for this Book+Ch as well, and apply the same reachability and level-register rules to each.
+- [x] `fidelity.md` gains a matching class: a plant instance the table assigns to this chapter and the prose did not render.
+
+### M5 — `init.md` scaffolds the plant table and its numbering
+
+Phase 22 M2 found Book 1 declaring a §Context Tags part that Books 2 and 3 lacked. The plant table has the same exposure and no scaffolding at all.
+
+- [x] Specify §Inline Plant Tracking as a required outline section: one row per plant, numbered instances per chapter, the payoff instance marked as such.
+- [x] State the convention M3 measures against — a plant carries multiple instances — where a writer will read it, not only where a checker will.
+
+### M6 — Say once what each register owns
+
+M1's defect is a file reasoning from a wrong model of another file. The three registers are described in three places and nowhere together.
+
+- [x] Write the table at the head of this phase into the skill's shared doctrine, and have `chapter-writer.md`, `coherence-check.md`, `fidelity.md` and `init.md` point at it instead of restating it.
+
+Doctrine file: `instructions/registers.md` (the table plus the reachability set, the level-register pointer, and the plant-table shape). `SKILL.md` names it alongside `graph-recall.md` and `milestone-format.md`; the four instruction files link to it.
+
+### Verification
+
+- Re-run the `ground-truth` measurements after deploy. `--check` there reports 0 orphans / 314 unreachable-MISSING / 50 CONFLICT; M1 is the change that should move MISSING. — pending
+- `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force` redeploy. — done 2026-07-26 (17 passed / 9 passed; `--check` clean)
+
+## Phase 24 ✅ — Restore the selective level-directory load, and make it the checked model (2026-07-26)
+
+Source: Phase 23's own M1 audit, plus a measurement in `ground-truth` the same day. **Phase 23 M1 was implemented on a false premise supplied by the author of the phase — me.**
+
+M1 said `coherence-check.md` §K's carve-out described a loading mechanism that does not exist. It exists. `chapter-writer.md:36` at commit `f1b6cd9` reads: *"load files from the corresponding `world/level-*-<name>/` directory **SELECTIVELY**: list the files in the directory, then load only those whose `## Usage Tracker` contains items mapped to THIS chapter."* §K's carve-out was an accurate description of it, and the two agreed.
+
+What actually broke the agreement was **Phase 22's 2.6.c**, which required every tracker row's file to be in the `context:` list without exempting the level directories the selective path already covered. Phase 23 then resolved the contradiction by deleting the selective path. That direction is wrong, and the measurement says how wrong: of 314 rows `ground-truth`'s guard reported unreachable, **226 sit in the chapter's own level directory** and were reachable all along. **88** were genuinely unreachable.
+
+**The selective load is the better mechanism and it is the one this skill argues for everywhere else.** It is derived rather than hand-maintained, it cannot drift, and it is the same principle Phase 22 M1 invoked against hardcoding the always-loaded set. Its real defect is different: a chapter's actual load is invisible in the outline, while §Context Tags calls the `context:` list authoritative.
+
+### M1 — One model, stated once, covering both paths
+
+- [x] Restore the selective level-directory load in `chapter-writer.md` Step 1, and state the complete model in `instructions/registers.md`: a chapter reaches a canon file if it is in the always-loaded set, in the texture-palette proxy, in the chapter's `context:` list, **or** in the chapter's own level directory carrying a tracker row for this Book+Ch. The last clause is the one Phase 23 removed.
+- [x] Correct §Context Tags' claim that the `context:` list is the authoritative record of what a chapter loads. It is authoritative for conditional files; the level directory is reached by rule. A document that overstates its own scope is what produced this phase.
+
+### M2 — 2.6.c must exempt what the selective path already covers
+
+- [x] Amend §2.6.c: a tracker row whose file sits in the chapter's own level directory is reachable by rule and is **not** an auto-add candidate. Auto-add applies to `world/` root files, `plot/`, `characters/`, and any level directory that is not this chapter's own — the last of which is a register conflict, not a missing entry.
+- [x] Say why in one line, so the exemption is not deleted again by someone reading 2.6.c alone.
+
+### M3 — Restore §K to the model, without restoring its blind spot
+
+§K's carve-out was right about level directories and silent about everything else, which is why `world/the-word.md` — a `world/` root file owning an entire character arc — was unreachable from all seven chapters that render it and no check said so.
+
+- [x] Restate §K over the full reachability set: level-directory rows are covered by rule; every other tracker row needs a `context:` entry, and its absence is a WARNING.
+- [x] Keep the level-register conflict verdict Phase 23 added. A row in a *different* level's directory is not reachable by any path.
+
+### M4 — Consumers of the model
+
+- [x] `fidelity.md` and `coherence-check.md` §J were written against Phase 23's single-path model in the same session; re-read both against the restored model and correct any reachability claim.
+- [x] Where a project ships a tool that computes reachability, the model above is what it must implement. Say so in `registers.md` — `ground-truth`'s `chapter-load.py --unreachable` over-reported by 226 rows for exactly this reason.
+
+**M4 audit (2026-07-26).** Every reachability claim in the two files, plus the ones the same grep found elsewhere:
+
+| Claim | Verdict |
+|---|---|
+| `fidelity.md` Input 4: tracker files collected as 2.6.c collects them, NOT restricted to `context:` | **Correct** — but 2.6.c now also carries an exemption; added one clause so an implementer does not inherit it and skip level-directory rows |
+| `fidelity.md` §19, class (d), class (e), §Coordinate with Chekhov | **Correct** — they read the tracker and plant registers directly and assert nothing about how a file is loaded |
+| `fidelity.md` class (d): "a row still `planned` is not a class (d) finding" | **Correct** — unaffected by the load model |
+| §J: a plant instance at Ch.N with no tracker row for Ch.N is owned by nothing | **Correct, and stronger** — with the selective load restored, a missing row also means Step 1 never opens the file; clause added |
+| §J: three-or-more-chapter recurrence needs a plant row; instance-count and gap bounds | **Correct** — no reachability content |
+| §K: three-route reachability set, level directories not exempt | **Wrong** — restated over the four routes; the WARNING now names `world/` root, `plot/`, `characters/` explicitly, so the blind spot §K had before Phase 23 is not restored with the carve-out |
+| §K load row: "level directories included, no exemption" | **Wrong wording** — the rows are read and resolved by rule, not exempted; reworded |
+| §K: flag a `context:` entry only when it has neither a tracker row nor a beat | **Correct** — a redundant entry is not flagged either way |
+| §R: a tracker row justifies a `context:` entry because 2.6.c re-adds it | **Incomplete** — 2.6.c no longer re-adds own-level-directory files; that entry is redundant, not orphaned. Clause added |
+| §S: three-route exclusion for beat-referenced files | **Incomplete** — fourth route added; a beat-referenced file already opened by Step 1 is not a context gap |
+| `chapter-writer.md` 2.6.b: orphan = zero beat references | **Incomplete** — did not count tracker rows at all (a pre-existing mismatch with §R), and would flag an own-level-directory entry. Both fixed |
+| `chapter-writer.md` Step 5.5: scope is every file holding a row for this Book+Ch, not the Step 1 load | **Correct** — the two sets now coincide for more chapters, and the difference report is unchanged |
+| `init.md` §Context Tags: the `context:` list is authoritative | **Wrong** — authoritative for conditional files only; corrected, and the reciprocal rule at §Key template principles gained the fourth exemption |
+| `SKILL.md` §The three registers: check K "came to exempt every `world/level-*/` file" | **Wrong** — that exemption matched the writer; the drift was 2.6.c ignoring it. Sentence corrected |
+
+### Verification
+
+- Re-run `ground-truth`'s guard after both repos land. — **done 2026-07-26.** `chapter-load.py` gained route 4 (project-side Phase 88 M9): unreachable-MISSING **314 → 88**, CONFLICT **50 → 50**. The unchanged conflict count is the check on the change rather than a coincidence — the register does not depend on the load model, so a correct fix must leave it untouched. 91 project tests green, including one pinning that no own-level-directory row is reported MISSING.
+- `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force`. — done 2026-07-26 (17 passed / 9 passed; `--check` clean)
+
+**Standing note for future phases.** Phase 23 M1 asked its implementer to *verify the premise before acting on it*, and the implementer did, found it false, and reported it. The instruction to verify is what saved this; the phase would otherwise have shipped a deletion of a working mechanism on the author's confidence alone.

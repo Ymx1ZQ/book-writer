@@ -144,6 +144,10 @@ When a command is received:
 
 If the consuming project keeps a graphify knowledge graph (`graphify-out/graph.json` in the project root), several instructions replace bulk canon loading with targeted graph queries — see `instructions/graph-recall.md` for the full doctrine (opt-in detection, index vs answer mode, the freshness gate, the never-substitute list, canon-blind exclusions, fallback ladder). Consumers: `chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`. Write side: mutating commands (`fix`, `revise`, `chapter`, `compact`, `integrate-anchors`, `arbiter` on APPLY) refresh the graph after their commit — see `instructions/graph-recall.md` §Keeping the graph fresh. Without the graph, every command behaves exactly as documented — the graph is a per-project accelerator, never a dependency.
 
+## The three registers
+
+A planned element is recorded in up to three places — the owning canon file's `## Usage Tracker`, the chapter's `context:` list, and the book outline's §Inline Plant Tracking table — each written by a different command. `instructions/registers.md` states what each register owns, the reachability set that binds tracker to context, and the plant-table shape. Consumers: `chapter-writer.md` (2.6.c), `coherence-check.md` (J, K), `fidelity.md` (classes d and e), `init.md` (the outline-header scaffold). They point at it rather than restating it: restated copies are how the model drifted twice — check K described the writer's selective level-directory load correctly while `chapter-writer.md` 2.6.c ignored it, and the repair then deleted the load instead of reconciling the two (Phase 23 M1, reversed by Phase 24).
+
 ## Recommended model per command
 
 | Tier | Commands | Rationale |

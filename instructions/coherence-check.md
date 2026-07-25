@@ -52,8 +52,8 @@ Scope options:
 | G — Infodump | Re-use outlines; load chapter drafts only if they exist (`chapters/book-N/ch*.md`, excluding plan files) |
 | H — Thematic | Re-use `world/overview.md` already loaded |
 | I — Reader Experience | `plot/reader-journey.md` (if exists), re-use outlines |
-| J — Chekhov | `plot/prestige-inventory.md` (if exists), `plot/motif-tracking.md` (if exists), ALL outlines across all books |
-| K — Context Tags & Trackers | All `world/level-*-<name>/` files (if not already loaded), all files referenced in `context:` tags across outlines |
+| J — Chekhov | `plot/prestige-inventory.md` (if exists), `plot/motif-tracking.md` (if exists), ALL outlines across all books — including each outline header's §Inline Plant Tracking table — and every canon file holding a `## Usage Tracker` section (`grep -rl "## Usage Tracker" characters/ world/ plot/`). The last two are the other two registers this check reconciles (→ `instructions/registers.md`) |
+| K — Context Tags & Trackers | Every canon file holding a `## Usage Tracker` section (`grep -rl "## Usage Tracker" characters/ world/ plot/` — every directory, level directories included: their rows are resolved by rule, not skipped), all files referenced in `context:` tags across outlines, and each book's outline header §Context Tags (always-loaded set + texture-palette proxy) |
 | L — Economic-Anchor Audit | Level-appropriate anchor files: Reality → `world/level-0-reality/economy.md` (+ `consumer-anchors.md` if present); Ark → `world/level-1-ark/daily-life.md`; Dome → `world/level-2-dome/bureaucracy.md` + `context.md`; cross-level → `world/economy-cross-level.md` (if present). Load chapter drafts (`chapters/book-N/ch*.md`). |
 | M — System-Implying-Number Audit | Re-use level files already loaded for L and E; load `world/level-0-reality/surveillance.md`, `world/level-0-reality/agent-capabilities.md`, `world/the-authors-method.md` if present; load chapter drafts. |
 | N — Interior-Labeling Detector | Chapter drafts only (re-use those loaded for G); reference `world/prose-rules.md` if not already loaded. |
@@ -70,7 +70,7 @@ Scope options:
 
 | Check | Graph-fresh path (replaces that check's load-table row) |
 |---|---|
-| J — Chekhov | `graphify query "every prestige-inventory plant and its payoff chapter"` + `graphify explain "<plant>"` on each plant the query returns with no payoff edge. Replaces loading ALL outlines across all books. Classification rules in check J apply to the query output unchanged. |
+| J — Chekhov | `graphify query "every prestige-inventory plant and its payoff chapter"` + `graphify explain "<plant>"` on each plant the query returns with no payoff edge. Replaces loading ALL outlines across all books. Classification rules in check J apply to the query output unchanged. The §Inline Plant Tracking tables and the tracker rows are read from disk regardless — the register reconciliation compares the registers as written, so neither source may be substituted by a query result. |
 | K — Context Tags & Trackers | The tracker-assignment query (`graphify query "usage-tracker items assigned to <book> ch<NN>"`, per chapter in scope); open ONLY the files the graph names. Replaces loading all `world/level-*-<name>/` files. |
 | B / C / D | Graph triage first — query for threads introduced and never resolved (B), knowledge routes across levels (C), character-trait contradictions (D) — then open plot files / character sheets only on flagged hits. |
 
@@ -163,6 +163,20 @@ A complete inventory of introduced elements and their payoff status:
 - **Orphans:** Things introduced and abandoned — characters, objects, questions, subplots — with no payoff in ANY book.
 - **Retroactive plants:** Things that appear in a later book that SHOULD have been planted in an earlier book but weren't.
 
+##### Register reconciliation (plant table ↔ Usage Trackers)
+
+A recurrence is recorded in the outline header's §Inline Plant Tracking table and in the owning canon file's `## Usage Tracker`, written at different times by different commands (→ `instructions/registers.md`). Reconcile both directions:
+
+- An element whose tracker rows span **three or more chapters** is a recurrence the reader is expected to accumulate, so it needs a §Inline Plant Tracking row. Missing → WARNING: "element tracked at Ch.NN/NN/NN with no plant row." **Route to:** DEVPLAN milestone adding the row to `chapters/<book>/outline.md` §Inline Plant Tracking.
+- A plant-table instance at Ch.N whose element has **no tracker row for Ch.N** is an instance nothing owns: no file carries the obligation, `/book chapter` 2.6.c cannot collect it, Step 5.5 has nothing to tick, and if the element lives in the chapter's own level directory, Step 1's selective pass does not open its file either. WARNING → DEVPLAN milestone adding the row to the file that owns the element.
+- A payoff instance whose **enabling element has no row of its own** in either register is the retroactive-plant class above, reached from the register side rather than the prose side. Flag it as a retroactive plant, naming which register is empty.
+
+##### Instance count and gap
+
+- A payoff with **fewer than two prior instances** → WARNING: "payoff at Ch.N rests on <count> prior instance(s)."
+- **Derive the gap bound from the project's own table; do not decree a number.** For every plant row *other than the one under test*, compute the consecutive gaps between numbered instances (the chapter distance from `#k` to `#k+1`) and take the maximum across all of them — that is the gap this book's working plants demonstrably sustain. A gap in the row under test that exceeds it → WARNING: "gap of N chapters between #k and #k+1 exceeds the book's observed maximum of M (`<other plant>`, #j→#j+1)." A single-instance element whose payoff sits N chapters later is measured the same way, instance-to-payoff. If no other row has two numbered instances, no bound can be derived: report that and skip the gap test rather than substituting a figure.
+- **The remedy is instances, not a better sentence.** Both flags route to a DEVPLAN milestone that adds intermediate instances at named chapters (a plant-table cell each, plus the matching tracker row and outline beat). Rewriting the single mention more emphatically closes neither finding — the deficit is the number of times the reader meets the element, not the wording of one meeting.
+
 #### K. Context Tag & Usage Tracker Audit
 
 (Graph-fresh path: per §1 Graph-assisted load, run the tracker-assignment query and open only the files it names; the audit rules below are unchanged.)
@@ -173,8 +187,10 @@ A complete inventory of introduced elements and their payoff status:
 
 **World file trackers (table format — Book/Ch/Detail/Status):**
 - Verify all world files in `world/level-*-<name>/` directories have a `## Usage Tracker` section. Flag missing trackers as WARNING.
-- For tracker items in files OUTSIDE level directories (e.g., `world/temporal-echoes.md`, `world/nothingness.md`): verify the target chapter's `context:` field includes this file. If not, flag as WARNING: "tracker item mapped to chapter but file not in context tag." Files inside `world/level-*-<name>/` directories are loaded selectively by the chapter writer based on tracker items — they do NOT need context tags.
-- Flag any chapter with a context tag pointing to a file that has NO tracker items mapped to that chapter (unnecessary loading, wastes agent context). Exclude always-loaded files (tones.md, prose-rules.md, etc.) from this check.
+- For every tracker row naming a target chapter, in every file and every directory: the row is valid only if its owning file is reachable from that chapter through one of the four routes of the reachability set (→ `instructions/registers.md`) — the chapter's `**context:**` list, the book's always-loaded set, its texture-palette proxy, or the chapter's own `world/level-*-<name>/` directory, which `/book chapter` Step 1 opens selectively from the rows themselves. A row in the chapter's own level directory is reachable by rule: it needs no `context:` entry and is not flagged.
+- Every other unreachable row → WARNING: "tracker row mapped to <book> Ch.NN but the owning file is not reachable from that chapter." No rule reaches `world/` root files, `plot/` or `characters/`, so a row in one of those is unreachable unless the chapter lists it — run this over the whole tracker set, not only the level directories. A root file owning an element that recurs across many chapters is the shape this catches: it is unreachable from every one of them until each chapter's `context:` names it.
+- If the row's owning file sits in a *different* level's directory, report the register conflict instead of the WARNING: that file is reachable by no route, so the row targets the wrong chapter or the content is filed in the wrong file. The register outranks the tracker and the fix is a content move or a retarget, never a `context:` entry.
+- Flag a `context:` entry only when the file has NEITHER a tracker row for that chapter NOR a beat that references it — those are the two independent justifications `/book chapter` 2.6.a and 2.6.c enforce, and a file carrying either one is correctly listed. Exclusions come from this book's outline header §Context Tags (always-loaded set + texture-palette proxy), parsed at run time — never from a list hardcoded in this file. Report zero-justification entries once, under check R.
 - Flag any world file where >50% of elements have no chapter assigned (`—` status) as NOTE: "worldbuilding without placement plan."
 
 **Character file trackers (same table format):**
@@ -287,20 +303,20 @@ NOT BLOCKING — revise applies the trim or vary, with light authority (NOTE-lev
 
 **Symmetry rule (project side):** every file listed in a chapter's `**context:**` field has at least one beat reference (explicit `→ see <file>` OR a named entity / system / location / mechanism that semantically requires the file's content); every beat that needs a file lists that file. When beats mutate, `**context:**` mutates.
 
-**Heuristic check (this class):** for every chapter in the active outline, parse the chapter's `**context:**` field. For each file listed (excluding the always-loaded set declared in the outline header `### Context Tags` paragraph), verify at least one beat reference exists. A beat reference is:
+**Heuristic check (this class):** for every chapter in the active outline, parse the chapter's `**context:**` field. For each file listed (excluding the always-loaded set and the texture-palette proxy declared in the outline header `### Context Tags` paragraphs), verify at least one beat reference exists **or** a `## Usage Tracker` row mapped to that chapter — a file listed for a tracker row is justified even with no beat, and `/book chapter` 2.6.c re-adds it on the next draft if it is removed. The one exception is a file in the chapter's own level directory: Step 1 reaches it by rule, so the entry is redundant rather than orphaned, and removing it costs nothing. Neither case is flagged. A beat reference is:
 
 - An explicit `→ see <file>` or bare `<file>` mentioned in beats.
 - An implicit reference: a named character (cross-ref `characters/**.md`); a named location (cross-ref `world/level-N-*/locations*.md` or `world/level-0-reality/architecture.md`); a named system / mechanism / technical anchor (cross-ref `world/**.md`); a named ration unit, compliance score, anomaly code, frequency, or hardware artifact whose canonical home is the listed file.
 
-**Flag every file with zero beat references as WARNING:** "context-list orphan at `chapters/<book>/outline.md` Ch.NN: file `<path>` listed in `**context:**` but no beat references it. Remove from per-chapter context, OR promote to always-loaded if consistency-only, OR add a beat reference."
+**Flag every file with zero justifications as WARNING:** "context-list orphan at `chapters/<book>/outline.md` Ch.NN: file `<path>` listed in `**context:**` but no beat references it and no tracker row maps to this chapter. Remove from per-chapter context, OR promote to always-loaded if consistency-only, OR add a beat reference."
 
 **Why WARNING (not BLOCKING):** the heuristic for "named entity → canonical file" is fuzzy (synonyms, common words); a fully strict rule would over-fire. Project-side review adjudicates.
 
 #### S. Missing-context (WARNING)
 
-**Heuristic check:** the inverse of R. For every chapter in the active outline, parse beats. For every explicit `→ see <path>` reference and every named entity / system / location / mechanism / anchor that traces to a canonical file, verify the corresponding file is in the chapter's `**context:**` (or in the always-loaded set declared in the outline header).
+**Heuristic check:** the inverse of R. For every chapter in the active outline, parse beats. For every explicit `→ see <path>` reference and every named entity / system / location / mechanism / anchor that traces to a canonical file, verify the corresponding file is reachable from the chapter — the `**context:**` list, the always-loaded set, the texture-palette proxy declared in the outline header, or the chapter's own level directory when the file carries a tracker row for that chapter (the reachability set in `instructions/registers.md`, the same exclusion `/book chapter` 2.6.a applies via Step 1 and 2.6.e).
 
-**Flag every beat reference whose canonical file is NOT in `**context:**` (and NOT always-loaded) as WARNING:** "context-gap at `chapters/<book>/outline.md` Ch.NN: beat references `<entity>` (canonical to `<file>`) but file not in `**context:**`. Add the file, OR promote `<entity>` to always-loaded, OR justify the omission."
+**Flag every beat reference whose canonical file is reachable through none of the four routes as WARNING:** "context-gap at `chapters/<book>/outline.md` Ch.NN: beat references `<entity>` (canonical to `<file>`) but file not in `**context:**`. Add the file, OR promote `<entity>` to always-loaded, OR justify the omission."
 
 **Why WARNING (not BLOCKING):** same fuzziness reason as R. The chapter-writer agent's pre-draft Step 2.6.a runs the same scan as a HARD `MUST` for chapters about to be drafted; coherence-check runs the same scan over the static outline as a routine audit, which is the right place for WARNING-level over-flagging because the user can dismiss false positives in batch.
 
@@ -409,7 +425,7 @@ Scan DEVPLAN.md for plain-bullet operational items in any phase whose action nam
 - `Then .*/book coherence <scope>` / `After .* /book coherence <scope>` (phasing-language phrasings)
 - For invocations with `<scope>=all`: also match per-book scopes (`/book coherence book-1`, `/book coherence book-2`, `/book coherence book-3`, `/book coherence common`) since `all` is the union.
 
-For each match with status `— pending`, update to `— done YYYY-MM-DD` (today's date). Skip matches already marked `— done`. Do NOT touch operational items referencing other commands — those close from their own consumers (`/book fix` §2.5, `/book continuity` §4.5, `/book compact` §4.5).
+For each match with status `— pending`, update to `— done YYYY-MM-DD` (today's date). Skip matches already marked `— done`. Do NOT touch operational items referencing other commands — those close from their own consumers (`/book fix` §2.5, `/book continuity` §4.5, `/book compact` §5.5).
 
 Announce in the summary:
 ```

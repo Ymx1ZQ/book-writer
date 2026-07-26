@@ -1357,3 +1357,29 @@ What actually broke the agreement was **Phase 22's 2.6.c**, which required every
 - `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force`. — done 2026-07-26 (17 passed / 9 passed; `--check` clean)
 
 **Standing note for future phases.** Phase 23 M1 asked its implementer to *verify the premise before acting on it*, and the implementer did, found it false, and reported it. The instruction to verify is what saved this; the phase would otherwise have shipped a deletion of a working mechanism on the author's confidence alone.
+
+## Phase 25 ✅ — A prose edit stamps the reader-state snapshots it invalidated (2026-07-26)
+
+Source: a measurement in `ground-truth`, 2026-07-26. One `/book revise` pass edited all nine drafted chapters of book-1 and left all nine reader-state snapshots in `chapters/coldread-state/` untouched, dated seven weeks earlier than the prose they describe. Nothing on disk recorded the mismatch; it was found by hand weeks after the pass.
+
+`instructions/revise.md` never mentioned the snapshot. Snapshots are derived from chapter prose and are the only model `/book coldread-enum` has of what the reader remembers. After an edit the snapshot keeps its filename, its structure and its four blocks, and describes text that is no longer in the chapter — a current snapshot and a stale one are indistinguishable on disk.
+
+### M1 — `/book revise` stamps every snapshot its edits invalidated
+
+Reader-state is cumulative: the snapshot for chapter N carries what the reader retained from chapters 1..N, so an edit at chapter N invalidates chapter N's snapshot and every later snapshot in the same book.
+
+- [x] New `### 5.7` in `revise.md`, between 5.5 and §6. It runs once at session end over the full set of chapters edited, not per fix — the range to stamp is fixed by the lowest chapter the session touched, which is not known until the last fix lands.
+- [x] The stamp is inserted immediately after the snapshot's H1 and replaces any stamp already present, so consecutive revise passes leave one line rather than a stack.
+- [x] §6 announce block reports the number of snapshots stamped and which chapters.
+
+**Mark stale, do not regenerate.** Regenerating costs one `/book snapshot` run per chapter from the edited chapter to the last drafted one, each reading a full chapter and each depending on the snapshot below it, so the runs are serial and ascending. How much of the book to rebuild, and when, is a decision the operator makes with the rest of the pass in view; spending it as a side effect of a prose fix takes that decision away. The stamp names the command to run instead.
+
+### M2 — `/book coldread-enum` refuses a stale snapshot
+
+- [x] Input 1 of `coldread-enum.md` gains the refusal: if the snapshot's opening lines carry `**STALE — do not consume.**`, the skill stops before reading the chapter, writes no `COLDREAD.md`, and reports the stale snapshot plus the exact `/book snapshot` command that regenerates it.
+
+**Refuse, do not warn.** `coldread-enum` runs unattended inside `run-merge-phase.sh` step 8.5. A warning line there is read by nobody and the run continues: `COLDREAD.md` comes out in the normal format, `coldread-filter` triages it into SMELL.md, and `revise` applies findings written against prose that no longer exists. Those findings are indistinguishable from valid ones at every downstream step, and they arrive with the authority of a completed gate. Stopping leaves the pipeline blocked at the step that needs an operator, which is the state the pipeline is in.
+
+### Verification
+
+- `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force` redeploy. — done 2026-07-26 (17 passed / 9 passed)

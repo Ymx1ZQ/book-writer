@@ -189,6 +189,26 @@ Improvement, Loss, Voice-floor, Suggested action]
 
 **Pre-step archive (Phase 9 M4):** before writing the new `*-PENDING.md`, if the file exists, rename to `chapters/<book>/archive/SMELL-PENDING-<YYYYMMDD-HHMMSS>-<chapter>.md` (or REVIEW-PENDING) before writing the merged version. Forensic history of what was decided when.
 
+### 5.7. Invalidate the reader-state snapshots
+
+Run this once, at session end, after every prose edit of the session is known. Do not run it per fix: the set of snapshots to stamp is fixed by the lowest-numbered chapter this session edited, and that is not settled until the last fix lands.
+
+Reader-state snapshots live at `chapters/coldread-state/<book>-chNN.md`. They are derived from chapter prose, and `/book coldread-enum` reads them as its only model of what the reader remembers entering the next chapter. Once a chapter's prose changes, its snapshot describes text that is no longer there, while keeping the same filename and the same structure as a current one.
+
+Reader-state is cumulative: the snapshot for chapter N carries what the reader retained from chapters 1 through N. An edit to chapter N therefore invalidates chapter N's snapshot and every later snapshot in the same book.
+
+Take the lowest-numbered chapter whose prose this session edited. Stamp its snapshot and the snapshot of every later chapter in that book that has one. Insert the stamp immediately after the snapshot's H1 line. If a stamp from an earlier session is already sitting there, replace it — each file carries one stamp line, never a stack of them.
+
+```
+> **STALE — do not consume.** Invalidated YYYY-MM-DD by a prose edit to chNN (`/book revise <book>`). Reader-state is cumulative, so an edit at chapter N invalidates chapter N's snapshot and every later one in the book. Regenerate ascending with `/book snapshot <book> chNN` before any gate reads this file.
+```
+
+Fill the three placeholders per file: `YYYY-MM-DD` is today's date; the first `chNN` is the edited chapter that invalidated this snapshot (the lowest chapter this session edited at or below this snapshot's own chapter); the `chNN` in the last sentence is this snapshot's own chapter, so the command as written regenerates this file. "Ascending" means run the stamped chapters in increasing order, because each snapshot is built on the one below it.
+
+If the session applied no prose edits — every finding surfaced as TRADE-OFF, acknowledged as SAFE-KEEP, or deferred — stamp nothing.
+
+**Do not regenerate the snapshots here.** Regeneration costs one `/book snapshot` run per chapter from the edited chapter to the last drafted one, each reading a full chapter, and the runs are serial because each snapshot depends on the one below it. How much of the book to rebuild, and when, is the operator's call, made with the rest of the pass in view. Revise records the invalidation and names the command; it does not spend that cost on its own.
+
 ### 6. Session Complete
 
 ```
@@ -216,6 +236,9 @@ Accepted (Routing: ACCEPT — no action):
 
 Chapters modified: [list with word counts]
 State propagated: [which chapters]
+Reader-state snapshots stamped STALE: N — [chapter list, e.g. ch04-ch09]
+  Regenerate ascending with /book snapshot <book> chNN before the next
+  /book coldread-enum, which refuses to run on a stale snapshot.
 
 Remaining: X items
 Next: [what to do if items remain — typically "triage ANCHOR-NEEDED into project

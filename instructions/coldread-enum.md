@@ -22,6 +22,9 @@ The skill is **canon-blind by design** (no `world/`, `characters/`, `plot/`, `ou
 ## Inputs (the agent reads ONLY these)
 
 1. **Reader-state snapshot for the prior chapter** at `chapters/coldread-state/<book>-ch(NN-1).md` — the compressed memory the reader carries forward. For ch01, no snapshot (true cold open).
+
+   **Staleness check — read the snapshot's opening lines first, before the chapter.** If they carry `**STALE — do not consume.**`, STOP. Do not read the target chapter, do not enumerate, and do not write `COLDREAD.md` — not even a partial one. Report which snapshot is stale and the exact command that regenerates it (`/book snapshot <book> ch(NN-1)`, run ascending from the earliest stamped chapter), then exit. The stamp is written by `/book revise` when a prose edit invalidates the chapter a snapshot was built from; see `instructions/revise.md` §5.7. Enumerating against a stale snapshot yields findings about prose that no longer exists, in a `COLDREAD.md` that is indistinguishable from a valid one — `/book coldread-filter` triages those findings into SMELL.md and `/book revise` applies them. That is worse than producing no findings at all, which at least leaves the gap visible.
+
 2. **Target chapter** at `chapters/<book>/chNN.md`.
 
 **Do NOT read**: the prior chapter in full (the snapshot is the authoritative reader-memory model — prior chapter inline over-feeds the agent with detail a real reader wouldn't retain), `outline.md`, `world/`, `characters/`, `plot/`, prior `SMELL.md` / `REVIEW.md` / etc.

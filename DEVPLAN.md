@@ -1474,3 +1474,142 @@ blank line. Each was internally consistent in the file it sat in, which is why t
 - Consuming project re-verified through the shim: 114 bats tests green, `./chapter-load.py --check` exit 0,
   and `--free` / `--check` / `--unreachable` / `--illegal-load` byte-identical to the pre-move output.
   — done 2026-07-27
+
+## Phase 27 🔄 — Token-cost pass over the instruction set (2026-07-27)
+
+Author's request: say the same thing more tersely across the whole skill, preserving information and
+instruction. Measured first, because two obvious hypotheses are false.
+
+**Measurements, 2026-07-27.**
+
+| Quantity | Value |
+|---|---|
+| Instruction set + SKILL.md | **67,979 words**, 31 instruction files |
+| Literal duplication across files (blocks >90 chars in 2+ files) | **226 words**, 0.3% |
+| Paragraphs carrying a date, phase number, measurement or explicit reason | **5,626 words**, 8% |
+| Largest single file | `chapter-writer.md` 8,214w — and it runs on every chapter |
+| Next four | `coherence-check.md` 7,121 · `reviewer.md` 5,429 · `sniff.md` 5,182 · `init.md` 3,181 |
+| Five catalogue sections | 21 checks 4,760 · 13 dimensions 3,189 · 11 objections 2,713 · self-edit 1,176 · 9 verify passes 1,174 = **13,012w, 19% of the set** |
+
+**De-duplication is not the lever.** 226 words across the whole set, in four harmless pairs — the
+cross-reference discipline in `registers.md` and `milestone-format.md` already works. Anyone starting this
+pass expecting to find restated doctrine will not find it.
+
+**Per-invocation cost is the number that matters, not the total.** No command loads 67,979 words. `/book
+chapter` loads SKILL.md + `chapter-writer.md` + what it points at; `/book coherence` loads SKILL.md +
+`coherence-check.md` + `registers.md` + `milestone-format.md`. Optimising a file no hot command loads buys
+nothing, so the order below is by invocation frequency × size, not by size.
+
+The per-command chain figures obtained by grepping cross-references (chapter-writer 26,527; sniff 34,922)
+are **upper bounds, not measurements**: they count every file a document mentions, and a mention is not a
+load. They are good enough to order the work and must not be quoted as savings.
+
+**The catalogues are the mass and they compress least.** 19% of the set is five lists where each entry is a
+distinct check. Nothing there can be deleted without deleting a check, and the older entries are already
+terse — check D is four lines. The slack is concentrated in entries written recently, which carry their
+rationale and their measured instance inline.
+
+### The rule for what may be cut — this is the part that decides whether the pass helps or harms
+
+This project's own doctrine is that a rule stated without its reason gets re-litigated by the next agent
+that reads it, and it has been re-litigated twice on record (Phase 23 M1 deleted a working mechanism; Phase
+24 restored it). So "asciutto" cannot mean dropping the reason.
+
+**Cuts allowed:**
+- Preamble that announces what a section is about before saying it.
+- A second example where the first already establishes the shape.
+- Restatement inside one file — a rule stated in the intro and again in the step that applies it.
+- Hedges and softeners that change no instruction.
+- Narrative connective tissue between numbered steps.
+
+**Never cut:**
+- Any imperative, MUST, threshold, exit code, file path, command name, or numeric bound.
+- The one clause that gives a rule its reason. Compressed, never deleted: `WARNING, not BLOCKING —
+  resolving a duplicate is a judgment` is enough; the paragraph of measurement behind it is not.
+- Any statement of what a check does *not* cover. Those exist because something was assumed covered.
+
+**The measured instance moves rather than dies.** A dated measurement (`nine items across two phases`,
+`314 versus 226`, `eleven rows overwritten`) is what stops a *human* reopening a settled question, and
+humans can follow a pointer; the one-clause reason is what stops the *agent* weakening the rule mid-run,
+and that must stay inline. Instances move to `rationale/<file>.md`, which no command loads, with the
+instruction keeping the one clause and a pointer. **This is the largest single saving available and the
+one with the most risk — it is M1 so it is judged on one file before the rest follow.**
+
+**`install.sh` copies `instructions/` and `scripts/` and nothing else** (lines 151-152), so a new top-level
+`rationale/` ships nowhere and every pointer added to an installed instruction file resolves to a path that
+does not exist on the consuming machine. Adding it to the installer is a prerequisite of M1, not a
+follow-up, and `test_install.sh` must cover it — otherwise the first thing this pass produces is a set of
+broken references, which is worse than the verbosity it removes.
+
+**The risk this move carries is the one the doctrine names.** If the measurement is not in context, the
+next agent to work on that file sees a rule with a one-clause reason and no evidence, which is a weaker
+position than today's, not a neutral one. The move only pays if the surviving clause is strong enough to
+stand alone — so the compression is doing real work, not relocation, and M1 is where that is judged.
+
+### Verification — prose changes, claims do not
+
+Compression is unverifiable by reading, because the reader who compressed it knows what it used to say. So
+each file is checked mechanically before and after:
+
+- **Claims inventory — the exact half.** Backticked tokens (paths, commands, flags), numbers with a unit
+  or a threshold, severity keywords (`MUST`, `NEVER`, `HARD`, `BLOCKING`, `WARNING`, `NOTE`), headings, and
+  cross-file references. These are **sets and compare exactly**: a dropped instruction is a set difference.
+- **Claims inventory — the heuristic half, and it is stated as heuristic.** Imperative sentences cannot be
+  set-compared, because rewording is the point of the pass. They are **counted per section** and a decrease
+  is a finding to justify, not a failure. A check that pretended to be exact here would be the kind of
+  false confidence this project has already paid for twice.
+- **A blind read, because the person who compressed a text cannot audit it.** Before compressing, derive a
+  fixed question list from the original — one question per instruction the file gives. After, a fresh agent
+  reads **only the compressed file** and answers them. A wrong or absent answer is information loss, and it
+  is the only evidence here that comes from behaviour rather than from string comparison.
+- `./install.sh --check` clean. **The pytest and bats suites are not evidence for this pass** — they cover
+  `scripts/`, and `test_frontmatter.py` asserts only that instruction files carry no frontmatter and open
+  with an H1. Running them guards the new script in M1 and nothing else. Saying "suites green" about a
+  prose change would be the sort of claim that reads as verification and is not.
+- Word count recorded per file, before and after.
+
+### M1 — Prove the rationale-move on one file, then decide 🔄
+
+`registers.md` (1,206w, **31% rationale** — the highest ratio in the set, and it is loaded by five commands).
+
+- [ ] Write `scripts/claims_inventory.py`: extract the claim set from a markdown file and diff two versions.
+  **Done when** it reports zero difference on an unmodified file and a non-zero difference when a single
+  `MUST` sentence is deleted from a copy.
+- [ ] Add `rationale/` to `install.sh` and to `test_install.sh`. **Done when** a fresh install carries the
+  directory and the installer's drift check covers it.
+- [ ] Compress `registers.md`, moving dated measurements to `rationale/registers.md` and keeping the
+  one-clause reason inline. **Done when** the exact claim inventory is unchanged, every measurement removed
+  is present in the rationale file, and the blind read answers every question the original could.
+  **No word target is set, here or anywhere in this phase.** A declared number invites hitting it by cutting
+  something, which is the failure this project spent Phase 97 M7 measuring from the other side.
+- [ ] **Record the achieved ratio before touching a second file.** **Done when** this milestone states the
+  before/after word count and whether the rest of the pass is worth running at that rate — if the saving on
+  the highest-rationale file in the set is under 20%, the rationale-move does not pay for the risk and M2-M4
+  drop the rationale-move and become prose-tightening only.
+
+### M2 — `chapter-writer.md`, the hot path
+
+8,214w on every chapter. Two sections are 30% of it: Step 3.5 Self-Edit (1,176w) and Step 5 Verify (1,174w).
+
+- [ ] Compress, exact claim inventory unchanged, blind read clean. **Done when** the before/after counts are
+  recorded here and `/book chapter` drafts a full chapter end to end with no step failing for a missing
+  instruction. That last is the real gate: this file is a procedure, and a procedure is verified by running
+  it, not by diffing it.
+
+### M3 — `coherence-check.md`, `reviewer.md`, `sniff.md`
+
+- [ ] One file at a time, claims inventory unchanged per file. **Done when** all three are recorded with
+  before/after counts and both suites are green after each.
+
+### M4 — The remaining 26 files
+
+- [ ] Sweep, claims inventory unchanged per file. **Done when** every file has a recorded before/after and
+  the set total is recorded against the 67,979 baseline.
+
+### What this phase does not do
+
+- It does not touch `scripts/`. Python is not loaded into context.
+- It does not merge files. The 31-file split is what makes per-invocation loading selective; merging would
+  raise per-invocation cost while lowering the total, which is the wrong number.
+- It does not delete a check, a dimension, or an objection category. If one of those is not worth its
+  tokens, that is a separate decision with its own evidence, not a side effect of a compression pass.

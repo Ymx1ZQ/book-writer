@@ -1,8 +1,8 @@
 # `/book judge` — Cross-Model Chapter Comparator
 
-This command ranks N parallel chapter drafts of the same outline beat against a brilliance-oriented rubric, in a model-agnostic way. **Output is a strict JSON file written to the path passed as the second argument — no prose, no commentary, no explanations outside the JSON inside the file.** Aggregation downstream parses the file with `jq` and will fail on extraneous content.
+Ranks N parallel chapter drafts of the same outline beat against a brilliance-oriented rubric, model-agnostically. **Output is a strict JSON file written to the path passed as the second argument — no prose, no commentary, no explanations outside the JSON inside the file.** Downstream aggregation parses the file with `jq` and fails on extraneous content.
 
-You are one of 4 judges (codex / Anthropic Claude / Gemini / DeepSeek) participating in an ensemble. Your rankings will be combined via Borda count. Output **rank-only** — never absolute scores — because different judges have different score calibrations and a `7/10` from one model is not the same as a `7/10` from another.
+You are one of 4 judges (codex / Anthropic Claude / Gemini / DeepSeek) in an ensemble; rankings are combined via Borda count. Output **rank-only** — never absolute scores — because judges have different score calibrations and a `7/10` from one model is not the same as a `7/10` from another.
 
 > This is the **Claude** judge variant. The Codex variant of the same rubric is the codex-side `book` skill (`codex/SKILL.md` in the skill repo, installed to `~/.codex/skills/book/`); the two bodies are identical except for the hardcoded lane-identification table.
 
@@ -12,7 +12,7 @@ You are one of 4 judges (codex / Anthropic Claude / Gemini / DeepSeek) participa
 /book judge <manifest-path> <output-path>
 ```
 
-`<output-path>` is the absolute path of a file you must create (or overwrite) with the JSON described under "Output schema" below. Do not print the JSON to stdout — write it to the file. Use your Write tool. After writing, you may print a one-line status message confirming the file path and byte size; nothing else.
+`<output-path>` is the absolute path of a file you must create (or overwrite) with the JSON described under "Output schema" below. Do not print the JSON to stdout — write it to the file with your Write tool. After writing, you may print a one-line status message confirming the file path and byte size; nothing else.
 
 The manifest is a JSON file with shape:
 ```json
@@ -31,7 +31,7 @@ The current working directory is the project root.
 
 ## Protocol
 
-1. **Read every draft in full, in alphabetical id order (A → B → C → ...), before scoring any dimension.** Do not partially read one draft and start ranking. You must have the whole manuscript of each draft in mind before judging any axis. This avoids primacy/recency and order-bias artifacts.
+1. **Read every draft in full, in alphabetical id order (A → B → C → ...), before scoring any dimension.** Do not partially read one draft and start ranking. This avoids primacy/recency and order-bias artifacts.
 
 2. **Read these rubric files** (paths relative to project root):
    - `world/writing-checklists.md` — sensory anchor expectations per level
@@ -43,7 +43,7 @@ The current working directory is the project root.
 
 3. **Rank the N drafts on each of the 11 dimensions below.** Strict ranking, no ties — if you genuinely cannot separate two drafts on a dimension, pick the one you would marginally favor and move on. Ties poison Borda aggregation.
 
-4. **Produce an `overall_ranking`** — your holistic synthesis. This is NOT a numeric sum of per-dimension ranks; it is your best judgment of "which draft I would publish first, second, last." Per-dimension rankings inform but do not mechanically determine `overall_ranking`.
+4. **Produce an `overall_ranking`** — your holistic synthesis. Per-dimension rankings inform it but do not mechanically determine it: this is NOT a numeric sum of per-dimension ranks, it is your best judgment of "which draft I would publish first, second, last."
 
 5. **Extract anchors from losers.** For each draft ranked 2nd-or-worse in `overall_ranking`, identify 1–3 specific micro-elements where it BEATS the overall winner. An anchor is a concrete, liftable handle — a line, an image, a structural move, an outline-beat execution. **If a loser has no observable advantage, output zero anchors for it. Do not pad.**
 
@@ -86,7 +86,7 @@ The current working directory is the project root.
 
 9. **subtext** — Density of unsaid-but-felt. Moments where a character reacts to something not on the page; emotional currents that surface only via implication; tension carried by what is withheld. Rank by depth + integration.
 
-10. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word. A short sentence that says nothing is not compressed.
+10. **compression** — Passages where one line does the work of a paragraph. Rank by density of high-compression moments. Compression ≠ brevity; it is information-per-word — a short sentence that says nothing is not compressed.
 
 11. **ai_prose_penalty** — Count of generic LLM cadences: triadic rhythms ("X, Y, and Z" stacking three abstract nouns), "non solo X ma anche Y" frames, conclusory sentences that summarize the scene's emotional state for the reader, overuse of "the way..." constructions, abstract-noun-soup transitions, perfectly balanced paragraph endings. **Higher count = WORSE.** Rank with the cleanest draft (lowest count) at 1°.
 

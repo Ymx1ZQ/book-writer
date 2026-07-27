@@ -1,6 +1,6 @@
 # Book Proof Reader
 
-Line-level proofreading of written chapters. This is the LAST pass before a chapter is considered finished — everything structural, narrative, and editorial has already been checked. This skill catches what spellcheck catches and what spellcheck misses.
+Line-level proofreading of written chapters. This is the LAST pass before a chapter is considered finished — everything structural, narrative, and editorial has already been checked.
 
 ## Invocation
 
@@ -16,7 +16,7 @@ Arguments: `<book>` (book-1, book-2, book-3), optionally `<chapter>` (ch01, ch02
 
 This is NOT editorial review (that's `/book review`). This is NOT narrative verification (that's the chapter-writer's 9 passes). This is **line-by-line language quality control** — the equivalent of a human proofreader with a red pen and a style guide.
 
-The style guide is defined in the project.s `CLAUDE.md` (language, tense) and character/world files (proper nouns, terminology).
+The style guide is defined in the project's `CLAUDE.md` (language, tense) and character/world files (proper nouns, terminology).
 
 ---
 
@@ -32,7 +32,7 @@ Read these files:
 
 **Pre-step archive (Phase 9 M4):** before writing any new PROOFREAD.md, if `chapters/<book>/PROOFREAD.md` already exists from a prior cycle, rename it to `chapters/<book>/archive/PROOFREAD-<YYYYMMDD-HHMMSS>-<chapter>.md` (creating the archive subdir if needed). Per-cycle proofread history preserved.
 
-**Note on flagging discipline:** proofread P1-P9 checks are line-level mechanical fixes (grammar, spelling, punctuation, mechanical pattern violations). Findings are by definition SAFE-CUT — there is no judgment call to make on whether a misspelled word should remain misspelled. If a candidate flag here turns out to be voice-dependent (e.g. an intentional fragment for character voice), that's not a proofread finding — it belongs in REVIEW.md as a TRADE-OFF for the reviewer to weigh. Proofread does not write TRADE-OFF entries.
+**Note on flagging discipline:** proofread P1-P9 checks are line-level mechanical fixes (grammar, spelling, punctuation, mechanical pattern violations). Findings are by definition SAFE-CUT — there is no judgment call on whether a misspelled word should remain misspelled. A candidate that turns out to be voice-dependent (e.g. an intentional fragment for character voice) is not a proofread finding — it belongs in REVIEW.md as a TRADE-OFF for the reviewer to weigh. Proofread does not write TRADE-OFF entries.
 
 ### 2. Run 9 Proofreading Checks
 
@@ -48,23 +48,22 @@ For each chapter, scan every line and report issues with **exact quotes and line
 - Sentence fragments that are NOT intentional style (Lena/Roe's clipped prose uses intentional fragments — these are fine. Unintentional fragments in Noah's POV or narration are errors.)
 - Double negatives, split infinitives only if awkward, other structural grammar issues
 
-**The rule:** Intentional rule-breaking for voice is fine (Roe's fragments, Lena's clinical truncation). Unintentional errors are not. If in doubt: does the construction serve the character's voice? If yes, leave it. If it's just sloppy, flag it.
+**The rule:** Intentional rule-breaking for voice is fine (Roe's fragments, Lena's clinical truncation); unintentional errors are not. In doubt: does the construction serve the character's voice? If yes, leave it; if it's just sloppy, flag it.
 
 #### P2. Tense Consistency
 
 - The project's default tense is defined in `CLAUDE.md`. Typically past tense for fiction. Present tense is used ONLY for:
-  - Text rendered as in-world system output (terminals, interfaces) may use present tense.
-  - In-world game or interactive system output may use present tense.
-  - Internal monologue fragments where the character's thought is rendered as present-tense flash (rare, intentional)
+  - In-world system output (terminals, interfaces, game or interactive output)
+  - Internal monologue fragments rendered as present-tense flash (rare, intentional)
 - Flag any unintentional tense shift — a paragraph that starts in past and slips into present, or vice versa.
-- Pay special attention to complex sentences with multiple clauses: the tense must be consistent within the sentence.
+- Watch complex sentences with multiple clauses: the tense must be consistent within the sentence.
 
 #### P3. Punctuation
 
 - **Em-dashes:** The project uses `—` (em-dash with no spaces). Flag any `--`, ` — ` (spaces around em-dash), or `–` (en-dash used as em-dash).
 - **Dialogue punctuation:** American convention. Periods and commas INSIDE quotation marks. `"I know," she said.` NOT `"I know", she said.`
 - **Quotation marks:** Double quotes for dialogue (`"..."`). Single quotes ONLY for quotes-within-quotes (`"She said 'don't' and left."`).
-- **Period-ended interrogatives — INTENTIONAL, do NOT flag.** A question punctuated with a period (`"What else." / "How long." / "What did the E stand for."`) is the book's deliberate flattened-interrogative device (`world/prose-rules.md §25`), NOT a missing question mark. Never "correct" it to `?`. The `?` is reserved for open vulnerability (`"Have you eaten?"`) and machine prompts (`"ARE YOU READY?"`); leave both exactly as written. This is a register device, not a punctuation error.
+- **Period-ended interrogatives — INTENTIONAL, do NOT flag.** A question punctuated with a period (`"What else." / "How long." / "What did the E stand for."`) is the book's deliberate flattened-interrogative device (`world/prose-rules.md §25`), NOT a missing question mark. Never "correct" it to `?`. The `?` is reserved for open vulnerability (`"Have you eaten?"`) and machine prompts (`"ARE YOU READY?"`); leave both exactly as written.
 - **Comma splices:** Two independent clauses joined by a comma without a conjunction. Flag unless clearly stylistic (Dome clinical voice sometimes uses comma splices for rhythm — flag only if accidental).
 - **Serial comma (Oxford comma):** Use it. `Red, green, and blue.` NOT `Red, green and blue.`
 - **Ellipses:** Three dots with no spaces (`...`). NOT `. . .` or `.. .`.
@@ -87,11 +86,11 @@ For each chapter, scan every line and report issues with **exact quotes and line
   - Spanish: `de + el → del`, `a + el → al`. Example: `Calle de + el Sol → Calle del Sol` (NOT `Calle de el Sol`).
   - German: definite-article form must agree with grammatical gender + case in compound place names.
   Also generic: gender agreement, plural forms, and accent marks (é, è, à, ñ, ü, ß, etc.) must be present where the source language requires them.
-  **The rule applies even when the proper noun is rendered in CAPS** (e.g., on an in-world terminal output) **or surrounded by English-language narration.** Capitalization and English context do not exempt the noun from its source-language grammar.
+  **The rule applies even when the proper noun is rendered in CAPS** (e.g., on an in-world terminal output) **or surrounded by English-language narration** — neither exempts the noun from its source-language grammar.
 
 #### P5. American English
 
-The project.s language is defined in `CLAUDE.md`. If American English, flag:
+The project's language is defined in `CLAUDE.md`. If American English, flag:
 - British spellings: colour → color, favour → favor, realise → realize, metre → meter (unit), centre → center (EXCEPT "Camera" which is an Italian proper noun), behaviour → behavior, defence → defense, grey → gray (NOTE: "grey" is used throughout the existing worldbuilding docs — decide on convention and enforce consistently)
 - British vocabulary: flat → apartment, lift → elevator (EXCEPT in Dome context where "vertical lift" is established terminology), boot → trunk, torch → flashlight, queue → line (EXCEPT in Dome/Ark context where "queue" is the natural word for rationed access)
 - British punctuation: see P3 above
@@ -117,7 +116,7 @@ The project.s language is defined in `CLAUDE.md`. If American English, flag:
 - Flag sentences over 50 words that are hard to parse on first read (unless in Noah's rapid-fire speech mode, where run-ons are intentional).
 - Flag paragraphs over 200 words that could be broken up.
 
-**The rule:** Good prose breathes. Short sentence. Then a longer one that stretches and fills the space. Then short again. The variation is the rhythm. Monotony in either direction is a problem.
+**The rule:** Good prose breathes. Short sentence. Then a longer one that stretches and fills the space. Then short again. Monotony in either direction is a problem.
 
 #### P8. Dialogue Formatting
 
@@ -229,17 +228,17 @@ Run BEFORE:
 - Declaring a chapter "final"
 - Assembling the book draft
 
-This is the LAST quality gate. After proofreading fixes are applied, the chapter is done.
+After proofreading fixes are applied, the chapter is done.
 
 ---
 
 ## Rules
 
 - ❌ Never change meaning. Proofreading fixes grammar, spelling, punctuation — NOT content, structure, or voice.
-- ❌ Never flag intentional style as an error. Check each character's voice profile in their character sheet before flagging intentional style.
+- ❌ Never flag intentional style as an error — check the character's voice profile in their character sheet first.
 - ❌ Never rewrite sentences. Provide the minimal fix: the smallest change that corrects the error.
 - ❌ Never skip the corrections devplan. The report without a devplan is useless.
 - ✅ Quote the exact error. No paraphrasing.
 - ✅ Provide the exact fix. No "consider revising."
 - ✅ When in doubt about American vs British: American wins. When in doubt about comma: use it.
-- ✅ Be pedantic. This is the red-pen pass. Pedantry is the job.
+- ✅ Be pedantic. This is the red-pen pass.

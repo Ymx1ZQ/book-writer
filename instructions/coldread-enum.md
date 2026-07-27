@@ -4,9 +4,9 @@ Enumerate every place a reader at normal reading speed could stumble in a chapte
 
 ## Why this check exists
 
-Standard quality checks (sniff/reviewer/proofread/coherence/continuity) read **with canon loaded**. They cannot answer "naive reader cannot follow." The deprecated `/book coldread` attempted naive-reader simulation via reader-experience persona, but the LLM (smart or dumb) reads too well — it silently resolves ambiguities a human stumbles on, then says "page-turn yes." Confirmed across smart Claude (Phase 40 M2) and deepseek-v4-flash (Phase 40 M7) — both produced essentially identical indulgent reading.
+Standard quality checks (sniff/reviewer/proofread/coherence/continuity) read **with canon loaded**. They cannot answer "naive reader cannot follow." The deprecated `/book coldread` attempted naive-reader simulation via reader-experience persona, but the LLM (smart or dumb) reads too well — it silently resolves ambiguities a human stumbles on, then says "page-turn yes." Confirmed across smart Claude (Phase 40 M2) and deepseek-v4-flash (Phase 40 M7).
 
-This skill flips the framing: instead of asking the agent to *read*, ask it to *enumerate defects* per explicit categories. LLMs are good at static analysis of text against criteria when told to be paranoid. The agent finds where a real reader could stumble by checking each sentence against the 10 categories below, with adversarial bias.
+This skill flips the framing: instead of asking the agent to *read*, ask it to *enumerate defects* — check each sentence against the 10 categories below, with adversarial bias. LLMs are good at static analysis of text against criteria when told to be paranoid.
 
 The skill is **canon-blind by design** (no `world/`, `characters/`, `plot/`, `outline.md` access — only the snapshot + chapter). This forces the simulation: if a fact isn't in the snapshot or chapter, the reader doesn't have it.
 
@@ -44,7 +44,7 @@ NO verdict, NO summary, NO ranking, NO "page-turn yes" line. Just the catalog.
 
 ## The 10 categories
 
-1. **AMBIGUOUS-PRONOUN** — A pronoun (he, she, it, they, this, that, "the X") where two or more reasonable referents exist in the prior 10 sentences of the chapter. Flag even if context resolves. **Sub-attend to POV-default suppression (TIGHT trigger — precision matters here):** flag the first `he/she` of a passage ONLY when the most recent SUBJECT (the actor of the immediately preceding sentences) is a DIFFERENT same-gender character than the POV — so the reader attaches the pronoun to that character, not the POV default. (Recovers the ch04 *"He had built the prototype" → reads as the father* bug: the prior subject was the father.) Do NOT fire merely because of a section break if the POV is already the active subject going into it (that was a false-positive source — ch03 L39, where Roe was the prior subject). The competing referent must be genuinely more salient/recent than the POV.
+1. **AMBIGUOUS-PRONOUN** — A pronoun (he, she, it, they, this, that, "the X") where two or more reasonable referents exist in the prior 10 sentences of the chapter. Flag even if context resolves. **Sub-attend to POV-default suppression (TIGHT trigger):** flag the first `he/she` of a passage ONLY when the most recent SUBJECT (the actor of the immediately preceding sentences) is a DIFFERENT same-gender character than the POV — so the reader attaches the pronoun to that character, not the POV default. (Recovers the ch04 *"He had built the prototype" → reads as the father* bug: the prior subject was the father.) Do NOT fire merely because of a section break if the POV is already the active subject going into it (that was a false-positive source — ch03 L39, where Roe was the prior subject). The competing referent must be genuinely more salient/recent than the POV.
 
 2. **UNSETUP-FACT** — A capability, system property, character trait, technology, or factual claim NOT established in the snapshot AND NOT established earlier in this chapter.
 

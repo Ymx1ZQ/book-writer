@@ -1475,7 +1475,7 @@ blank line. Each was internally consistent in the file it sat in, which is why t
   and `--free` / `--check` / `--unreachable` / `--illegal-load` byte-identical to the pre-move output.
   — done 2026-07-27
 
-## Phase 27 🔄 — Token-cost pass over the instruction set (2026-07-27)
+## Phase 27 ✅ — Token-cost pass over the instruction set (2026-07-27)
 
 Author's request: say the same thing more tersely across the whole skill, preserving information and
 instruction. Measured first, because two obvious hypotheses are false.
@@ -1568,43 +1568,119 @@ each file is checked mechanically before and after:
   prose change would be the sort of claim that reads as verification and is not.
 - Word count recorded per file, before and after.
 
-### M1 — Prove the rationale-move on one file, then decide 🔄
+### M1 — Prove the rationale-move on one file, then decide ✅
 
 `registers.md` (1,206w, **31% rationale** — the highest ratio in the set, and it is loaded by five commands).
 
-- [ ] Write `scripts/claims_inventory.py`: extract the claim set from a markdown file and diff two versions.
+- [x] Write `scripts/claims_inventory.py`: extract the claim set from a markdown file and diff two versions.
   **Done when** it reports zero difference on an unmodified file and a non-zero difference when a single
   `MUST` sentence is deleted from a copy.
-- [ ] Add `rationale/` to `install.sh` and to `test_install.sh`. **Done when** a fresh install carries the
+- [x] Add `rationale/` to `install.sh` and to `test_install.sh`. **Done when** a fresh install carries the
   directory and the installer's drift check covers it.
-- [ ] Compress `registers.md`, moving dated measurements to `rationale/registers.md` and keeping the
+- [x] Compress `registers.md`, moving dated measurements to `rationale/registers.md` and keeping the
   one-clause reason inline. **Done when** the exact claim inventory is unchanged, every measurement removed
   is present in the rationale file, and the blind read answers every question the original could.
   **No word target is set, here or anywhere in this phase.** A declared number invites hitting it by cutting
   something, which is the failure this project spent Phase 97 M7 measuring from the other side.
-- [ ] **Record the achieved ratio before touching a second file.** **Done when** this milestone states the
+- [x] **Record the achieved ratio before touching a second file.** **Done when** this milestone states the
   before/after word count and whether the rest of the pass is worth running at that rate — if the saving on
   the highest-rationale file in the set is under 20%, the rationale-move does not pay for the risk and M2-M4
   drop the rationale-move and become prose-tightening only.
 
-### M2 — `chapter-writer.md`, the hot path
+**M1 verdict, 2026-07-27: the rationale-move gave 8% and the threshold was 20, so it is dropped.** Both
+halves of the item were built — the script and the installer support — and both were then reverted with the
+directory, because unused scaffolding is a file that answers to a glob and to no caller. The reason it pays
+so little: the 31% marker counted whole paragraphs containing a date or a figure, and inside those the
+measurement is a clause while the rest is the rule, which stays either way.
+
+Prose-tightening with the measurements left inline gives **3%** on `registers.md` and **10%** on the largest
+procedure section in the set. M2-M4 ran as prose-tightening only.
+
+`scripts/claims_inventory.py` stays and is the gate for the rest of the phase. **Its own negative test found
+a hole in it**: deleting a sentence that referenced `chapter-writer.md` changed nothing, because a set sees
+the loss of a token's *last* mention and not the loss of one of several. Occurrence counts were added and
+report as `THINNED`; eight tests, one of which pins that limitation rather than hiding it.
+
+`registers.md` also gained `--ownership`, missing from both its mode list and its exit-1 list since the mode
+shipped.
+
+### M2 — `chapter-writer.md`, the hot path ✅
 
 8,214w on every chapter. Two sections are 30% of it: Step 3.5 Self-Edit (1,176w) and Step 5 Verify (1,174w).
 
-- [ ] Compress, exact claim inventory unchanged, blind read clean. **Done when** the before/after counts are
+- [x] Compress, exact claim inventory unchanged, blind read clean. **Done when** the before/after counts are
   recorded here and `/book chapter` drafts a full chapter end to end with no step failing for a missing
   instruction. That last is the real gate: this file is a procedure, and a procedure is verified by running
   it, not by diffing it.
 
-### M3 — `coherence-check.md`, `reviewer.md`, `sniff.md`
+**8,214 → 7,931, 3.4%.** Step 3.5 (seventeen checks) gave 10% by hand; the rest of the file gave 2%. Steps
+2.5 and 2.6, the densest 2,150 words, yielded ~40 words of connective tissue — nearly every sentence is a
+rule, the reason a rule exists, or a "report both hypotheses, resolve neither" instruction. Passes 1-7 are
+six-to-ten-word lines with nothing to take.
 
-- [ ] One file at a time, claims inventory unchanged per file. **Done when** all three are recorded with
+### M3 — `coherence-check.md`, `reviewer.md`, `sniff.md` ✅
+
+- [x] One file at a time, claims inventory unchanged per file. **Done when** all three are recorded with
   before/after counts and both suites are green after each.
 
-### M4 — The remaining 26 files
+`coherence-check.md` 7,121 → 6,751 (**5%**, and 7% inside the 21-check catalogue — three checks restated
+their own load-table rows verbatim). `reviewer.md` 5,429 → 5,346 (**1.5%**). `sniff.md` 5,182 → 5,074
+(**2%**). The two catalogues resisted: reviewer's Rules 25-28 are built from clauses that are individually
+protected — guard lists with numbered exemptions, a boundary naming the sibling checks, a severity, a
+classification — and sniff's categories each carry a named example that *is* the definition.
 
-- [ ] Sweep, claims inventory unchanged per file. **Done when** every file has a recorded before/after and
+### M4 — The remaining 26 files ✅
+
+- [x] Sweep, claims inventory unchanged per file. **Done when** every file has a recorded before/after and
   the set total is recorded against the 67,979 baseline.
+
+### Result — 2.9%, and eight defects
+
+**67,979 → 66,001 words, −1,978, 2.9% across 31 files.** One `LOST` verdict in the whole set, and it is the
+deliberate heading correction below. 51 pytest, 9 install tests, `./install.sh --check` clean, and the
+consuming project's guard still exits 0 through the shipped copy.
+
+| Band | Files |
+|---|---|
+| 4-6% | `sensitivity.md`, `coherence-check.md`, `milestone-format.md`, `motif.md`, `sweep.md`, `readability.md` |
+| 2-3% | the majority |
+| 0-2% | `factcheck.md`, `coldread-enum.md`, `chapter-writer.md`, `reviewer.md`, `sniff.md`, `judge.md`, `compact.md` |
+| 0% | `epub.md`, `pdf.md` — returned unchanged, with the reason |
+
+**The 10% measured on Step 3.5 was an outlier, not a rate.** That section is seventeen checklist items each
+carrying its rationale inline; almost nothing else in the set has that shape. The three largest files —
+`chapter-writer.md`, `reviewer.md`, `sniff.md`, 18,700 words together — came in between 1.5% and 3.4%,
+because they are catalogues where each line is a rule with its own threshold.
+
+**Where the 2.9% actually came from, in every file that beat 4%: one rule stated twice.** `milestone-format`
+stated its deferral rule negatively and then positively. `motif` had a §Calibration restating §Flagging
+discipline. `coherence-check` had three checks whose `**Load:**` line duplicated their own row in the §1
+load table, and a §4 routing rule restating §Routing doctrine from the top of the file. `readability` had
+two Calibration blocks saying the same thing. That is the compressible shape, and it is scarce — literal
+duplication across the whole set was 226 words before this pass, and the within-file kind is not much
+larger.
+
+**The return was not the tokens.** Eight defects surfaced, none of them compression, all verified before
+fixing:
+
+| File | Defect |
+|---|---|
+| `chapter-writer.md` | heading read `Verify (9 passes)` over ten passes — Pass 10 is conditional and skippable without noticing |
+| `reviewer.md` | "Before the **8** dimensions" over thirteen; a duplicated question in §4; corrupted apostrophes |
+| `sniff.md` | "one of the **ten** categories" and "satisfies all **nine**" over eleven |
+| `sniff.md` | §Notes said `SMELL.md` is overwritten and history lives in git, while Step 5 archives it to `archive/` |
+| `coherence-check.md` | §5 template classifies into `[A-J]` while the checks run to U; two empty bullets; two unclosed parentheses, one swallowing the rest of its bullet |
+| `continuity-check.md` | check F had unbalanced parentheses and a stranded `(e.g.,` — a half-finished edit |
+| `coldread-filter.md` | rule 1 routed PENDING to "arbiter/user review" against the contract that forbids a human, which would stall an unattended run |
+| `init.md` | pointed at "§Context Tags below" with the section above it, in both the file and the generated outline |
+
+Stale counts are the pattern: four of the eight are a number in a heading or lead-in that stopped matching
+the list under it. Nothing checks those, and nothing here proposes a checker — they were found by reading
+every line with intent, which is what a compression pass is.
+
+**One rule held throughout and is worth keeping for any future pass: do not chase the number.** Every agent
+was told the 10% was an observation and not a target. `epub.md` and `pdf.md` came back unchanged with their
+reasoning, `factcheck.md` at 1.9%, and no agent invented a cut to hit a figure.
 
 ### What this phase does not do
 

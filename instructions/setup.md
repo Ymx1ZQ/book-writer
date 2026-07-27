@@ -1,6 +1,6 @@
 # Book Setup — Interactive World-Building Wizard
 
-Guide the user step by step to populate all project files. This is a CONVERSATION — ask questions, listen, write the answers into the correct files, show what you wrote, ask for feedback, iterate.
+Guide the user step by step to populate all project files. This is a CONVERSATION — ask, listen, write the answers into the correct files, show them, iterate.
 
 ## Invocation
 
@@ -14,7 +14,7 @@ Or: `/book setup characters` / `/book setup world` / `/book setup plot` to resum
 
 ## Philosophy
 
-The user has a story in their head. Your job is to EXTRACT it — not to invent it. Ask open questions. Listen for the specific details. Push back when something is vague ("what does that look like?", "how does that feel?", "why would they do that?"). Write what the user tells you into the structured files. Show them what you wrote. Ask: "Is this right? What's missing?"
+The user has a story in their head. Your job is to EXTRACT it — not to invent it. Ask open questions. Listen for the specific details. Push back when something is vague ("what does that look like?", "how does that feel?", "why would they do that?"). Write the answers into the structured files, show them, and ask: "Is this right? What's missing?"
 
 You are NOT an author. You are an editor and architect who listens and builds.
 
@@ -101,9 +101,9 @@ Starting with: [first empty section]
 - "What's their backstory? What happened before the story starts?"
 - "What's their arc? How do they change?"
 
-**Write** into the character file. For each character, also add entries to `characters/notes/voice-samples.md`. Add narrator POV rules to `characters/notes/narrator-boundaries.md` (one section per POV character).
+**Write** into the character file. Also add entries to `characters/notes/voice-samples.md`, and narrator POV rules to `characters/notes/narrator-boundaries.md` (one section per POV character).
 
-**Prose discipline:** Each prose section: max 2-3 sentences. The chapter-writer needs the ESSENCE, not a biography. Details land in the tracker, not in prose. After writing, run `wc -w <file>` and check against word budgets (see init.md template principles). If over budget, compress before moving on.
+**Prose discipline:** Each prose section: max 2-3 sentences. The chapter-writer needs the ESSENCE, not a biography. Details land in the tracker, not in prose. Run `wc -w <file>` after writing; if over budget, compress before moving on.
 
 **Anti-duplication rule:** Each concept in a character file lives in ONE section. If a flashback scene appears in §Flashback Beats, other sections use `→ See §Flashback N` instead of retelling. Narrator Boundaries go in `characters/notes/narrator-boundaries.md`, not inline in the character file.
 
@@ -140,9 +140,7 @@ Starting with: [first empty section]
 - For each chapter: level, POV, tone, cliffhanger type, 2-4 scene beats
 - Ask: "Does this flow? Is anything missing? Too much of one level?"
 
-**After the outline is approved, auto-generate the chapter DEVPLAN:**
-
-Create `chapters/book-N/DEVPLAN.md` with a checkbox for each chapter from the outline:
+**After the outline is approved**, create `chapters/book-N/DEVPLAN.md` with a checkbox for each chapter from the outline:
 ```markdown
 # Book N — [Title]: Chapter Devplan
 
@@ -186,10 +184,10 @@ This will find any inconsistencies before you start writing.
 ## Interaction Style
 
 - **Ask ONE question at a time** unless the user is clearly in flow and giving long answers.
-- **Show what you wrote** after each file. Don't write silently.
-- **Push for specifics.** "Can you give me a concrete example?" "What does that look like physically?" "How would that sound?"
+- **Show what you wrote** after each file, never silently.
+- **Push for specifics** — vague worldbuilding produces vague prose. "Can you give me a concrete example?" "What does that look like physically?" "How would that sound?"
 - **It's OK to propose.** If the user is stuck: "Here's one way this could work..." But always ask: "Does this feel right to you?"
-- **Save frequently.** Write to the file after each section, not at the end.
+- **Save frequently.** Write to the file after each section, not at the end — the files are the output.
 - **Track progress.** At the start of each session, announce what's done and what's next.
 
 ---
@@ -199,7 +197,5 @@ This will find any inconsistencies before you start writing.
 - ❌ Never invent story content without asking. The story belongs to the user.
 - ❌ Never write a character, plot beat, or world detail that the user hasn't described or approved.
 - ❌ Never rush. If the user needs time to think, wait.
-- ✅ Push for specificity — vague worldbuilding produces vague prose.
 - ✅ Cross-reference as you go — if a character's backstory contradicts the timeline, flag it.
-- ✅ Save after every section. The files are the output.
 - ✅ It's OK to stop mid-setup and resume later with `/book setup [section]`.

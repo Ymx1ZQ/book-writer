@@ -2,7 +2,7 @@
 
 Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, characters/, plot/, outlines). Does NOT touch chapter prose — for that, use `/book revise`.
 
-**Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the milestone's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving any specific draft choice — and not defending prior decisions. This applies regardless of who authored the finding (past you, the writer-side coherence pass, an external reviewer): findings are signal; you decide the response on merit. No competition.
+**Framing — read first.** Treat each finding as a critique from an outside editor reading cold, whoever authored it (past you, the writer-side coherence pass, an external reviewer). Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the milestone's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving a specific draft choice and not defending a prior decision.
 
 **Milestone format:** see `instructions/milestone-format.md`. `/book fix` parses only `- [ ]` items inside coherence/sniff/continuity milestones — operational items in plain-bullet form are ignored by design (they are not pipeline-executable).
 
@@ -25,12 +25,12 @@ Apply pending coherence fixes from `DEVPLAN.md` to project files (world/, charac
 - Run Steps 1, 2, 3, 4 on those milestones only.
 
 **If target is `all`:**
-1. First, run the `common` flow above (shared-file coherence fixes).
-2. Then, detect all books by scanning for `chapters/book-*/` directories.
+1. Run the `common` flow above.
+2. Detect all books by scanning for `chapters/book-*/` directories.
 3. For each book found (in natural order: book-1, book-2, book-3, ...):
    - Run the full per-book fix process below (Steps 1–4).
    - Announce the per-book session complete before moving to the next book.
-4. After all books are processed, announce a combined summary.
+4. Announce a combined summary.
 
 **If target is a specific book (e.g., `book-1`):**
 - Process milestones affecting `chapters/<book>/` plus any shared-file milestones not yet applied.
@@ -86,7 +86,7 @@ Announce:
 
 **Runs once per `/book fix <scope>` invocation, unconditionally** — whether Step 1 found N milestones to apply (then runs after Step D for the last one) or reported zero (the scope is already in applied state). Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
 
-Semantic: "this `/book fix <scope>` invocation has just confirmed scope `<scope>` is in applied state; any operational item naming `/book fix <scope>` as pending elsewhere in DEVPLAN.md can be closed."
+Semantic: this invocation has just confirmed scope `<scope>` is in applied state, so any operational item naming `/book fix <scope>` as pending elsewhere in DEVPLAN.md can be closed.
 
 Scan DEVPLAN.md for plain-bullet operational items in any phase whose action names this invocation. Match patterns (scope-aware):
 - `Apply Phase NN milestones via .*/book fix <scope>`
@@ -98,7 +98,7 @@ For each match with status `— pending`, update to `— done YYYY-MM-DD` (today
 
 **Stale meta-statement cleanup.** Same pass: scan for plain-bullet items matching `Pending milestones from Phases [\d, /]+ still require application via .*/book fix invocations` with status `— pending`. If every Phase NN listed has all `[ ]` items now `[x]`, update the operational item to `— done YYYY-MM-DD`. If any phase still has open `[ ]` items, leave the marker `— pending`.
 
-**Defensive convergence sweep.** If after the literal-pattern passes above the invocation completes with `grep -c "^- \[ \]" DEVPLAN.md == 0` (zero unchecked anywhere in the file), perform a final sweep: for each `— pending` item remaining in any phase whose checkboxes are all `[x]`, inspect the action description. If it describes pre-writing-phase work — namely references `/book fix`, `/book coherence`, `/book continuity`, `/book compact`, or `./run-coherence-cycle.sh` in any phrasing — update to `— done YYYY-MM-DD`. Catches edge-case phrasings the literal patterns miss (`M1 closes via /book fix book-2`, `After M1 applies, …`, `Run ./run-coherence-cycle.sh book-2`). Do NOT close items referencing banned writing-phase commands per `instructions/milestone-format.md` §Verification & next-steps blocks rule 2 (`/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise`) — those should not be in the ledger at all per doctrine; flag them for surface to the user instead of closing.
+**Defensive convergence sweep.** If after the literal-pattern passes above the invocation completes with `grep -c "^- \[ \]" DEVPLAN.md == 0`, sweep once more: for each `— pending` item remaining in any phase whose checkboxes are all `[x]`, if its action describes pre-writing-phase work — namely references `/book fix`, `/book coherence`, `/book continuity`, `/book compact`, or `./run-coherence-cycle.sh` in any phrasing — update to `— done YYYY-MM-DD`. Catches edge-case phrasings the literal patterns miss (`M1 closes via /book fix book-2`, `After M1 applies, …`, `Run ./run-coherence-cycle.sh book-2`). Do NOT close items referencing banned writing-phase commands per `instructions/milestone-format.md` §Verification & next-steps blocks rule 2 (`/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise`) — those should not be in the ledger at all per doctrine; flag them for surface to the user instead of closing.
 
 Announce in the session summary:
 ```

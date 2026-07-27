@@ -42,7 +42,7 @@ For each `chapters/book-N/outline.md` in scope:
 
 Remove the inline `[Sauveterre — ...]` notes from individual chapters. The table is the canonical tracker.
 
-**E. Density check.** Measure word count per chapter entry. Flag any chapter entry over 800 words (normal) or 300 words (rapid cross-cut). These are bloated — compress beats to 1-2 sentences each and replace mechanism explanations with cross-refs. Target: normal chapters 150-300 words, rapid cross-cut 50-100 words.
+**E. Density check.** Flag any chapter entry over 800 words (normal) or 300 words (rapid cross-cut). These are bloated — compress beats to 1-2 sentences each and replace mechanism explanations with cross-refs. Target: normal chapters 150-300 words, rapid cross-cut 50-100 words.
 
 **F. Authorial reasoning check.** Flag any outline text containing: "the reader should", "on reread", "the attentive reader", "the question is", "MANDATORY —" followed by >50 words of explanation. These are authorial reasoning blocks — move to writing-notes.md, leave one-line directive in outline.
 
@@ -63,9 +63,9 @@ In removed locations, leave a one-line pointer: `→ See Flashback Beats §[name
 - Physical details described in Appearance, Depth-Compact, Physicality Expanded
 - Key events retold in Background, Worst Act, Formative Scene
 
-**C. PRESERVE Usage Trackers.** Do NOT remove or modify any `## Usage Tracker` section in any file — they are writing scaffolding. Each tracker is a table mapping elements to specific chapters with Detail (scene/accent) and Status (planned/written). Items with `planned` status track what has NOT yet been written. Status changes to `written` ONLY by `/book chapter` after a chapter is written and verified. Leave all trackers intact. This applies to ALL files that contain a `## Usage Tracker` section: character files, world-concept files, plot files, and any other file with trackable content.
+**C. PRESERVE Usage Trackers.** Do NOT remove or modify any `## Usage Tracker` section in any file — they are writing scaffolding. Each tracker is a table mapping elements to specific chapters with Detail (scene/accent) and Status (planned/written). Items with `planned` status track what has NOT yet been written. Status changes to `written` ONLY by `/book chapter` after a chapter is written and verified. Applies to ALL files containing a `## Usage Tracker` section: character files, world-concept files, plot files, and any other file with trackable content.
 
-**D. Extract writing instructions from character files.** If a character file contains blocks that are writing instructions rather than character information (e.g., "The reader must SEE this fight", "This is the most powerful moment", multi-paragraph prose-rules embedded in the sheet), move them to the character's narrator boundaries section or to the relevant outline chapter. Character files define WHO the character is, not HOW to write them.
+**D. Extract writing instructions from character files.** If a character file contains blocks that are writing instructions rather than character information (e.g., "The reader must SEE this fight", multi-paragraph prose-rules embedded in the sheet), move them to the character's narrator boundaries section or to the relevant outline chapter. Character files define WHO the character is, not HOW to write them.
 
 ### 3. World File Cross-Reference Audit
 
@@ -92,7 +92,7 @@ For each `plot/episode-N-*.md`:
 
 ### 5. Prose Compression (all files in scope)
 
-For every file in scope (world/, characters/, plot/), apply token-reducing compression to narrative prose WITHOUT losing any information. This step does what an editor does: says the same thing in fewer words.
+For every file in scope (world/, characters/, plot/), apply token-reducing compression to narrative prose WITHOUT losing any information — say the same thing in fewer words.
 
 **What to compress:**
 
@@ -126,15 +126,13 @@ For every file in scope (world/, characters/, plot/), apply token-reducing compr
 2. No `context:` tags altered (if outline file)
 3. Spot-check: pick 3 facts from the original — verify they're still present
 
-**Scope control:** Process files via agents in parallel batches of ≤10. For each file: read full → identify compressible prose → rewrite compressed → verify tracker integrity. Do NOT re-read pipeline-critical files listed above — they are exempt.
+**Scope control:** Process files via agents in parallel batches of ≤10. For each file: read full → identify compressible prose → rewrite compressed → verify tracker integrity. Do NOT re-read the pipeline-critical files listed above — they are exempt.
 
 ---
 
 ### 5.5 Close Matching Operational Items
 
-**Runs once per `/book compact <scope>` invocation, unconditionally** — compact is idempotent, every successful run is valid evidence the named compact was performed. Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
-
-Semantic: "this `/book compact <scope>` invocation has just performed (or re-confirmed) compaction on `<scope>`; any operational item naming `/book compact <scope>` as pending elsewhere in DEVPLAN.md can be closed."
+**Runs once per `/book compact <scope>` invocation, unconditionally** — compact is idempotent, so every successful run is valid evidence that compaction on `<scope>` was performed, and any operational item naming `/book compact <scope>` as pending elsewhere in DEVPLAN.md can be closed. Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
 
 Scan DEVPLAN.md for plain-bullet operational items naming this invocation. Match patterns (scope-aware):
 - `.*/book compact <scope>` in any phrasing (`Run /book compact X`, `Then /book compact X`, `After … /book compact X`, etc.)

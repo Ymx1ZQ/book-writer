@@ -1,17 +1,17 @@
 # Milestone Format — Executable vs Operational
 
-This file defines the canonical format for `DEVPLAN.md` milestones in book-skill projects. Cross-link from any instruction that writes to `DEVPLAN.md`.
+Canonical format for `DEVPLAN.md` milestones in book-skill projects. Cross-link from any instruction that writes to `DEVPLAN.md`.
 
 ## Two kinds of items
 
-**Executable items** use checkbox `- [ ]` (and `- [x]` when done). They are consumable by the autonomous pipeline:
+**Executable items** use checkbox `- [ ]` (`- [x]` when done). Consumable by the autonomous pipeline:
 
 - Canon milestones consumed by `/book fix` (sniff, coherence, continuity output).
 - Prose entries consumed by `/book revise` (`REVIEW.md`, `PROOFREAD.md`; `SMELL.md` uses its own `## #N` + `**Status:**` structure already).
 - Chapter entries consumed by `/book write` / `/book chapter`.
 - Direct file edits the implementing agent will perform without human intervention.
 
-**Operational items** use plain bullet `- ` (no checkbox). They describe steps the autonomous pipeline cannot close on its own:
+**Operational items** use plain bullet `- ` (no checkbox) — steps the autonomous pipeline cannot close on its own:
 
 - Orchestration script runs (`./run-coherence-cycle.sh ...`, `./run-write-cycle.sh ...`).
 - Manual test runs requiring user action.
@@ -23,9 +23,9 @@ Operational bullets may carry an inline status tag where useful: `- pending`, `-
 
 ## Why the distinction matters
 
-`run-coherence-cycle.sh` (and `run-write-cycle.sh`) compute the unresolved-findings count by `grep -c "^- \[ \]"` on `DEVPLAN.md`. If operational items use checkboxes, they accumulate as a constant offset that no consumer can clear, and the stuck-issue guardrail (exit code 7) fires spuriously even when the pipeline has actually converged.
+`run-coherence-cycle.sh` (and `run-write-cycle.sh`) compute the unresolved-findings count by `grep -c "^- \[ \]"` on `DEVPLAN.md`. Operational items with checkboxes accumulate as a constant offset no consumer can clear, and the stuck-issue guardrail (exit code 7) fires spuriously even after the pipeline has converged.
 
-By reserving `- [ ]` for items the pipeline can close, the counter becomes a true convergence signal: it goes to zero when (and only when) all autonomous fixes have been applied.
+Reserving `- [ ]` for items the pipeline can close makes the counter a true convergence signal: zero when and only when all autonomous fixes have been applied.
 
 ## Examples
 
@@ -50,7 +50,7 @@ By reserving `- [ ]` for items the pipeline can close, the counter becomes a tru
 - On success, mark closes M9 first item and M11 Test 1.
 ```
 
-These describe a runbook. The user runs the script (or instructs Claude to run it). No `/book fix` invocation will close them. Plain bullets keep the convergence counter clean.
+A runbook: the user runs the script (or instructs Claude to run it). No `/book fix` invocation will close them. Plain bullets keep the convergence counter clean.
 
 ## Override of global CLAUDE.md
 
@@ -58,7 +58,7 @@ Global CLAUDE.md may instruct "every task uses a checkbox." This skill's doctrin
 
 ## What never enters DEVPLAN
 
-DEVPLAN holds **milestones only** — never future-writer instructions, never editorial-choice escalations, never long-lived backlog. The following patterns are anti-patterns regardless of the label used:
+DEVPLAN holds **milestones only** — never future-writer instructions, never editorial-choice escalations, never long-lived backlog. These patterns are anti-patterns regardless of the label used:
 
 - **`### Pending` / `### Decisions Pending` / `### Drafting-Only` / `### Awaits Draft` / `### Escalated to User` sections** → BANNED. Route by content:
   - Drafting-time guidance for an undrafted chapter → keyed section `## ChNN-<short-name>` in `chapters/<book>/writing-notes.md` + `→ See writing-notes.md §ChNN-<short-name>` pointer at the relevant outline beat. Apply the writing-notes section *now*, even though the chapter prose does not yet exist; that *is* the action.
@@ -67,15 +67,13 @@ DEVPLAN holds **milestones only** — never future-writer instructions, never ed
 - **`Status: Pending (awaits ...)` lines** in any tracker file (SMELL.md, REVIEW.md, PROOFREAD.md, DEVPLAN.md) → BANNED. Same routing as above.
 - **`### Deferred to Phase NNN` sections** → permitted ONLY for cap-overflow inside a single coherence/continuity phase, AND only if the successor phase consumes them within 1-2 cycles. A "Deferred" section that survives 3+ phases is a backlog leak — promote everything to writing-notes / outline / character file and delete the section.
 - **Future-writer instructions** (e.g., "verify draft uses X phrasing", "remember at draft time to surface the Y plant") → BANNED in DEVPLAN. Route to `chapters/<book>/writing-notes.md` as a drafting guard, with `→ See writing-notes.md §...` pointer at the relevant outline beat. The writing-notes section is the durable home; DEVPLAN is the work-in-progress ledger.
-- **Command-scoped deferrals** — `Deferred to /book fix book-2`, `Left for that pass`, `Route there`, `Deferred to the book-N run`, `Same reason, deferred` → BANNED. This form is more dangerous than `### Deferred to Phase NNN`, because it names a pipeline command and therefore reads as a *routing decision*: a reviewer sees a destination and moves on. It is not a destination. `/book fix book-2` is a run nobody has scheduled, and until someone runs it the finding exists only in DEVPLAN, which no drafting, build or review step reads.
+- **Command-scoped deferrals** — `Deferred to /book fix book-2`, `Left for that pass`, `Route there`, `Deferred to the book-N run`, `Same reason, deferred` → BANNED. This form is more dangerous than `### Deferred to Phase NNN`, because it names a pipeline command and so reads as a *routing decision*: a reviewer sees a destination and moves on. It is not a destination — `/book fix book-2` is a run nobody has scheduled, and until someone runs it the finding exists only in DEVPLAN, which no drafting, build or review step reads.
 
-The unifying rule: if a finding's resolution lives at draft time, the *current-phase* action is to write the drafting guidance into context (writing-notes / outline / character file) so the future writer pass picks it up automatically. Parking the finding in DEVPLAN as "deferred" routes it nowhere and accumulates as backlog leak.
-
-**Stated as the action rather than the prohibition**, because the rule above says what not to do more clearly than what to do: an item whose content belongs to an undrafted chapter is not postponed — **its destination is the file the future step loads**. Write the constraint into that file in the form that file uses (a Usage Tracker row, an outline beat, a `writing-notes.md §ChNN-<name>` guard, a character-file line), then close the item in the same pass. The work the item described is done at that point: the future drafting pass will meet the constraint whether or not anyone remembers the phase that wrote it. A file is a durable destination; a future command invocation is not.
+The unifying rule, stated as the action: an item whose resolution lives at draft time is not postponed — **its destination is the file the future step loads**. Write the constraint into that file in the form that file uses (a Usage Tracker row, an outline beat, a `writing-notes.md §ChNN-<name>` guard, a character-file line), then close the item in the same pass. The work is done at that point: the future drafting pass will meet the constraint whether or not anyone remembers the phase that wrote it. Parking the finding in DEVPLAN as "deferred" routes it nowhere and accumulates as backlog leak — a file is a durable destination, a future command invocation is not.
 
 If no such file exists, that absence is the actual finding, and the item becomes "create the file the future step will load" — which is executable now.
 
-**Measured instance (2026-07-26, ground-truth project).** Phases 87 and 88 parked **nine** items across two phases using `Deferred to /book fix book-2` / `book-3`. The wording passed every check in this list, because the banned constructs all named a *phase* or a *user* and this one named a command. One day after the phases were written the items were untouched and the destination books were undrafted; two further items in the same phases were blocked on trade-offs that had since closed, and nothing re-checked the gate. All nine were applicable immediately — they wrote tracker rows, outline beats and canon lines that the future drafting pass reads.
+**Measured instance (2026-07-26, ground-truth project).** Phases 87 and 88 parked **nine** items across two phases using `Deferred to /book fix book-2` / `book-3`. The wording passed every check in this list because the banned constructs all named a *phase* or a *user*, and this one named a command. A day later the items were untouched and the destination books undrafted; two further items were blocked on trade-offs that had since closed, and nothing re-checked the gate. All nine were applicable immediately — they wrote tracker rows, outline beats and canon lines the future drafting pass reads.
 
 ## Autonomous-decision principle
 
@@ -83,12 +81,12 @@ The book pipeline is an **autonomous writer**, not an assistant. Editorial-choic
 
 When a finding has multiple plausible resolutions, derive the default in this priority order:
 
-1. **`world/canon-hierarchy.md` tier order** — explicit precedence rules between worldbuilding files, character files, plot files, outlines, and prose. The higher tier always wins; lower-tier files defer.
+1. **`world/canon-hierarchy.md` tier order** — explicit precedence rules between worldbuilding files, character files, plot files, outlines, and prose. The higher tier always wins.
 2. **Canon as already written** — among files at the same tier, the existing canon usage takes precedence over the new finding's framing. If 80% of the trilogy already calls a sensor "PD-073", the canonicalization adopts that form.
 3. **Chapter's own tonal/structural guards already declared** — writing-notes per-chapter sections (density caps, register guards, opening-type rotation, beat-priority caps) constrain the resolution space. If a guard caps a beat at 1 sentence, the resolution must fit.
 4. **Occam** — among options that survive (1)-(3), pick the one that adds the least new infrastructure (no new files, no new naming conventions, no new cross-references unless one already exists).
 
-Apply the chosen default to canon AND record a one-line rationale in the appropriate decision-record location:
+Apply the chosen default to canon AND record a one-line rationale:
 
 - Drafting-time guidance → `chapters/<book>/writing-notes.md` keyed section.
 - Character-level decision → character file (Habits, Tradecraft, Voice, etc.).
@@ -99,17 +97,17 @@ The user can always override later by editing the decision-record. But the syste
 
 **Banned constructs:** `"User picks A or B?"`, `"Needs design decision"`, `"Escalated to user"`, `"Pending user input"`, `"Choice point — user must decide"`. If a triage step produces such a bucket, the triage is incomplete: re-derive the default per the four-tier order and apply.
 
-**Genuine blockers** (the canon contradicts itself irreducibly, AND no defensible default exists from any of the four tiers) are vanishingly rare. Confirm the contradiction is irreducible before raising. If raised, present 2-3 options each with concrete canon evidence (file:line for each), not as an open question.
+**Genuine blockers** (the canon contradicts itself irreducibly AND no defensible default exists from any of the four tiers) are vanishingly rare. Confirm the contradiction is irreducible before raising. If raised, present 2-3 options each with concrete canon evidence (file:line), not as an open question.
 
 ## Verification & next-steps blocks
 
-Phases written by `/book coherence` and `/book continuity` may include a `### Verification & next steps` block listing operational items that close the phase. These items are plain-bullet (per the executable/operational distinction above) and may carry inline status (`- pending`, `- done YYYY-MM-DD`).
+Phases written by `/book coherence` and `/book continuity` may include a `### Verification & next steps` block listing operational items that close the phase. These are plain-bullet and may carry inline status (`- pending`, `- done YYYY-MM-DD`).
 
 Three rules constrain the block:
 
-**1. Per-phase scope only.** Operational items describe ONLY actions that close THIS phase's milestones (e.g., `/book fix <scope>` for the canon side, `/book revise <scope>` for the prose side, a re-run of THIS phase's check that verifies clean state). They do NOT restate prior phases' pending status. The cycle script's `count_unresolved_global` (run-coherence-cycle.sh) is the cross-phase source of truth — restating "Pending milestones from Phases X / Y / Z still require application" propagates a meta-statement that becomes stale the instant the next `/book fix` lands, and the propagation amplifies as each new phase copies it forward.
+**1. Per-phase scope only.** Operational items describe ONLY actions that close THIS phase's milestones (e.g., `/book fix <scope>` for the canon side, `/book revise <scope>` for the prose side, a re-run of THIS phase's check that verifies clean state). They do NOT restate prior phases' pending status. The cycle script's `count_unresolved_global` (run-coherence-cycle.sh) is the cross-phase source of truth — restating "Pending milestones from Phases X / Y / Z still require application" propagates a meta-statement that goes stale the instant the next `/book fix` lands, and amplifies as each new phase copies it forward.
 
-**2. Allowed and banned command references.** Operational items in pre-writing-phase ledgers (the ledgers consumed by `/book fix` / `/book coherence` / `/book continuity` / `/book compact`) follow an explicit allow/ban list:
+**2. Allowed and banned command references.** Operational items in pre-writing-phase ledgers (those consumed by `/book fix` / `/book coherence` / `/book continuity` / `/book compact`) follow an explicit allow/ban list:
 
 - **Allowed:** `/book fix`, `/book coherence`, `/book continuity`, `/book compact` — the pre-writing pipeline. Each has a §2.5/§4.5 step that closes its own pending refs at successful invocation, so the ledger self-cleans.
 - **Banned:** `/book write`, `/book chapter`, `/book sniff`, `/book review`, `/book proofread`, `/book revise` — writing-phase commands. Their state belongs to writing-phase ledgers (chapter-level files: `chapters/<book>/state.md`, `chapters/<book>/SMELL.md`, `chapters/<book>/REVIEW.md`, `chapters/<book>/PROOFREAD.md`), never to a phase-level pre-writing ledger. Pre-writing convergence (worldbuilding / coherence-clean) is the prior phase; drafting is a separate ledger.

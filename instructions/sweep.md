@@ -14,7 +14,7 @@ Argument: `<book>` (e.g. `book-1`, `book-2`, `book-3`).
 
 Every review-producing skill (`sniff`, `review`, `coldread`, `proofread`) and `revise`'s `*-PENDING.md` emitters already have a **rotate-on-write** archival pattern: when re-run for the next cycle on the same book, they move the existing artifact into `archive/<TYPE>-<TIMESTAMP>-<chapter>.md` before writing the new one.
 
-That handles every cycle except the **last one for a chapter** — after which the user moves on to the next chapter, no follow-up run for the closed chapter ever happens, and the terminal artifacts sit forever at the chapter-dir root, accumulating across chapters. This skill is the missing terminal sweep.
+That handles every cycle except the **last one for a chapter** — no follow-up run for a closed chapter ever happens, so its terminal artifacts sit forever at the chapter-dir root, accumulating across chapters.
 
 ## What it does
 
@@ -54,7 +54,7 @@ Destination: `chapters/<book>/archive/<TYPE>-<YYYYMMDD-HHMMSS>-final-<chapter>.m
 
 - **Idempotent.** Re-running on a clean directory is a silent no-op.
 - **Reversible.** Every action is `mv` into a timestamped destination; `git mv` undoes any wrong move.
-- **Fail-safe.** Any parsing ambiguity → SKIP with reason. The script never deletes and never archives a file that still has actionable content (`Status: pending`, unresolved `- [ ]`, or a reference to an open chapter).
+- **Fail-safe.** Any parsing ambiguity → SKIP with reason. The script never deletes, and never archives a file that still has actionable content.
 - **Race-safe.** 60-second mtime guard prevents racing against a cycle that just wrote a fresh artifact.
 
 ## Related

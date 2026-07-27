@@ -11,7 +11,7 @@ description: >-
 
 # Book — Unified Writing Pipeline
 
-Single entry point for all book-writing operations. Genre-agnostic — reads tone, rules, structure, and genre from the project's own files (CLAUDE.md, world/, characters/).
+Single entry point for all book-writing operations. Genre-agnostic — see §Genre Agnosticism below.
 
 ## Invocation
 
@@ -91,11 +91,11 @@ PARALLEL PIPELINE — MERGE PHASE (run-merge-phase.sh, per chapter)
   /book arbiter <book> <ch>        → autonomously resolve *-PENDING.md trade-offs
 ```
 
-`judge`, `integrate-anchors`, and `arbiter` were standalone `book-*` skills until Phase 11 consolidated the toolchain into this one skill. `judge` is cross-CLI: under Claude it routes to `instructions/judge.md`; under Codex it is the `codex/SKILL.md` variant installed to `~/.codex/skills/book/`.
+`judge`, `integrate-anchors` and `arbiter` were standalone `book-*` skills until Phase 11 consolidated them here. `judge` is cross-CLI: under Claude it routes to `instructions/judge.md`; under Codex it is the `codex/SKILL.md` variant installed to `~/.codex/skills/book/`.
 
 ## The human cold-read gate
 
-The steps above are the *machine* pipeline. Completing them yields a **machine-checked** chapter — every enumerable check passed — not a *finished* one. The machine passes are structurally blind to what only a linear, committed, skeptical human reading catches: referential friction felt at reading speed, implausibility a cooperative reader rationalizes away, jargon the agent silently decodes, and whether the chapter is *alive* on the page. A chapter is reader-validated only after a human has read it at speed. The machine pipeline's job is to make that human read **cheap** — to exhaust the enumerable so the human's attention lands only where a human is required. Do not report a machine-checked chapter as "done" or "clean"; report it as machine-checked and awaiting human cold-read.
+The steps above are the *machine* pipeline. Completing them yields a **machine-checked** chapter — every enumerable check passed — not a *finished* one. The machine passes are structurally blind to what only a linear, committed, skeptical human reading catches: referential friction felt at reading speed, implausibility a cooperative reader rationalizes away, jargon the agent silently decodes, and whether the chapter is *alive* on the page. The pipeline's job is to make that human read **cheap** — to exhaust the enumerable so the human's attention lands only where a human is required. Do not report a machine-checked chapter as "done" or "clean"; report it as machine-checked and awaiting human cold-read.
 
 **Pre-draft context symmetry:** the chapter-writer agent enforces beat↔context symmetry before drafting (chapter-writer Step 2.6 — STOP on missing files, advisory on orphans). `coherence-check` flags drift on already-written outlines as WARNING (classes R + S). No standalone subcommand: the symmetry check lives inside `chapter-writer` (write-time) and `coherence-check` (audit-time).
 
@@ -136,7 +136,7 @@ When a command is received:
 4. **Pass all remaining arguments** to the instruction file's process.
 5. **After the instruction completes**, commit changes — **scoped to this skill's outputs only** (Phase 41 M13 hygiene):
    - The instruction file declares which files this skill produces/modifies. Stage ONLY those declared output paths via targeted `git add <path1> <path2> ...`.
-   - If the instruction does not explicitly declare outputs, use `git diff --name-only` on the working tree to enumerate files this skill *actually* touched, and stage those — DO NOT use `git add -A` (it captures dirty work unrelated to this skill; this caused the Phase 40 M7 commit-bundling incident).
+   - If the instruction does not declare outputs, use `git diff --name-only` to enumerate files this skill *actually* touched, and stage those — DO NOT use `git add -A` (it captures dirty work unrelated to this skill; this caused the Phase 40 M7 commit-bundling incident).
    - Commit with message: `book <command> <args>: <one-line summary of what was done>`
    - Do NOT push (the caller decides when to push).
 
@@ -152,7 +152,7 @@ A planned element is recorded in up to three places — the owning canon file's 
 
 | Tier | Commands | Rationale |
 |---|---|---|
-| **Opus** | `chapter` / `write`, `revise`, `integrate-anchors`, `judge`, `arbiter`, `review`, `sniff`, `coldread-filter`, `setup` | Creative drafting and judgment calls — these need the strongest prose + evaluation model. |
+| **Opus** | `chapter` / `write`, `revise`, `integrate-anchors`, `judge`, `arbiter`, `review`, `sniff`, `coldread-filter`, `setup` | Creative drafting and judgment calls — need the strongest prose + evaluation model. |
 | **Sonnet** | `coherence`, `continuity`, `fix`, `proofread`, `factcheck`, `fidelity`, `motif`, `sensitivity`, `readability`, `adjacency`, `coldread-enum`, `snapshot`, `compact`, `sweep` | Detection and mechanical passes are rubric-driven — the rubric carries the quality, not the model. |
 
 Unlisted commands (`help`, `init`, `pdf`, `epub`) are mechanical/scripted and run fine on either tier. Scripted enforcement of this table lives in the consuming project's pipeline (ground-truth DEVPLAN Phase 80), not in this skill; interactive users pick the tier via `/model` before running the command.
@@ -175,7 +175,7 @@ This skill contains NO genre-specific content. All genre, tone, style, and struc
 - `world/writing-checklists.md` — sensory enforcement per level
 - `characters/notes/voice-samples.md` — character voice profiles
 
-The instructions reference these files generically: "read the project's tone file" not "apply Kafkaesque register." This makes the pipeline usable for any multi-book fiction project.
+The instructions reference these files generically: "read the project's tone file" not "apply Kafkaesque register."
 
 ## If `help` is the command
 

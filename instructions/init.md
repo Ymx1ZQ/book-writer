@@ -16,14 +16,14 @@ No arguments. The command asks the user for project parameters interactively.
 
 ### 1. Ask Project Parameters
 
-Ask the user these questions (accept brief answers — we'll flesh things out in `/book setup`):
+Ask the user these questions (brief answers are fine — `/book setup` fleshes them out):
 
 1. **Project name** — What's the working title?
 2. **Number of books** — How many books in the series? (1, 2, 3, or more)
-3. **Narrative levels** — Does the story have multiple narrative levels, timelines, or worlds? If yes, how many and what are their names? (e.g., "Reality, Dome, Ark" or "Past, Present, Future" or "just one")
+3. **Narrative levels** — Does the story have multiple narrative levels, timelines, or worlds? If yes, how many and what are their names? (e.g., "Reality, Dome, Ark", or "just one")
 4. **Approximate chapters per book** — Rough number? (default: 30)
 5. **Language** — What language is the book written in? (default: American English)
-6. **Genre/tone keywords** — Brief genre description? (e.g., "sci-fi thriller" or "literary fiction" or "fantasy with horror elements") — used only for template hints, not hardcoded
+6. **Genre/tone keywords** — Brief genre description? (e.g., "sci-fi thriller") — used only for template hints, not hardcoded
 
 ### 2. Create Directory Structure
 
@@ -180,7 +180,7 @@ Each chapter `context:` field lists conditional files beyond the always-loaded s
 | [element] | #1 [how it appears] | #2 [how it appears] | #3 [how it appears] | #4 payoff — [what it spends] |
 ```
 
-- All three named parts — always-loaded reference, texture-palette proxy, context-list discipline — are required in every book's outline header. A book with no palette says so in the paragraph; an absent paragraph is indistinguishable from an unfinished one, which is how books drift into different shapes.
+- All three named parts — always-loaded reference, texture-palette proxy, context-list discipline — are required in every book's outline header. A book with no palette says so; an absent paragraph is indistinguishable from an unfinished one, which is how books drift into different shapes.
 - **§Inline Plant Tracking is required in every book's outline header too**, starting as an empty table with a header row. It is where `/book chapter` 2.6.c reads the instances due in the chapter being drafted, and where `/book coherence` check J reads this book's own convention (→ `instructions/registers.md`).
   - One row per plant; one column per chapter that carries an instance. Cells are numbered `#1`, `#2`, … in chapter order and say how the instance appears; `—` means no instance in that chapter; the payoff instance is labeled `payoff`. Renumber the row when an instance moves.
   - **A plant carries more than one instance before its payoff.** A single mention many chapters ahead of the payoff has not been planted: the reader met the element once and will not retrieve it when the payoff arrives. When a chapter needs to establish something a later chapter spends, add the intermediate instances at named chapters — a more emphatic single sentence does not substitute for them.
@@ -198,12 +198,12 @@ Each chapter `context:` field lists conditional files beyond the always-loaded s
   - `scene` = rendered beat · `accent` = one-two sentence texture
   - `—` = no chapter assigned · `planned` = chapter assigned · `written` = in draft
   - The tracker IS the placement plan — no need to duplicate in chapter outlines
-  - One format everywhere: character files, world files, plot files. No exceptions.
+  - One format everywhere. No exceptions.
   - Keep files under ~150 lines of content before the tracker. If larger, split by topic so the chapter writer loads only what's relevant
 
-- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Add a file to `context:` when a beat references it or it holds tracker items mapped to that chapter — the two justifications `/book chapter` 2.6.a and 2.6.c enforce — and, reciprocally, writing a tracker row for chapter X and adding the owning file to X's `**context:**` are one action, done in the same edit. A row whose file chapter X does not load is not a plan: the writer never opens the file, so the row cannot be rendered and cannot be ticked. The only files exempt are those already reachable through the outline header's always-loaded set or texture-palette proxy (§Context Tags below), and those in the chapter's own `world/level-<N>-<name>/` directory, which the writer opens selectively from the tracker rows naming that chapter.
-- **Level register.** A chapter's `**Level:**` decides which level-scoped canon it may load: its own `world/level-<N>-<name>/`, plus the level-neutral `characters/`, `plot/` and top-level `world/*.md`. Every other level's directory is barred — that level's POV cannot see it. The register outranks the tracker: a row aimed at a Dome chapter from inside a Level-0 file does not make that file loadable, so the row is unreachable and `/book chapter` reports it instead of auto-adding it. Corollary for canon authors: a `### Dome` subsection inside a Level-0 file is unreachable from every chapter that wants it. Level-scoped content belongs in that level's own directory.
-- No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` if they need to reference it.
+- Chapter outlines include a `context:` field in each chapter header listing which conditional world/plot files the chapter-writer must load beyond the always-loaded set. Add a file to `context:` when a beat references it or it holds tracker items mapped to that chapter — the two justifications `/book chapter` 2.6.a and 2.6.c enforce — and, reciprocally, writing a tracker row for chapter X and adding the owning file to X's `**context:**` are one edit. A row whose file chapter X does not load is not a plan: the writer never opens the file, so the row cannot be rendered or ticked. Exempt: files already reachable through the outline header's always-loaded set or texture-palette proxy (§Context Tags above, and in the generated outline's header), and the chapter's own `world/level-<N>-<name>/` directory, which the writer opens selectively from the tracker rows naming that chapter.
+- **Level register.** A chapter's `**Level:**` decides which level-scoped canon it may load: its own `world/level-<N>-<name>/`, plus the level-neutral `characters/`, `plot/` and top-level `world/*.md`. Every other level's directory is barred — that level's POV cannot see it. The register outranks the tracker: a row aimed at a Dome chapter from inside a Level-0 file does not make that file loadable, so the row is unreachable and `/book chapter` reports it instead of auto-adding it. So a `### Dome` subsection inside a Level-0 file is unreachable from every chapter that wants it: level-scoped content belongs in that level's own directory.
+- No overlapping sections. Each fact lives in ONE section. Other sections use `→ See §[section]` to reference it.
 - Each concept has ONE canonical file. When generating level context files, technology files, and thematic files, check for overlap. If two files would describe the same mechanism, pick one as canonical and cross-ref from the other.
 - **Word budgets (prose excluding tracker tables):**
 
@@ -227,7 +227,7 @@ Each chapter `context:` field lists conditional files beyond the always-loaded s
 
 ### 4. Generate CLAUDE.md
 
-**CRITICAL: CLAUDE.md is an OPERATIONAL file, not a narrative file.** It tells Claude HOW to work and WHERE to find things. It NEVER contains narrative content (plot summaries, character descriptions, tonal details, worldbuilding). All narrative content lives in the project files (`world/`, `characters/`, `plot/`). CLAUDE.md only POINTS to those files.
+**CRITICAL: CLAUDE.md is an OPERATIONAL file, not a narrative file.** It tells Claude HOW to work and WHERE to find things. It NEVER contains narrative content (plot summaries, character descriptions, tonal details, worldbuilding): that lives in the project files (`world/`, `characters/`, `plot/`), and CLAUDE.md only POINTS to them.
 
 Generate CLAUDE.md with this structure:
 
@@ -387,7 +387,7 @@ The project has three meta-files with distinct, non-overlapping roles:
 | `README.md` | **Where things are** | Directory tree, one-line descriptions | Narrative content, development history, counts that change |
 | `DEVPLAN.md` | **What to do** | Milestones, fixes, progress tracking | Operational instructions, directory maps |
 
-This separation prevents stale data: when narrative details change (e.g., a level moves from deep-space to LEO), only the project file (`world/tones.md`) needs updating. CLAUDE.md and README.md don't break because they never contained the detail — they only pointed to it.
+This separation prevents stale data: when narrative details change (e.g., a level moves from deep-space to LEO), only the project file (`world/tones.md`) needs updating. CLAUDE.md and README.md don't break because they never contained the detail, only a pointer to it.
 
 ---
 

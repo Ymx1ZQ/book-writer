@@ -1,6 +1,6 @@
 # `/book sensitivity` — representation / dated-language pass
 
-A conservative, advisory-first read for the defect class no other pass owns: stereotype, caricature, dated or ableist language, and representation handled in a way that would read as careless or wrong to a member of the depicted group. This is **not** a content-politics filter and it does not soften the book's themes, darkness, or characters' ugliness — fiction depicts cruelty, bias, and flawed people on purpose. It flags only where the *narration itself* (not a character's deliberate viewpoint) carries an unintended stereotype, or where a word/framing is dated in a way the author would want to know about.
+A conservative, advisory-first read for the defect class no other pass owns: stereotype, caricature, dated or ableist language, and representation handled in a way that would read as careless or wrong to a member of the depicted group. This is **not** a content-politics filter and it does not soften the book's themes, darkness, or characters' ugliness — fiction depicts cruelty, bias, and flawed people on purpose.
 
 ## What this check is, and what it is NOT
 
@@ -11,7 +11,7 @@ A conservative, advisory-first read for the defect class no other pass owns: ste
 
 The distinction is **diegetic intent**: a bigoted *character* is the book working; a stereotype in the *narrator's own framing*, unsignaled, is the defect. When unsure which it is, default to surfacing it as a TRADE-OFF for the human, never to silent edits.
 
-**Milestone format:** see `instructions/milestone-format.md`. Findings route to `SMELL.md` (`Source: sensitivity`); almost all are **TRADE-OFF** (→ `SMELL-PENDING.md`, human decides). Only unambiguous dated-term swaps with no loss may be SAFE-CUT.
+**Milestone format:** see `instructions/milestone-format.md`. Findings route to `SMELL.md` (`Source: sensitivity`); almost all are **TRADE-OFF** (→ `SMELL-PENDING.md`, human decides).
 
 ## Usage
 
@@ -22,7 +22,7 @@ The distinction is **diegetic intent**: a bigoted *character* is the book workin
 ## Output
 
 - Findings → `chapters/<book>/SMELL.md` (`Source: sensitivity`), advisory-first.
-- A mandatory **"Sensitivity Audit"** section: groups depicted in the chapter + verdict. Always present.
+- A mandatory **"Sensitivity Audit"** section: groups depicted in the chapter + verdict.
 
 ## Step 0 — Load intent
 
@@ -90,7 +90,7 @@ Findings surfaced: A (A-1 SAFE-CUT / rest TRADE-OFF). SAFE-KEEP (diegetic/intend
 
 ## Calibration
 
-- **Inform, do not sanitize.** Surface for the author; never auto-rewrite voice or theme.
-- **Diegetic intent is the gate.** A bigoted character is the book working. Only unsignaled *narration* flags.
-- **TRADE-OFF by default.** When in doubt, surface to the human — never silent-edit, never silent-pass.
+- **Inform, do not sanitize.** Never auto-rewrite voice or theme.
+- **Diegetic intent is the gate.** Only unsignaled *narration* flags.
+- **TRADE-OFF by default.** Never silent-edit, never silent-pass.
 - **No moralizing.** The rationale is editorial, specific, and neutral. The author decides.

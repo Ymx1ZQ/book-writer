@@ -34,10 +34,10 @@ Before writing any chapter:
 6. **If resuming from a previous session** (not the first batch): run Voice Calibration before writing:
    a. Read the BEST chapter from the previous batch (not the last — the best, identified by review score or word count).
    b. Read the voice samples for the POV character of the NEXT chapter to write.
-   c. Write a 100-word voice test (NOT saved, just for calibration): a paragraph in the POV character's voice describing something mundane. If it sounds right, proceed. If not, re-read voice samples and try again.
-   The risk between sessions is voice drift — characters start sounding alike. Calibration is the vaccine.
+   c. Write a 100-word voice test (NOT saved): a paragraph in the POV character's voice describing something mundane. If it sounds right, proceed. If not, re-read voice samples and try again.
+   The risk between sessions is voice drift — characters start sounding alike.
 
-**Batch context note:** The files loaded in steps 2 and 4 above (`state.md`, `tones.md`, `prose-rules.md`, `writing-checklists.md`) remain in context for the entire batch. When chapter-writer runs for each chapter, it will skip re-reading these files (see its "Batch session optimization" note in Step 1). This saves ~4 file reads per chapter × 5 chapters = 20 redundant reads per batch.
+**Batch context note:** The files loaded in steps 2 and 4 above (`state.md`, `tones.md`, `prose-rules.md`, `writing-checklists.md`) remain in context for the entire batch; chapter-writer skips re-reading them (see its "Batch session optimization" note in Step 1). This saves ~4 file reads per chapter × 5 chapters = 20 redundant reads per batch.
 
 ---
 
@@ -53,15 +53,13 @@ Read `chapters/<book>/DEVPLAN.md`. Find the next `- [ ]` entry. Extract chapter 
 
 **Follow the complete process defined in `/chapter-writer`:** Load context → Plan → Write → Word count gate → Verify (8 passes) → Update state → Mark complete.
 
-All writing rules, verification passes, prose rules, and quality gates live in the chapter-writer skill. Do not duplicate them here — read and follow that process.
+All writing rules, verification passes, prose rules, and quality gates live in the chapter-writer skill — do not duplicate them here.
 
 ### 2b. Track Ending Types
 
 After each chapter is complete, update the running ending type tracker. If J (contemplative) reaches 2, flag all subsequent plans that default to contemplative — they must choose F, G, H, or I instead.
 
 ### 3. Degradation Check (every 3 chapters)
-
-After every 3rd chapter in the batch:
 
 ```bash
 wc -w chapters/<book>/ch<LAST3>.md

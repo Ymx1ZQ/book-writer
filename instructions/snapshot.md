@@ -13,7 +13,7 @@ Build or refresh the compressed reader-memory snapshot for a chapter. The snapsh
 1. **Target chapter** at `chapters/<book>/chNN.md`
 2. **Prior snapshot** at `chapters/coldread-state/<book>-ch(NN-1).md` (if exists; ch01 = cold open, no prior).
 
-**Do NOT read**: `state.md` (authorial bookkeeping; includes what the reader does not yet know), `outline.md`, `world/`, `characters/`, `plot/`. The snapshot is **reader-side only**, built strictly from chapter texts.
+**Do NOT read**: `state.md` (authorial bookkeeping; includes what the reader does not yet know), `outline.md`, `world/`, `characters/`, `plot/`.
 
 ## Output
 

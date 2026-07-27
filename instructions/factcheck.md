@@ -1,6 +1,6 @@
 # `/book factcheck` — active real-world accuracy pass
 
-Extract every real-world factual claim in the chapter and **actively verify it** — against the project's canon and against real-world knowledge — instead of waiting for one to *look* suspicious. This is the dedicated batch verifier; `sniff` §5/§5.a is the reactive in-prose guardrail. Together they cover the gap where a chapter ships with a plausible-sounding but factually wrong detail that no pass challenged because nothing about it wrinkled the nose.
+Extract every real-world factual claim in the chapter and **actively verify it** — against the project's canon and against real-world knowledge — instead of waiting for one to *look* suspicious. This is the dedicated batch verifier; `sniff` §5/§5.a is the reactive in-prose guardrail. Together they close the gap through which a plausible-sounding but factually wrong detail ships unchallenged.
 
 ## What this check is, and what it is NOT
 
@@ -11,7 +11,7 @@ Extract every real-world factual claim in the chapter and **actively verify it**
 | Anachronism as a nose-wrinkle | `sniff.md` §1 |
 | **Systematic extract-every-claim → verify each → declare the verdict** | **THIS check** |
 
-The difference from sniff §5.a is *posture*: sniff scans prose and flags what looks suspicious (reactive, charitable to unflagged claims); factcheck **enumerates the full claim set first**, then adjudicates each, so a confidently-worded falsehood cannot pass by simply not looking suspicious. **Do not duplicate** sniff's per-line objections; this pass produces a claim ledger and routes only the claims that fail or cannot be verified.
+The difference from sniff §5.a is *posture*: sniff flags what looks suspicious as it scans (reactive, charitable to unflagged claims); factcheck **enumerates the full claim set first**, then adjudicates each, so a confidently-worded falsehood cannot pass by simply not looking suspicious. **Do not duplicate** sniff's per-line objections; this pass produces a claim ledger and routes only the claims that fail or cannot be verified.
 
 **Milestone format:** see `instructions/milestone-format.md`. Routing: prose-fixable falsehood → `SMELL.md` (`Source: factcheck`, INLINE); in-world override the project should canonicalize → `DEVPLAN.md` (ANCHOR-NEEDED); unverifiable-at-agent → `Flagging: VERIFY` surfaced to `SMELL-PENDING.md` for human/web confirmation.
 
@@ -24,13 +24,13 @@ The difference from sniff §5.a is *posture*: sniff scans prose and flags what l
 ## Output
 
 - Findings → `chapters/<book>/SMELL.md` (`Source: factcheck`); canon → `DEVPLAN.md`.
-- A mandatory **"Fact-Check Audit"** section in SMELL.md: the full claim ledger with each claim's bucket. Always present.
+- A mandatory **"Fact-Check Audit"** section in SMELL.md: the full claim ledger with each claim's bucket.
 
 ## Step 0 — Load the reality baseline
 
 1. `world/timeline.md` — the in-world year and the macro trajectory (climate, technology, economy, society) from the present-day baseline. Every period-plausibility judgment is relative to this year, not 2024.
 2. `world/canon-hierarchy.md` — resolution doctrine for ANCHOR-NEEDED.
-3. The level files for the scene's setting, and any `consumer-anchors.md` / economic-anchor files (real-world numbers the project has already canonicalized — prices, distances, tech availability). A claim anchored here is *anchored*, not a finding.
+3. The level files for the scene's setting, and any `consumer-anchors.md` / economic-anchor files — the real-world numbers the project has already canonicalized (prices, distances, tech availability).
 
 ## Procedure — enumerate, then adjudicate
 
@@ -104,5 +104,5 @@ Buckets: W anchored / X verified / Y contradicted (flagged) / Z VERIFY (surfaced
 
 - **Enumerate before you judge.** The value of this pass over sniff is completeness — the full ledger, not just what looked wrong.
 - **Apply the trajectory.** Every real-world fact is judged at the in-world year with the timeline's climate/tech/economy trajectory applied — not at 2024.
-- **VERIFY is a first-class outcome.** Surfacing "I cannot confirm this" is correct and valuable; it is not a failure to decide. Never auto-edit or silently pass a VERIFY claim.
+- **VERIFY is a first-class outcome.** Surfacing "I cannot confirm this" is correct and valuable, not a failure to decide. Never auto-edit or silently pass a VERIFY claim.
 - **Don't re-do sniff.** If sniff already flagged a claim, reference its entry in the ledger rather than emitting a duplicate; only add what sniff's reactive scan missed.

@@ -1,8 +1,8 @@
 # Book Continuity Check
 
-Verify continuity between books before starting the next one. Run this AFTER completing Book N and BEFORE writing Book N+1.
+Verify continuity between books. Run AFTER completing Book N and BEFORE writing Book N+1.
 
-**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed to one of two channels per `world/canon-hierarchy.md`:
+**Routing doctrine:** every finding written by this skill is classified by its primary target file and routed per `world/canon-hierarchy.md`:
 
 - Target in `world/`, `plot/`, `characters/`, `outline.md`, `state.md`, `voice-samples.md`, `flashback-beats.md`, `chorus-poem-map.md`, `sauveterre-plant.md`, `temporal-echoes.md`, character sheets → **DEVPLAN milestone** (consumed by `/book fix`).
 - Target in `chapters/<book-N>/ch*.md` or `chapters/<book-N+1>/ch*.md` (chapter prose) → **per-chapter `chapters/<book>/SMELL.md` entry** (consumed by `/book revise`) using the same format `sniff.md` uses, with `Source: continuity` tag inside the entry.
@@ -28,7 +28,7 @@ Arguments: `<completed-book>` `<next-book>` (e.g., `book-1 book-2` or `book-2 bo
 ### 1. Load Files
 
 **From completed book:**
-- `chapters/<completed-book>/state.md` — the LAST "After Chapter XX" section (final state). This is the PRIMARY source for checks A, B, C, D, F, G — it captures character positions, open threads, ticking clocks, world state, tic introductions, and micro-details planted.
+- `chapters/<completed-book>/state.md` — the LAST "After Chapter XX" section. This is the PRIMARY source for checks A, B, C, D, F, G — it captures character positions, open threads, ticking clocks, world state, tic introductions, and micro-details planted.
 - `chapters/<completed-book>/outline.md` — load ONLY if `state.md`'s "Micro-details Planted" section is sparse for check E (plants). If loaded, use a targeted read focused on plant-tracking entries — do not load the full file.
 
 **From next book:**
@@ -50,7 +50,7 @@ graphify query "plants placed in <completed-book> paying off in <next-book>"
 graphify query "character positions at end of <completed-book> vs opening of <next-book>"
 ```
 
-They pre-populate checks B+C, E, and A respectively. Every finding MUST then be verified against `chapters/<completed-book>/state.md`, which remains the PRIMARY input and the write-target — the graph proposes, `state.md` decides. `voice-samples.md` (never-substitute per `graph-recall.md`) is still loaded verbatim for check D. Graph absent or stale → this section applies unchanged.
+They pre-populate checks B+C, E, and A respectively. Every finding MUST then be verified against `chapters/<completed-book>/state.md`, which remains the PRIMARY input and the write-target. `voice-samples.md` (never-substitute per `graph-recall.md`) is still loaded verbatim for check D. Graph absent or stale → this section applies unchanged.
 
 ### 2. Check Categories
 
@@ -84,7 +84,7 @@ Check `voice-samples.md` for each POV character:
 #### F. Tic & Gesture Continuity
 - Which tics were introduced (with caption) in the completed book?
 - The next book MUST use them caption-free. Flag any outline beat that re-explains an introduced tic.
-- Are there tics that should EVOLVE? (e.g., Check character sheets for tics that evolve (gain objects, change meaning). Ensure evolved versions appear in the next book.
+- Are there tics that should EVOLVE? Check character sheets for tics that gain objects or change meaning; ensure the evolved versions appear in the next book.
 
 #### G. World State
 - What is the state of each level at the end of the completed book?
@@ -143,9 +143,7 @@ The `### Verification & next steps` block (if written) follows `instructions/mil
 
 ### 4.5 Close Matching Operational Items
 
-**Triggers when this `/book continuity <from> <to>` invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings** (the verification semantic — a clean continuity run is itself the verification that prior `/book continuity <from> <to>` operational refs can close). Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
-
-Semantic: "this `/book continuity <from> <to>` invocation has just verified the `<from>`→`<to>` transition is continuity-clean; any operational item naming `/book continuity <from> <to>` (or the reverse pair) as pending elsewhere in DEVPLAN.md can be closed."
+**Triggers when this `/book continuity <from> <to>` invocation produces 0 BLOCKING / 0 WARNING / 0 NOTE actionable findings** — a clean run is itself the verification that the `<from>`→`<to>` transition is continuity-clean, so any operational item naming `/book continuity <from> <to>` (or the reverse pair) as pending elsewhere in DEVPLAN.md can be closed. Per `instructions/milestone-format.md` §Verification & next-steps blocks rule 3.
 
 If findings are non-zero, skip §4.5 — convergence has not been re-verified.
 

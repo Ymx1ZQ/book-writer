@@ -1,8 +1,8 @@
 # `/book fidelity` — planned-vs-rendered check
 
-Compare a chapter's outline entry (the plan of record) against the chapter prose (what was actually rendered), with `chapters/<book>/outline-deviation.md` as the ledger of legitimate differences between them. Catch the class of defect where plan and prose silently diverge: a planned beat that never made the page, a rendered beat nobody planned, a ledger entry that no longer describes the prose it ratified, a tracker row marked `written` for an element the prose does not contain, a plant instance the book's plant table assigned to this chapter and the prose skipped.
+Compare a chapter's outline entry (the plan of record) against the chapter prose (what was rendered), with `chapters/<book>/outline-deviation.md` as the ledger of legitimate differences between them. Catch the class of defect where plan and prose silently diverge: a planned beat that never made the page, a rendered beat nobody planned, a ledger entry that no longer describes the prose it ratified, a tracker row marked `written` for an element the prose does not contain, a plant instance the book's plant table assigned to this chapter and the prose skipped.
 
-The skill already has the **write-time half** of this contract: `chapter-writer.md` Step 2.5.d (the outline-deviation contract) and Step 7 item 8 (the writer's own silent-cut self-check). Fidelity is that self-check's **independent post-hoc verifier** — per the canon-hierarchy doctrine that no single skill validates its own output, the writer's word that the contract was respected is never the last word. Fidelity re-derives the comparison from scratch, assuming nothing about whether Step 7 ran or ran honestly.
+The skill already has the **write-time half** of this contract: `chapter-writer.md` Step 2.5.d (the outline-deviation contract) and Step 7 item 8 (the writer's own silent-cut self-check). Fidelity is that self-check's **independent post-hoc verifier** — per the canon-hierarchy doctrine that no single skill validates its own output, the writer's word that the contract was respected is never the last word. Fidelity re-derives the comparison from scratch, assuming nothing about Step 7.
 
 ## What this check is, and what it is NOT
 
@@ -14,7 +14,7 @@ The skill already has the **write-time half** of this contract: `chapter-writer.
 | Motif semantic charge across chapters | `motif.md` |
 | Cross-chapter shape / voice / irony across a window | `adjacency.md` |
 | Craft judgment of the rendered prose | `reviewer.md` |
-| **"Did the prose render what the outline planned? Is everything substantive in the prose either planned or ledgered? Does the ledger still describe the prose? Is every `written` tracker mark true of the prose? Did this chapter's plant instances land?"** | **THIS check** |
+| **"Did the prose render what the outline planned, is everything substantive in the prose either planned or ledgered, does the ledger still describe the prose, is every `written` tracker mark true of it, and did this chapter's plant instances land?"** | **THIS check** |
 
 The three registers a chapter is judged against — Usage Tracker, `context:` list, §Inline Plant Tracking — are defined in `instructions/registers.md`; classes (d) and (e) below read the first and third.
 
@@ -31,9 +31,9 @@ The three registers a chapter is judged against — Usage Tracker, `context:` li
 
 ## Inputs (read all before judging)
 
-1. The chapter's § of `chapters/<book>/outline.md`, **verbatim** (header to next chapter header) — every beat, plant assignment, motif assignment, cliffhanger. This is the plan of record.
+1. The chapter's § of `chapters/<book>/outline.md`, **verbatim** (header to next chapter header) — every beat, plant assignment, motif assignment, cliffhanger.
 2. The chapter prose `chapters/<book>/<chNN>.md`, **verbatim**.
-3. `chapters/<book>/outline-deviation.md` **if it exists** — the append-only legitimate-deviations ledger (per the `chapter-writer.md` Step 2.5.d contract). It may not exist: the file is created only when a deviation is first logged, so absence means "no deviations ever ratified", not an error.
+3. `chapters/<book>/outline-deviation.md` **if it exists** — the append-only legitimate-deviations ledger (per the `chapter-writer.md` Step 2.5.d contract). Created only when a deviation is first logged, so absence means "no deviations ever ratified", not an error.
 4. Every canon file holding a `## Usage Tracker` row for this Book+Ch — collected the way `chapter-writer.md` 2.6.c collects them (`grep -rlF "| B<N> | <NN> |" characters/ world/ plot/`, span rows like `B1 | 01-30` ignored), NOT restricted to the chapter's `context:` list — 2.6.c's collection step only: its own-level-directory exemption governs auto-add, never what fidelity reads. Class (d) only; the rows' Status column is the claim under test.
 5. The book outline header's §Inline Plant Tracking table — this chapter's column, every non-`—` cell, with its instance number and payoff marking. Class (e) only.
 
@@ -59,13 +59,13 @@ Per `instructions/milestone-format.md` §Autonomous-decision principle, the chec
 
 ### (b) Rendered-not-planned
 
-A substantive prose beat with no outline basis and no deviation entry. Two legitimate resolutions exist — **ratify** (a retroactive `outline-deviation.md` entry + outline annotation) or **trim** (cut/compress the prose beat) — and this check **NEVER auto-decides which**. The finding is one `SMELL.md` entry, `Flagging: TRADE-OFF` (never SAFE-CUT), whose `Suggested action` names BOTH resolutions; revise surfaces TRADE-OFF entries to `SMELL-PENDING.md` and `/book arbiter` (or the user) adjudicates. If the adjudication is "ratify", the resolution converts to a `DEVPLAN.md` milestone for `/book fix` (ledger-side); if "trim", it is applied as a prose edit.
+A substantive prose beat with no outline basis and no deviation entry. Two legitimate resolutions — **ratify** (a retroactive `outline-deviation.md` entry + outline annotation) or **trim** (cut/compress the prose beat) — and this check **NEVER auto-decides which**. The finding is one `SMELL.md` entry, `Flagging: TRADE-OFF` (never SAFE-CUT), whose `Suggested action` names BOTH resolutions; revise surfaces TRADE-OFF entries to `SMELL-PENDING.md` and `/book arbiter` (or the user) adjudicates. If the adjudication is "ratify", the resolution converts to a `DEVPLAN.md` milestone for `/book fix` (ledger-side); if "trim", it is applied as a prose edit.
 
 ### (c) Deviation-ledger drift
 
 An `outline-deviation.md` entry that no longer matches the prose it describes: the entry says a scene moved to ch07 but ch07's prose never received it; a plant's recorded destination disagrees with where the prose actually planted it; a ledgered cut was later restored without a new entry. The ledger is append-only, so the fix is a **corrective append** (plus any outline-annotation update) — never a rewrite of ledger history. Ledger-side → `DEVPLAN.md` milestone consumed by `/book fix`. If the drift exposes a plant with no valid destination, name it as orphaned.
 
-**Acknowledged rule (load-bearing):** entries already recorded in `outline-deviation.md` are ACKNOWLEDGED. A beat cut-and-ledgered is legitimate — never re-flagged as (a); a beat added-and-ledgered is legitimate — never re-flagged as (b). The ledger is the contract instrument; fidelity verifies against it, it does not second-guess ratified deviations. Only class (c) touches an existing entry, and only when the entry no longer describes the prose. The ledger does not reach class (d): a ratified deviation explains why a beat is absent, it never makes a `written` tracker mark true.
+**Acknowledged rule (load-bearing):** entries already recorded in `outline-deviation.md` are ACKNOWLEDGED. A beat cut-and-ledgered is legitimate and never re-flagged as (a); a beat added-and-ledgered, never as (b). The ledger is the contract instrument; fidelity verifies against it, it does not second-guess ratified deviations. Only class (c) touches an existing entry, and only when the entry no longer describes the prose. The ledger does not reach class (d): a ratified deviation explains why a beat is absent, it never makes a `written` tracker mark true.
 
 ### (d) Marked-written-not-rendered
 
@@ -149,5 +149,5 @@ Per `instructions/milestone-format.md`, same shape sniff uses for ANCHOR-NEEDED 
 - **Independent verifier, both ways.** Never assume the writer's Step 7 self-check ran or ran honestly — re-derive everything. But also never punish the latitude the contract grants: the outline is a plan, not a transcript.
 - **The ledger closes findings.** Acknowledged = closed. Re-flagging a ratified deviation is the check failing, not the chapter.
 - **Never auto-decide class (b).** Ratify-vs-trim is an authorial call; the check's job is to make the call impossible to skip, not to make it.
-- **Class (d) checks the writer's own claim.** The `written` mark was set by the session that wrote the prose (`chapter-writer.md` Step 5.5) and is re-read nowhere else in the skill. Treat every mark as unverified until the element is located on the page, in the channel the row names.
+- **Class (d) checks the writer's own claim.** Treat every `written` mark as unverified until the element is located on the page, in the channel the row names.
 - **Coordinate with Chekhov.** Plant/payoff existence across the book, the register reconciliation and the instance-gap bound are `coherence-check.md` §Chekhov's; fidelity checks THIS chapter against ITS plan, so class (e) asks only whether the instances due here landed — never whether the row has enough of them. If Chekhov already flagged the missing plant, reference its entry in the audit table instead of duplicating.

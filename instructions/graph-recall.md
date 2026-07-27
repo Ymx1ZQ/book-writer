@@ -1,6 +1,6 @@
 # Graph-Assisted Recall (graphify) — Shared Doctrine
 
-Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used: detection, modes, the freshness gate, what may never be substituted, which commands are excluded, and how mutating commands keep the graph fresh. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`, `sniff.md`, `reviewer.md`) cross-reference this file — they never restate it.
+Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`, `sniff.md`, `reviewer.md`) cross-reference this file — they never restate it.
 
 ## Opt-in detection
 
@@ -10,13 +10,13 @@ Graph use activates ONLY if `graphify-out/graph.json` exists in the project root
 test -f graphify-out/graph.json
 ```
 
-Absent → every instruction behaves exactly as today. No graph, no change, no warning. The skill stays project-agnostic: whether a project builds a graph (via `/graphify`) is the project's choice, and nothing in this skill depends on it.
+Absent → every instruction behaves exactly as today. No graph, no change, no warning. The skill stays project-agnostic: whether a project builds a graph (via `/graphify`) is the project's choice.
 
 ## Two modes
 
 | Mode | What the query result is | Staleness tolerance |
 |---|---|---|
-| **Index mode** (default) | File/§ **pointers**. The agent reads the pointed-to sections from disk. The graph navigates; the file is the truth. | Tolerant — pointers into changed files are re-read from disk anyway (already the rule). |
+| **Index mode** (default) | File/§ **pointers**. The agent reads the pointed-to sections from disk — the file is the truth. | Tolerant — pointers into changed files are re-read from disk anyway (already the rule). |
 | **Answer mode** | Content consumed **directly** (plant/payoff tables, thread lists, tracker assignments) without opening the underlying files. | Strict — allowed ONLY when the freshness gate below passes. |
 
 Consumers declare which mode each of their graph uses runs in. When in doubt, use index mode — it can never serve stale content because the disk read is the final word.
@@ -108,7 +108,7 @@ Any command whose edits touch graph-covered sources (`world/`, `characters/`, `p
 - **Ordering** — the refresh runs AFTER the command's own commit (SKILL.md dispatch step 5), so graph artifacts never enter the command's commit. `graphify-out/` is also gitignored project-side.
 - **Soft-fail** — a failed refresh never fails the command. Log and move on; consumers are protected by the read-side freshness gate above.
 
-The refresh is graph *maintenance*, not graph *consumption*: it runs after the command's editorial work is complete and committed, and feeds nothing back into the command's judgment. It therefore does not conflict with the canon-blind exclusions above — `arbiter.md` and `integrate-anchors.md` keep their verbatim loads and still refresh the graph their edits just invalidated. `coldread-enum.md` and `snapshot.md` stay fully outside on both sides: no graph access, no refresh step (their output files going briefly stale in the graph is accepted; the backstop covers them).
+The refresh is graph *maintenance*, not graph *consumption*: it feeds nothing back into the command's judgment. It therefore does not conflict with the canon-blind exclusions above — `arbiter.md` and `integrate-anchors.md` keep their verbatim loads and still refresh the graph their edits just invalidated. `coldread-enum.md` and `snapshot.md` stay fully outside on both sides: no graph access, no refresh step (their output files going briefly stale in the graph is accepted; the backstop covers them).
 
 ## Rules
 

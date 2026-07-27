@@ -2,9 +2,9 @@
 
 Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PROOFREAD.md) fixes to written chapter prose. Does NOT touch project architecture — for that, use `/book fix`.
 
-**Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the entry's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving any specific draft choice — and not defending prior decisions. This applies regardless of who authored the finding (past you, the writer-side review pass, an external reviewer): findings are signal; you decide the response on merit. No competition.
+**Framing — read first.** Treat each finding as a critique from an outside editor reading cold. Evaluate it on merit; accept or reject calmly; if rejecting, record the rationale in the entry's `Status:` line so the rejection is visible to future passes. The goal is the best manuscript, not preserving a draft choice or defending a prior decision — regardless of who authored the finding (past you, the writer-side review pass, an external reviewer). Findings are signal, not competition.
 
-**Routing context:** SMELL.md may now contain entries written by `sniff`, `coherence`, `continuity`, `factcheck`, `motif`, `sensitivity`, `readability`, OR `adjacency` (each entry tags its origin via a `Source:` field). All these sources route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing. Revise consumes them uniformly. **Note (`adjacency`):** revise applies only adjacency's SMELL.md micro-fixes (idiolect reword, one-line POV-clean irony bridge, targeted compression); adjacency's *structural* findings live in `DEVPLAN.md` / `SMELL-PENDING.md` for the user and are NOT auto-applied here. Canon-side findings from those same sources are routed to `DEVPLAN.md` and applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved upstream.
+**Routing context:** SMELL.md may contain entries written by `sniff`, `coherence`, `continuity`, `factcheck`, `motif`, `sensitivity`, `readability`, OR `adjacency` (each tags its origin via a `Source:` field). All route prose-target findings to SMELL.md per `world/canon-hierarchy.md` two-channel routing; revise consumes them uniformly. **Note (`adjacency`):** revise applies only adjacency's SMELL.md micro-fixes (idiolect reword, one-line POV-clean irony bridge, targeted compression); its *structural* findings live in `DEVPLAN.md` / `SMELL-PENDING.md` for the user and are NOT auto-applied here. Canon-side findings from those sources go to `DEVPLAN.md` and are applied by `/book fix` upstream — by the time revise runs, ANCHOR-NEEDED entries should already be resolved.
 
 **Milestone format:** see `instructions/milestone-format.md`. `/book revise` parses only `- [ ]` items in REVIEW.md and PROOFREAD.md (and SMELL.md INLINE entries). Operational items in plain-bullet form are ignored.
 
@@ -27,11 +27,11 @@ Apply pending smell-test (SMELL.md), editorial (REVIEW.md), and proofreading (PR
 Check three sources:
 
 **A. SMELL.md** — `chapters/<book>/SMELL.md`
-Parse all entries. Each entry now carries TWO independent classifications (Phase 9 M2):
+Parse all entries. Each carries TWO independent classifications (Phase 9 M2):
 - `Routing:` field — one of `INLINE`, `ANCHOR-NEEDED`, `ACCEPT` (which channel applies the fix)
 - `Flagging:` field — one of `SAFE-CUT`, `TRADE-OFF`, `SAFE-KEEP` (whether to apply at all)
 
-Each entry may also include a `Source:` field indicating which detection skill wrote it (`sniff`, `coherence`, `continuity`, `factcheck`, `motif`, `sensitivity`, `readability`, `adjacency`); processing is uniform regardless of source.
+Each entry may also include a `Source:` field naming the detection skill that wrote it (the sources listed under **Routing context**); processing is uniform regardless of source.
 
 `factcheck` may also emit a `Flagging: VERIFY` value (a claim the agent could not confirm). Treat `VERIFY` exactly like `TRADE-OFF`: **never auto-apply** — surface to `chapters/<book>/SMELL-PENDING.md` with `Status: pending — verification required` so a human/web check resolves it. `readability` entries carry an extra `Register:` field (`default` / `intended-heavy`); only `default`-register INLINE×SAFE-CUT entries auto-apply (an `intended-heavy` entry should already be SAFE-KEEP).
 
@@ -43,7 +43,7 @@ Apply rules:
 - **ANCHOR-NEEDED × SAFE-KEEP** — rare; treat as ACCEPT.
 - **ACCEPT** (any flagging) — noted, no action.
 
-For backwards compatibility: if an entry has `Classification:` (legacy single field) but no separate `Routing:` and `Flagging:`, interpret `Classification:` as `Routing:` and default `Flagging:` to `SAFE-CUT`. New entries written by Phase-9-onwards sniff/coherence/continuity use the two-field form.
+Backwards compatibility: if an entry has `Classification:` (legacy single field) but no separate `Routing:` and `Flagging:`, interpret `Classification:` as `Routing:` and default `Flagging:` to `SAFE-CUT`. Phase-9-onwards sniff/coherence/continuity write the two-field form.
 
 **B. REVIEW.md** — `chapters/<book>/REVIEW.md`
 Parse all unchecked `- [ ]` items in the Critical / High / Medium / Low / Cross-Chapter sections — these are editorial SAFE-CUT fixes. Then parse the `## Trade-Off Decisions Pending` section (Phase 9 M1) — these are NOT auto-applied; surface to `chapters/<book>/REVIEW-PENDING.md` for user decision. The `## Acknowledged (No Action)` section is informational.
@@ -87,7 +87,7 @@ For each fix:
 
 Follow the fix instruction. Types:
 
-- **Cut** — Delete the quoted passage. Read the surrounding lines to ensure the prose still flows after deletion. If removing a sentence creates an awkward transition, smooth the join (but add NOTHING thematic — only conjunctions, paragraph breaks, or minor rewordings of the adjacent sentence).
+- **Cut** — Delete the quoted passage; read the surrounding lines to confirm the prose still flows. If the deletion creates an awkward transition, smooth the join (add NOTHING thematic — only conjunctions, paragraph breaks, or minor rewordings of the adjacent sentence).
 - **Rewrite** — Replace the quoted passage with the suggested alternative. If the fix says "consider" or "e.g.", choose the best option and apply it. Stay within the POV character's vocabulary register (check `characters/notes/voice-samples.md`).
 - **Add** — Insert the specified content at the indicated location. Read the full context before and after to ensure the addition fits.
 - **Restructure** — Larger changes (moving sections, breaking apart scenes). Read the full scene before and after, then apply.
@@ -99,18 +99,18 @@ Follow the fix instruction. Types:
 After applying, verify:
 
 1. **The original problem is gone.** Grep for the old text — it should not appear.
-2. **Word count still meets minimum.** If a cut dropped the chapter below the minimum word count, flag it: `⚠️ Ch. N now at XXXX words (below minimum). Will be recovered in Step 5.` Do not expand inline (it would interleave with the fix queue and risk introducing fixes whose target text has just shifted) — Step 5 (Word Count Recovery) collects all flagged chapters at session end and applies dialogue-only expansion. Auto-recovery is the standard path; never defer to a future writing session.
+2. **Word count still meets minimum.** If a cut dropped the chapter below minimum, flag it: `⚠️ Ch. N now at XXXX words (below minimum). Will be recovered in Step 5.` Do not expand inline (it would interleave with the fix queue and risk introducing fixes whose target text has just shifted) — Step 5 (Word Count Recovery) collects all flagged chapters at session end and applies dialogue-only expansion. Auto-recovery is the standard path; never defer to a future writing session.
 3. **The surrounding prose flows.** Read 5 lines before and 5 lines after the edit. Fix orphaned transitions, dangling references, or broken paragraphs.
 4. **No new violations introduced.** The fix must not create new show/tell violations, break character voice registers, or introduce tic-caption errors.
 
 #### Step D — Propagate to State
 
 Check if the fix affects anything tracked in `chapters/<book>/state.md`:
-- **Character positions** — if a fix changes where a character is at chapter end
-- **Plot progress** — if a fix changes what happened in the chapter
-- **Micro-details planted** — if a fix removes or changes a planted detail
-- **Tic introductions** — if a fix changes how a tic is introduced
-- **Open threads** — if a fix closes or opens a narrative thread
+- **Character positions** — where a character is at chapter end
+- **Plot progress** — what happened in the chapter
+- **Micro-details planted** — a planted detail removed or changed
+- **Tic introductions** — how a tic is introduced
+- **Open threads** — a narrative thread opened or closed
 
 If YES: update the corresponding "After Chapter N" section in state.md.
 If NO: skip this step.
@@ -187,15 +187,15 @@ Improvement, Loss, Voice-floor, Suggested action]
 
 **Persistence rule:** if `*-PENDING.md` from a prior cycle exists, read it. Entries marked with a final Status (`✓ Accepted (defer)` or `✅ Fixed (manual)`) are dropped from the new pending file. Entries still `pending — manual decision required` are re-emitted alongside any new TRADE-OFFs from this cycle. The pending file accumulates user-decided history across cycles, never clears silently.
 
-**Pre-step archive (Phase 9 M4):** before writing the new `*-PENDING.md`, if the file exists, rename to `chapters/<book>/archive/SMELL-PENDING-<YYYYMMDD-HHMMSS>-<chapter>.md` (or REVIEW-PENDING) before writing the merged version. Forensic history of what was decided when.
+**Pre-step archive (Phase 9 M4):** if `*-PENDING.md` exists, rename it to `chapters/<book>/archive/SMELL-PENDING-<YYYYMMDD-HHMMSS>-<chapter>.md` (or REVIEW-PENDING) before writing the merged version. Forensic history of what was decided when.
 
 ### 5.7. Invalidate the reader-state snapshots
 
 Run this once, at session end, after every prose edit of the session is known. Do not run it per fix: the set of snapshots to stamp is fixed by the lowest-numbered chapter this session edited, and that is not settled until the last fix lands.
 
-Reader-state snapshots live at `chapters/coldread-state/<book>-chNN.md`. They are derived from chapter prose, and `/book coldread-enum` reads them as its only model of what the reader remembers entering the next chapter. Once a chapter's prose changes, its snapshot describes text that is no longer there, while keeping the same filename and the same structure as a current one.
+Reader-state snapshots live at `chapters/coldread-state/<book>-chNN.md`. They are derived from chapter prose, and `/book coldread-enum` reads them as its only model of what the reader remembers entering the next chapter. Once a chapter's prose changes, its snapshot describes text that is no longer there, while keeping the same filename and structure as a current one.
 
-Reader-state is cumulative: the snapshot for chapter N carries what the reader retained from chapters 1 through N. An edit to chapter N therefore invalidates chapter N's snapshot and every later snapshot in the same book.
+Reader-state is cumulative: the snapshot for chapter N carries what the reader retained from chapters 1 through N, so an edit to chapter N invalidates it and every later snapshot in the same book.
 
 Take the lowest-numbered chapter whose prose this session edited. Stamp its snapshot and the snapshot of every later chapter in that book that has one. Insert the stamp immediately after the snapshot's H1 line. If a stamp from an earlier session is already sitting there, replace it — each file carries one stamp line, never a stack of them.
 
@@ -217,15 +217,15 @@ Run this once, at session end, after every prose edit is applied and **before th
 python3 <skill>/scripts/remap_citations.py <repo-root> chapters/<book>/chNN.md [more chapter files...]
 ```
 
-The corpus cites prose by line number, and those citations are load-bearing: a later pass follows one to check that a canon claim is still true against the text. An insertion invalidates every citation below it in the same file. It does so silently — the stale citation still points at a real line, which now says something else, so the pass that follows it either verifies the wrong text or writes a second false claim on top of the first.
+The corpus cites prose by line number, and those citations are load-bearing: a later pass follows one to check that a canon claim is still true against the text. An insertion silently invalidates every citation below it in the same file — the stale citation still points at a real line, which now says something else, so the pass that follows it either verifies the wrong text or writes a second false claim on top of the first.
 
-Measured on the ground-truth corpus, 2026-07-26: one revise pass inserted seven lines at `ch07.md:39-45`; a later pass re-verified the five deviation-ledger entries it was told to check and found four of the five carried a wrong line, and the same shift had already propagated into two canon files and an outline. The corpus holds 140 live prose citations, only 11% of which quote the text they cite, and none of the shifted ones pointed past end of file — so neither a quotation check nor a bounds check would have caught any of it. The only component that knows the shift is the one that caused it, which is this step.
+Measured on the ground-truth corpus, 2026-07-26: one revise pass inserted seven lines at `ch07.md:39-45`; a later pass re-verified the five deviation-ledger entries it was told to check and found four carried a wrong line, and the same shift had already propagated into two canon files and an outline. The corpus holds 140 live prose citations, only 11% of which quote the text they cite, and none of the shifted ones pointed past end of file — so neither a quotation check nor a bounds check would have caught any of it. The only component that knows the shift is the one that caused it: this step.
 
 What the script does and does not touch:
 
 - It rewrites citations in files that assert current truth — canon, outlines, character files, plot files, writing-notes, state.
 - It leaves **historical records** alone: `archive/`, `SMELL*`, `PROOFREAD*`, `REVIEW*`, `COLDREAD*`, `DEVPLAN.md` and `outline-deviation.md`. A SMELL entry cites the line it actually examined on its own date, and the deviation ledger is append-only by its own rule — a stale citation there is corrected by a dated append, never by editing the ratified text.
-- A citation whose target line was **rewritten or deleted** has no counterpart, so the script reports it and exits 1 rather than picking the nearest surviving line. Resolve each of those by reading the new text; a plausible-looking number is worse than a reported one, because it looks verified.
+- A citation whose target line was **rewritten or deleted** has no counterpart, so the script reports it and exits 1 rather than picking the nearest surviving line. Resolve each by reading the new text; a plausible-looking number is worse than a reported one, because it looks verified.
 - A bare `chNN.md:LINE` names no book. While one book is drafted the reference is unambiguous; once the same chapter number is drafted in two books the script reports the ambiguity instead of guessing.
 
 Exit 1 means at least one citation needs a decision. Do not commit past it without resolving them.

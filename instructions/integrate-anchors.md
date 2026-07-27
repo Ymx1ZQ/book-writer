@@ -1,8 +1,8 @@
 # `/book integrate-anchors` — Scout-not-Surgeon Writer Pass
 
-This command takes a chapter that has won a multi-model judge competition, plus an aggregated pool of "anchors" — micro-elements (lines, images, moves, beats, concepts) that loser drafts of the same chapter executed better. For each anchor, the writer-agent decides whether to integrate, partially adapt, or skip it, with hard constraints on POV, emotional arc, voice, and word count.
+This command takes a chapter that has won a multi-model judge competition, plus an aggregated pool of "anchors" — micro-elements (lines, images, moves, beats, concepts) that loser drafts of the same chapter executed better. For each anchor, the writer-agent decides whether to integrate, partially adapt, or skip it.
 
-**The writer is the chef, not the scout.** The judge already said "this anchor is interesting in isolation." The writer's job is the *separate* judgment: "does it fit *here*, in this chapter, in this voice, in this rhythm — and if yes, where, and at what dose?" Reject anchors that are good in isolation but break the chapter's spell. Padding the integration log with "skip — does not fit" is the correct outcome for some anchors; do not force fits.
+**The writer is the chef, not the scout.** The judge already said "this anchor is interesting in isolation." The writer's job is the *separate* judgment: "does it fit *here*, in this voice and rhythm — and if yes, where, and at what dose?" Reject anchors that are good in isolation but break the chapter's spell. Padding the integration log with "skip — does not fit" is the correct outcome for some anchors; do not force fits.
 
 ## Invocation
 
@@ -35,7 +35,7 @@ For each anchor in `anchor_pool`:
 1. **Read the anchor's excerpt + rationales** to understand what the judges identified as the win.
 2. **Locate the corresponding slot in the winner** — the scene or paragraph that the anchor improves on. For `beat`-type anchors, the slot is the specific outline beat the loser executed better. For `line`/`image`-type anchors, the slot is the equivalent moment in the winner.
 3. **Check the 5 hard constraints.** If any fails, decision = `skip`, log the reason.
-4. **Decide between `integrate` (verbatim or near-verbatim) and `partial` (concept/move adapted into the winner's voice and rhythm).** Verbatim integration is rare — most anchors will be `partial` because the winner's voice differs from the loser's. Verbatim is OK only when the line/image is so distinct it would lose force in adaptation.
+4. **Decide between `integrate` (verbatim or near-verbatim) and `partial` (concept/move adapted into the winner's voice and rhythm).** Most anchors will be `partial`, because the winner's voice differs from the loser's. Verbatim is OK only when the line/image is so distinct it would lose force in adaptation.
 5. **Apply the edit in place** in `chapters/<book>/<chapter>.md`. Track the word-count delta.
 6. **Log the decision** in `archive/integration-log-<book>-<chapter>.md` (see schema below).
 
@@ -49,7 +49,7 @@ For each anchor in `anchor_pool`:
 
 ## Integration log schema
 
-Path: `archive/integration-log-<book>-<chapter>.md`. Overwrite on each run (one log per chapter; if re-run, the new log replaces the old).
+Path: `archive/integration-log-<book>-<chapter>.md`. Overwrite on each run (one log per chapter).
 
 ```markdown
 # Integration Log — book-1 ch01

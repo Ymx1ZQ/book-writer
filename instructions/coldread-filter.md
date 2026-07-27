@@ -26,7 +26,7 @@ For each finding in COLDREAD.md, classify and process:
 
 **Classification**:
 - VALID — a real reader stumble; produce a SMELL entry
-- NOISE — false positive; dismiss with one-sentence justification (must reference snapshot, chapter context, outline intent, or genre convention — never "the reader will figure it out" alone)
+- NOISE — false positive; dismiss with one-sentence justification per rule 3 (never "the reader will figure it out" alone)
 - ADJACENT — partial signal; either merge with a sibling VALID (note merge) or dismiss
 
 **For VALID, produce SMELL entry** with these fields:
@@ -48,7 +48,7 @@ For each finding in COLDREAD.md, classify and process:
 
 ## Conservative rules (mandatory)
 
-1. **Voice-floor default = YES** for findings in categories TONAL-SHIFT, UNPREPARED-FORM, UNGROUNDED-IMPLICATION, UNEARNED-IMPORTANCE. These are voice-related; fixes risk damaging authorial voice; route to PENDING for arbiter/user review.
+1. **Voice-floor default = YES** for findings in categories TONAL-SHIFT, UNPREPARED-FORM, UNGROUNDED-IMPLICATION, UNEARNED-IMPORTANCE. These are voice-related; fixes risk damaging authorial voice; route to PENDING for `/book arbiter` — never to a human, per the pipeline contract below.
 
 2. **SAFE-CUT eligibility**: only when ALL of:
    (a) the fix is purely additive (adds clarity, doesn't subtract voice content)
@@ -63,8 +63,7 @@ For each finding in COLDREAD.md, classify and process:
 5. **Suggested action must be executable by `/book revise` without further judgment**:
    - GOOD: "Change 'It boots from cold.' (line 229) to '[explicit new text]'"
    - GOOD: "Add anchoring phrase 'his phone agent' at first occurrence (approx line 247)"
-   - BAD: "Make the moment clearer."
-   - BAD: "Consider rephrasing."
+   - BAD: "Make the moment clearer." / "Consider rephrasing."
 
 ## Output structure (write to chapters/<book>/SMELL.md, appending or replacing)
 
@@ -95,7 +94,7 @@ Output entries are SMELL-compatible. `/book revise <book> <chapter>` consumes pe
 - ANCHOR-NEEDED → DEVPLAN milestone for `/book fix`
 - ACCEPT/SAFE-KEEP → acknowledged
 
-**Pipeline contract (Phase 42)**: no human-in-the-loop. PENDING entries are always resolved by `/book arbiter` autonomously (APPLY or ACCEPT-keep, never a third "defer to human" option). The voice-floor=yes flag is a *signal to the arbiter* that this is a delicate call worth weighing carefully — not a request for human input. The arbiter must commit to a binary decision and document the rationale.
+**Pipeline contract (Phase 42)**: no human-in-the-loop. PENDING entries are always resolved by `/book arbiter` autonomously (APPLY or ACCEPT-keep, never a third "defer to human" option). The voice-floor=yes flag signals a delicate call to the arbiter, not a request for human input. The arbiter must commit to a binary decision and document the rationale.
 
 ## Commit hygiene
 

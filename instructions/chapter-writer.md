@@ -16,11 +16,11 @@ Arguments: `<book>` (book-1, book-2, book-3) and `<chapter>` (ch01, ch02, ..., c
 
 ## Step 1: Load Context
 
-Read the project's files. Paths are relative to the project root.
+Paths are relative to the project root.
 
 **Always load:**
 - `CLAUDE.md` — project instructions, language, structure overview
-- `chapters/<book>/outline.md` — load ONLY the specific chapter entry. Use a targeted read: locate the chapter's header (e.g., `## Ch. NN` or `### Ch. NN`) and read from there to the next chapter's header. Do NOT load the entire outline file. If the outline is split into per-chapter files (`chapters/<book>/ch<NN>.md`), read only that file.
+- `chapters/<book>/outline.md` — load ONLY this chapter's entry: read from its header (e.g. `## Ch. NN` or `### Ch. NN`) to the next chapter's header. Do NOT load the entire outline file. If the outline is split into per-chapter files (`chapters/<book>/ch<NN>.md`), read only that file.
 - `chapters/<book>/state.md` — the ENTIRE most recent "After Chapter N" section
 - `world/tones.md` — tonal register for this chapter's level
 - `world/pacing-rules.md` — pacing and tension rules
@@ -30,18 +30,18 @@ Read the project's files. Paths are relative to the project root.
 - `characters/notes/narrator-boundaries.md` — POV narrator rules (em-dash limits, vocabulary restrictions, metaphor register)
 - `plot/cliffhanger-map.md` — cliffhanger type for this chapter
 
-**Batch session optimization:** If running inside `/book write` (a batch session), `world/tones.md`, `world/prose-rules.md`, `world/pacing-rules.md`, and `world/writing-checklists.md` were loaded at session start and remain in context. Do NOT re-read them — they have not changed. Re-read them only when running `/book chapter` as a standalone command in a fresh session where they are not yet in context.
+**Batch session optimization:** Inside `/book write` (a batch session), `world/tones.md`, `world/prose-rules.md`, `world/pacing-rules.md`, and `world/writing-checklists.md` were loaded at session start and have not changed — do NOT re-read them. Re-read only when `/book chapter` runs standalone in a fresh session where they are not yet in context.
 
 **Load based on level:**
-Identify this chapter's narrative level from the outline, then load the corresponding `world/level-*-<name>/` directory **SELECTIVELY**: list the files in the directory, then load only those whose `## Usage Tracker` holds a row for THIS Book+Ch. Files in the directory with no row for this chapter stay closed; every other level's directory is barred outright (§Level register below), whatever its rows say.
+Identify this chapter's narrative level from the outline, then load the corresponding `world/level-*-<name>/` directory **SELECTIVELY**: list its files, load only those whose `## Usage Tracker` holds a row for THIS Book+Ch. Files with no row for this chapter stay closed; every other level's directory is barred outright (§Level register below), whatever its rows say.
 
 This selective pass is the fourth route of the reachability set (→ `instructions/registers.md`): the chapter's own level directory is reached by rule, derived from the tracker rows themselves, so those rows need no `context:` entry and 2.6.c does not auto-add their files. The other three routes — the `context:` list, the always-loaded set, the texture-palette proxy — carry everything outside this directory.
 
-Also load `world/technology-comparison.md` (or equivalent) to ensure this level's tech fingerprint is correct and distinct from other levels.
+Also load `world/technology-comparison.md` (or equivalent) so this level's tech fingerprint is correct and distinct from other levels.
 
 ### Level register (which canon directories this chapter may load)
 
-The chapter header's `**Level:**` value (e.g. `Reality` / `Dome` / `Ark`) decides which level-scoped canon is legal for this chapter:
+The chapter header's `**Level:**` value (e.g. `Reality` / `Dome` / `Ark`) decides which level-scoped canon is legal:
 
 - **Legal:** `world/level-<N>-<this level>/` plus every level-neutral file — `characters/**`, `plot/**`, and top-level `world/*.md`.
 - **Barred:** every other `world/level-*-<name>/` directory. A Dome chapter does not load `world/level-0-reality/*` because the POV cannot see it, and the same holds in every direction.
@@ -63,7 +63,7 @@ Per-scene checklist (measurable):
 - [from register-locks.md §<LEVEL>]
 ```
 
-Treat this as a hard constraint, not advisory context. The "Forbidden patterns" list is derived from observed register leakage (Phase 40 M2 / Phase 41 M2 user feedback on ch04): these patterns make readers feel they are in the wrong tonal world and must not appear in chapters outside their proper level.
+Treat this as a hard constraint, not advisory context. The "Forbidden patterns" list is derived from observed register leakage (Phase 40 M2 / Phase 41 M2 user feedback on ch04): these patterns make readers feel they are in the wrong tonal world and must not appear outside their proper level.
 
 **Load based on POV character:**
 - The POV character's sheet from `characters/foreground/` or `characters/midground/`
@@ -86,7 +86,7 @@ The first returns the tracker rows pre-planned for this chapter; the second retu
 The `context:` tag stays the authored artifact — the graph prunes the LOAD, it never edits the tag, and the Step 2.6 symmetry check runs unchanged against the full tag. Graph absent → this subsection is a no-op and Step 1 proceeds exactly as written. Empty query result or stale graph → `graph-recall.md` §Fallback ladder (load the files as below).
 
 **Load from `context:` tag (MANDATORY):**
-Read the `context:` field from this chapter's header in the outline. Load every file listed there in addition to the always-loaded set. These are the conditional context files for this chapter — determined during outline planning, not at the writer's discretion. If a file in the context tag does not exist, stop and report.
+Read the `context:` field from this chapter's header in the outline and load every file listed, in addition to the always-loaded set. These are the chapter's conditional context files — determined during outline planning, not at the writer's discretion. If a listed file does not exist, stop and report.
 
 Also load any `plot/` files explicitly referenced in the chapter's scene beats (e.g., mythology fragments) that are not already in the `context:` tag.
 
@@ -101,7 +101,7 @@ Also load any `plot/` files explicitly referenced in the chapter's scene beats (
 - `plot/mechanical-set-pieces.md` — rule-driven spectacle scenes
 - `plot/ticking-clocks-physical.md` — physical countdown indicators for this chapter
 
-If none of these files exist, skip — the skill works without them. If they exist, they inform the Reader Architecture section and the Simultaneity section of the plan.
+Absent → skip; the skill works without them. Present → they inform the plan's Reader Architecture and Simultaneity sections.
 
 Announce: *"📖 Ch. N: [title] — [Level] / [POV] / [Tone] / Cliffhanger: [type]"*
 
@@ -111,7 +111,7 @@ Announce: *"📖 Ch. N: [title] — [Level] / [POV] / [Tone] / Cliffhanger: [typ
 
 Create a plan file at `chapters/<book>/ch<NN>-plan.md`. Answer the 30 reasoning questions in your thinking first, then write the plan.
 
-**Reasoning questions (answer in thinking):**
+**Reasoning questions:**
 
 Story (5): What happens? What does the reader know that characters don't? What does each character know/feel NOW? What changes by the end? Which questions open/close?
 
@@ -129,9 +129,9 @@ Anti-AI (2): What patterns to avoid? What sensory anchors?
 
 World Pressure (2): 5+ checklist items by name. Where does the world press on characters?
 
-Reader Architecture (4): What does the reader believe RIGHT NOW — both true and false? Which false belief am I reinforcing (good) or accidentally correcting (bad, too early)? What detail am I planting that pays off later? What will a re-reader notice in this chapter that a first-time reader will miss?
+Reader Architecture (4): What does the reader believe RIGHT NOW — both true and false? Which false belief am I reinforcing (good) or accidentally correcting (bad, too early)? What detail am I planting that pays off later? What will a re-reader notice that a first-time reader will miss?
 
-Bullshit Detector (2): For each scene — why does the character do this? Would a reader ask "but why?" If a scene has no clear character motivation, rewrite the beat. If something only makes sense because the worldbuilding doc says so (but the reader hasn't read that doc), it will confuse — add context or cut it.
+Bullshit Detector (2): For each scene — why does the character do this? Would a reader ask "but why?" If a scene has no clear character motivation, rewrite the beat. If something only makes sense because a worldbuilding doc says so, it will confuse the reader who hasn't read that doc — add context or cut it.
 
 **Then write the plan file:**
 
@@ -223,9 +223,9 @@ Contemplative endings used so far in this book: X/2
 
 ## Step 2.5: Pre-Drafting Anchor Checks (MANDATORY)
 
-Before drafting a single sentence, scan the plan for elements that REQUIRE a worldbuilding anchor. The chapter writer MUST NOT invent fact-with-system-implications when a canonical anchor is missing — invented "flavor numbers" silently corrupt the worldbuilding and force expensive retrofits later.
+Before drafting a single sentence, scan the plan for elements that REQUIRE a worldbuilding anchor. The writer MUST NOT invent fact-with-system-implications when a canonical anchor is missing — invented "flavor numbers" silently corrupt the worldbuilding and force expensive retrofits later.
 
-**Escalation, not invention.** When an anchor is missing, the writer does NOT pick a value to fill the gap. Instead, the writer writes a fully-specified canon-creation milestone to `DEVPLAN.md` (proposing a value derived from adjacent canonical anchors and `timeline.md` trajectory, with explicit reasoning), then exits with the special string `ANCHOR-NEEDED-RETRY` as the FINAL line of agent output. The orchestration script catches this signal, runs `/book fix book-N` to apply the milestone (creating the canon entry per the proposal), and re-runs the writer once. The proposed value is then visible in DEVPLAN diff and is verified by the next coherence pass — no single skill has unilateral authoring authority. See `world/canon-hierarchy.md §Anchor-creation policy` for the doctrine.
+**Escalation, not invention.** When an anchor is missing, the writer does NOT pick a value to fill the gap. It writes a fully-specified canon-creation milestone to `DEVPLAN.md` (proposing a value derived from adjacent canonical anchors and `timeline.md` trajectory, with explicit reasoning), then exits with the special string `ANCHOR-NEEDED-RETRY` as the FINAL line of agent output. The orchestration script catches this signal, runs `/book fix book-N` to apply the milestone (creating the canon entry per the proposal), and re-runs the writer once. The proposed value is then visible in the DEVPLAN diff and verified by the next coherence pass — no single skill has unilateral authoring authority. Doctrine: `world/canon-hierarchy.md §Anchor-creation policy`.
 
 **The DEVPLAN milestone format for an escalation:**
 
@@ -267,7 +267,7 @@ For each match, verify a canonical worldbuilding file defines the system. If not
 
 ### 2.5.c — Cross-substrate sensory echo check (MUST)
 
-If the plan involves a sensory anchor (a number, a frequency, a specific object) that ALSO appears canonically at a DIFFERENT narrative level, verify whether the echo is intentional. Read `world/temporal-echoes.md` §Cross-Substrate Sensory Resonances (if present). If the echo is canonical, USE the canonical signature exactly. If the echo is not yet documented and the writer cannot determine intent, ESCALATE: write a canon-creation milestone to `DEVPLAN.md` proposing a one-line addition to `world/temporal-echoes.md §Cross-Substrate Sensory Resonances` that documents the echo as intentional (the default, since silent un-coordinated matches at the same value are statistically rare — per `canon-hierarchy.md`, the existing canonical signature wins; the new chapter aligns to it). Include the canonical signature as the proposed value. Then print as the FINAL line: `ANCHOR-NEEDED-RETRY`. Examples to flag: any 440 Hz reference (already canonical in Ark per Phase 111 M3); any "Phrygian quarter-tone bent-third" signature; any object that recurred in another book's chapter.
+If the plan involves a sensory anchor (a number, a frequency, a specific object) that ALSO appears canonically at a DIFFERENT narrative level, verify whether the echo is intentional. Read `world/temporal-echoes.md` §Cross-Substrate Sensory Resonances (if present). If the echo is canonical, USE the canonical signature exactly. If it is undocumented and intent cannot be determined, ESCALATE: write a canon-creation milestone to `DEVPLAN.md` proposing a one-line addition to `world/temporal-echoes.md §Cross-Substrate Sensory Resonances` that documents the echo as intentional (the default, since silent un-coordinated matches at the same value are statistically rare — per `canon-hierarchy.md`, the existing canonical signature wins; the new chapter aligns to it). Include the canonical signature as the proposed value. Then print as the FINAL line: `ANCHOR-NEEDED-RETRY`. Examples to flag: any 440 Hz reference (already canonical in Ark per Phase 111 M3); any "Phrygian quarter-tone bent-third" signature; any object that recurred in another book's chapter.
 
 ### 2.5.d — Outline-deviation contract (MUST)
 
@@ -279,7 +279,7 @@ If the plan during Step 2 deviates from the chapter outline (cuts a scene, split
    Ch.NN (YYYY-MM-DD): <scene name> moved/cut/merged because <reason>. Plants shifted: <list, with new chapter destinations>. Open debt: <list of plants now without a planned chapter>. Context: -<file>, +<file>.
    ```
 3. If any plant lost its planned chapter and has no new destination, FLAG this in the writer's announcement: *"⚠️ Plant orphaned: <plant>. Will be unassigned until reassigned in a future writer call."*
-4. **Update the affected chapter's `**context:**` field** to keep beat↔context symmetry (per Step 2.6): remove files that lose their justifying beat after the cut/move (orphans per 2.6.b); add files newly required by the surviving or relocated beats (gaps per 2.6.a). If a beat moved to a different chapter, the source chapter loses the corresponding files and the destination chapter gains them — both `**context:**` fields update; both diffs go into the deviation entry's `Context:` field.
+4. **Update the affected chapter's `**context:**` field** to keep beat↔context symmetry (per Step 2.6): remove files that lose their justifying beat after the cut/move (orphans per 2.6.b); add files newly required by the surviving or relocated beats (gaps per 2.6.a). If a beat moved to a different chapter, the source chapter loses the corresponding files and the destination gains them — both `**context:**` fields update, and both diffs go into the deviation entry's `Context:` field.
 
 **Silent cuts are forbidden.** Step 7 (Outline Cleanup) verifies the contract was respected.
 
@@ -290,7 +290,7 @@ Announce upon completion of Step 2.5:
 
 ## Step 2.6: Pre-Drafting Context Symmetry Check (MANDATORY)
 
-The chapter's `**context:**` list (in the outline) must stay symmetric with three things: its scene beats (every file in `context:` justifies itself with at least one beat reference; every beat that needs a file lists it), the Usage Tracker rows mapped to this chapter (every file holding a row for this Book+Ch is reachable), and the plant instances the book's §Inline Plant Tracking table assigns to this chapter (→ `instructions/registers.md` for what each register owns). Drift is an invention surface in each direction — orphan = wasted context window; missing beat file = the writer fills silence with plausible-but-uncanonicalized invention; missing tracker file or uncollected plant instance = planned canon that never reaches a reader. This check runs after Step 2.5 and before Step 3.
+The chapter's `**context:**` list (in the outline) must stay symmetric with three things: its scene beats (every file in `context:` justifies itself with at least one beat reference; every beat that needs a file lists it), the Usage Tracker rows mapped to this chapter (every file holding a row for this Book+Ch is reachable), and the plant instances the book's §Inline Plant Tracking table assigns to this chapter (→ `instructions/registers.md` for what each register owns). Drift is an invention surface in each direction — orphan = wasted context window; missing beat file = the writer fills silence with plausible-but-uncanonicalized invention; missing tracker file or uncollected plant instance = planned canon that never reaches a reader.
 
 ### 2.6.a — Beat-side scan (missing files) (HARD `MUST`)
 
@@ -299,7 +299,7 @@ Parse the chapter outline beats up to the next chapter header. Extract:
 - **Explicit references**: every `→ see <path>` and every bare `<path>` mentioned in beats.
 - **Implicit references**: every named character (cross-ref `characters/**.md`); every named location (cross-ref `world/level-N-*/locations*.md` or `world/level-0-reality/architecture.md`); every named system, mechanism, or technical anchor (cross-ref `world/**.md`); every named ration unit, compliance score, anomaly code, frequency, or hardware artifact that traces to a canonical file.
 
-Compare the union against the chapter's `**context:**` list, **minus** the always-loaded set declared in the outline header and minus the files Step 1's selective pass already opened (this chapter's own level directory, where the file carries a tracker row for this Book+Ch — the fourth route of the reachability set). Files referenced in beats but missing from `**context:**` → AUTO-ADD: append the missing files to the chapter's `**context:**` field in the outline (this is a per-outline edit fully within the writer's scope; no escalation needed since the symmetry rule is mechanical, not creative). Announce: *"✅ Pre-drafting context symmetry: auto-added N files to `**context:**` (<list>) to match beat references."* Then proceed to drafting.
+Compare the union against the chapter's `**context:**` list, **minus** the always-loaded set declared in the outline header and minus the files Step 1's selective pass already opened (this chapter's own level directory, where the file carries a tracker row for this Book+Ch — the fourth route of the reachability set). Files referenced in beats but missing from `**context:**` → AUTO-ADD: append them to the chapter's `**context:**` field in the outline (a per-outline edit fully within the writer's scope; the symmetry rule is mechanical, not creative, so no escalation). Announce: *"✅ Pre-drafting context symmetry: auto-added N files to `**context:**` (<list>) to match beat references."*
 
 ### 2.6.b — Context-side scan (orphan candidates)
 
@@ -324,11 +324,11 @@ Files reachable through none of the four routes, split by the level register (St
 - **Level-legal** — a `world/` root file, `plot/` or `characters/`, none of which any rule reaches → AUTO-ADD: append them to the chapter's `**context:**` field in the outline, exactly as 2.6.a does for beats. Announce: *"✅ Pre-drafting context symmetry: auto-added N files to `**context:**` (<list>) to match tracker rows mapped to this chapter."* Then load them (Step 1 has already run) and add their rows to the plan file's `## Usage Targets` — they are pre-planned elements for this chapter like any other.
 - **Level-barred** (a file in a *different* level's directory: a Level-0 file holding a row for a Dome or Ark chapter, and every other cross-level case) → do NOT add. Report in the pre-draft summary, naming both hypotheses and resolving neither: the row targets the wrong chapter, OR the content is filed in the wrong file. The register outranks the tracker. Drafting proceeds without the file; the row stays `planned`.
 
-**Plant instances due this chapter.** Read the book outline header's §Inline Plant Tracking table and take every cell in THIS chapter's column. Each is an obligation for this chapter exactly like a tracker row: record it in the plan file's `## Usage Targets` with its instance number, the plant it belongs to, and whether it is the payoff. Apply the same two rules — the file owning the element must be reachable (auto-add it if level-legal, as above), and a barred file is reported rather than added, leaving the instance unrendered. An instance whose element holds no tracker row anywhere is reported in the pre-draft summary: nothing will tick it after drafting, and `coherence-check.md` J reconciles the two registers.
+**Plant instances due this chapter.** Read the book outline header's §Inline Plant Tracking table and take every cell in THIS chapter's column. Each is an obligation exactly like a tracker row: record it in the plan file's `## Usage Targets` with its instance number, the plant it belongs to, and whether it is the payoff. Apply the same two rules — the file owning the element must be reachable (auto-add it if level-legal, as above), and a barred file is reported rather than added, leaving the instance unrendered. An instance whose element holds no tracker row anywhere is reported in the pre-draft summary: nothing will tick it after drafting, and `coherence-check.md` J reconciles the two registers.
 
 ### 2.6.d — Post-draft audit
 
-After Step 5 (Verify), the agent generates `chapters/<book>/ch<NN>-context-audit.md` (ephemeral; project should gitignore via `chapters/*/ch*-context-audit.md` pattern). For each file in `**context:**`, the audit maps the file to the beat / line-range where it was actually used in prose. The audit also lists any file used in prose but not in `**context:**` (drift). One-line summary at the top of the file:
+After Step 5 (Verify), the agent generates `chapters/<book>/ch<NN>-context-audit.md` (ephemeral; project should gitignore via `chapters/*/ch*-context-audit.md` pattern). For each file in `**context:**`, the audit maps it to the beat / line-range where it was actually used in prose, and it lists any file used in prose but not in `**context:**` (drift). One-line summary at the top of the file:
 
 ```
 context drift: -N file(s) planned-but-unused (<list>); +M file(s) used-but-unplanned (<list>).
@@ -338,7 +338,7 @@ Drift entries feed back into the symmetry check for the next chapter — used-bu
 
 ### 2.6.e — Always-loaded set awareness
 
-Read the outline header's "Always-loaded reference" paragraph (typically lists `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, plus trilogy-wide foreground character files and any book-specific promotions). Exclude every file in this paragraph from the missing (2.6.a), orphan (2.6.b) and tracker (2.6.c) checks. Always-loaded references are out of scope for per-chapter symmetry — they are loaded by default and need no per-chapter justification. Same exclusion for the header's "Texture-palette proxy" paragraph: those files are loaded transitively through `writing-notes.md`, so their rows are reachable without a `context:` entry. Both paragraphs are parsed from THIS book's outline header at run time — never carried over from another book.
+Read the outline header's "Always-loaded reference" paragraph (typically lists `world/technology-comparison.md`, `world/temporal-echoes.md`, `world/tones.md`, plus trilogy-wide foreground character files and any book-specific promotions). Exclude every file in this paragraph from the missing (2.6.a), orphan (2.6.b) and tracker (2.6.c) checks: loaded by default, they need no per-chapter justification. Same exclusion for the header's "Texture-palette proxy" paragraph: those files are loaded transitively through `writing-notes.md`, so their rows are reachable without a `context:` entry. Both paragraphs are parsed from THIS book's outline header at run time — never carried over from another book.
 
 Announce upon completion of Step 2.6:
 *"✅ Pre-drafting context symmetry check passed. Proceeding to write."*
@@ -353,24 +353,24 @@ Write to `chapters/<book>/ch<NN>.md`.
 
 Every outline beat becomes a RENDERED SCENE. The components, in order of weight:
 
-1. **ACTION + DIALOGUE — 60% of each scene.** Things happening. People talking. Bodies moving. Objects touched, opened, broken, shared. Dialogue is SPOKEN — actual words with pauses, interruptions, body language between lines. Not summary ("Anyuk explained"). Real words.
+1. **ACTION + DIALOGUE — 60% of each scene.** Things happening. People talking. Bodies moving. Objects touched, opened, broken, shared. Dialogue is SPOKEN — actual words with pauses, interruptions, body language between lines. Not summary ("Anyuk explained").
 
 2. **POV INTERIOR — 20%.** The character's thought woven INTO the action. Not commentary after the action. Not "She recognized that..." but the thought arriving mid-gesture, fragmentary, unfinished. Thought as texture, not analysis.
 
-3. **WORLD/SETTING — 15%.** 1-2 sentences to anchor in space. Then MOVE. The world emerges from the action — a hand touching a warm pipe tells us the temperature. A drone humming during a conversation tells us the surveillance. Don't describe the room and then put people in it. Put people in the room and let the room reveal itself through what they do.
+3. **WORLD/SETTING — 15%.** 1-2 sentences to anchor in space. Then MOVE. The world emerges from the action — a hand touching a warm pipe tells us the temperature. Don't describe the room and then put people in it. Put people in the room and let the room reveal itself through what they do.
 
 4. **CLOSING DETAIL — 5%.** One image or fact that plants something for later.
 
 ### The 500-Word Rule
 
-The inciting tension — what this chapter is ABOUT — must emerge within the first 500 words. If the first 500 words are pure setting with no tension, the chapter is mis-structured. Start with or near the tension. Let setting emerge from it.
+The inciting tension — what this chapter is ABOUT — must emerge within the first 500 words. First 500 words of pure setting with no tension = mis-structured chapter. Start with or near the tension; let setting emerge from it.
 
 ### Prose Rules (from `world/prose-rules.md` — CRITICAL)
 
 - **SHOW THEN MOVE ON.** After an image or action renders a beat, do NOT explain it. No "It was also the first time..." No "What she recognized was..." Cut every explanation sentence.
 - **NO APHORISMS.** No fortune-cookie endings to paragraphs. No "Systems rewarded persistence."
 - **NOT EVERYTHING MEANS SOMETHING.** 2-3 details per chapter that are just details. A stain, a loose thread, a sound unrelated to theme.
-- **EMOTIONAL MESSINESS.** One moment per chapter where a reaction is disproportionate, wrong, or surprising. A character snaps at the wrong person, a classification system fails, someone says something they shouldn.t.
+- **EMOTIONAL MESSINESS.** One moment per chapter where a reaction is disproportionate, wrong, or surprising: a character snaps at the wrong person, a classification system fails.
 - **NARRATOR STAYS AT CHARACTER LEVEL.** No analyzing unconscious behavior with literary-critic vocabulary. Show the deviation. Let the reader name it.
 - **30% DIALOGUE** when characters are present.
 - **VARY OPENINGS.** Must differ from previous chapter (checked in plan).
@@ -432,11 +432,11 @@ wc -w chapters/<book>/ch<NN>.md
 
 ---
 
-## Step 5: Verify (9 passes — MANDATORY)
+## Step 5: Verify (10 passes — MANDATORY; Pass 10 only for [RAPID CROSS-CUT] or climax chapters)
 
 **Run verification passes inline — do NOT launch a separate Agent.** All reference files are already in context from Step 1. An Agent would re-read them from scratch and double the token cost.
 
-**Exception:** only launch an Agent if running in a context where Step 1 files have been cleared (e.g., a fresh session resumed mid-chapter). In that case, tell the agent explicitly which files are already loaded and which it must read. The agent MUST read:
+**Exception:** launch an Agent only if the Step 1 files have been cleared (e.g. a fresh session resumed mid-chapter). Tell it explicitly which files are already loaded and which it must read. The agent MUST read:
 - The chapter file (`chapters/<book>/ch<NN>.md`)
 - The plan file (`chapters/<book>/ch<NN>-plan.md`)
 - `world/technology-comparison.md` — for Pass 9 (level-identification check)
@@ -453,9 +453,9 @@ wc -w chapters/<book>/ch<NN>.md
 **Pass 6 — World Pressure (Reality only):** Analog alongside 2045 tech? Could be 2026 = FAIL.
 **Pass 7 — Word Count & Scene Density:** ≥2500 (normal) / ≥800 (rapid)? Every beat a rendered scene? ≥3 dialogue exchanges if characters present?
 **Pass 8 — Prose Discipline (prose-rules.md):** Check ALL of:
-- Explanation sentences after powerful images? (**>0 = FAIL** — zero tolerance)
-- Aphorisms in narration? (**>1 = FAIL** — aphorisms in dialogue OK if in-character)
-- Em-dash glosses exceed POV character limit? (exceeds POV character.s max from their character sheet = **FAIL**)
+- Explanation sentences after powerful images? (**>0 = FAIL**)
+- Aphorisms in narration? (**>1 = FAIL** — in dialogue OK if in-character)
+- Em-dash glosses over the POV character's sheet max? (If yes = **FAIL**)
 - "The way" simile count >3? (If yes = **FAIL**)
 - Tic caption on a previously-introduced tic? (If yes = **FAIL**)
 - ≥30% dialogue when characters present? (If not = FAIL)
@@ -465,7 +465,7 @@ wc -w chapters/<book>/ch<NN>.md
 - ≥2 non-thematic details (things that are just things)? (If not = FAIL)
 - Ending type J (contemplative) when 2 already used in book? (If yes = **FAIL**)
 - Vocabulary outside POV character's chapter-range register? (If yes = **FAIL** — check voice-samples.md Vocabulary Evolution)
-- **Metaphors in narration?** (**>0 = FAIL** — zero tolerance. Use synecdoche, metonymy, precise image, negative space. Rule 1 + Rule 9)
+- **Metaphors in narration?** (**>0 = FAIL** — synecdoche, metonymy, precise image or negative space instead. Rule 1 + Rule 9)
 - **Variant dialogue tags (non-"said") count?** (**>2 = FAIL** — replace with action beats. Rule 15)
 - **Chapter opening has concrete image + tension within first 150 words?** (If not = **FAIL**. Rule 21 — stricter than the 500-word inciting-tension rule)
 - **Chapter closing is ≤2-sentence image or single line?** (Summary paragraph or contemplative wrap-up >2 sentences = **FAIL**. Rule 22)
@@ -473,23 +473,23 @@ wc -w chapters/<book>/ch<NN>.md
 - **Object permanence:** prior-introduced object touched/used/noticed OR new plant-object introduced? (Neither present = **NOTE** — consider adding in revision. Rule 16)
 - **Silence beat after dramatic peak?** (Peak chapter with zero silent beats = **FAIL**. Rule 20)
 - **Dialogue from desire, not information?** (Any "as you know" construction OR character-A-tells-character-B what both already know = **FAIL**. Rule 14)
-- **Sentence length progression in climax chapter?** (If this is a climax chapter and avg sentence length does not decrease ≥30% from opening to closing = **FAIL**. Rule 18)
+- **Sentence length progression in climax chapter?** (Climax chapter whose avg sentence length does not decrease ≥30% from opening to closing = **FAIL**. Rule 18)
 - **Echo, not repetition:** any motif phrase returning from a prior chapter carries semantic shift? (If identical semantic meaning on return = **FAIL**. Rule 19)
 - **Reader plant (dramatic irony):** at least one detail the POV character notices but does not process, that the reader can? (If none = **NOTE** — add in revision if feasible. Rule 23)
 - **Consequence, not explanation:** any narrator paragraph explaining HOW a mechanism works (not the character discovering it through action)? (If yes = **FAIL** — move to diegetic artifact or cut. Rule 24)
 
 **Pass 9 — Reader Perspective (MANDATORY — added Phase 25):** The agent answers these questions as a reader who has NOT read the worldbuilding docs:
 - "Does this chapter make sense to someone who only knows what previous chapters established?" (If not = FAIL — identify what's confusing)
-- "Is any section boring? Where would a reader skip ahead?" (If yes = FAIL — identify the drag and propose a cut or replacement with dialogue/action)
+- "Is any section boring? Where would a reader skip ahead?" (If yes = FAIL — identify the drag; propose a cut or a dialogue/action replacement)
 - "Does the reader want to read the next chapter?" (If not = FAIL — the cliffhanger or tension isn't working)
 - "Does anything not make logical sense? Would a reader ask 'but why?'" (If yes = FAIL — the bullshit detector caught something)
 - "Are the character's emotions visible in their BODY, not just narrated?" (If not = FAIL — show the implant fight, the tremor, the jaw lock, the sweat)
-- "Can the reader tell which level (the project.s narrative levels) they're in from any random paragraph, without character names?" (If not = FAIL — technology/sound/light fingerprint is missing. Check `world/technology-comparison.md`)
+- "Can the reader tell which level (the project's narrative levels) they're in from any random paragraph, without character names?" (If not = FAIL — technology/sound/light fingerprint is missing. Check `world/technology-comparison.md`)
 - "Is the reader's attention being directed correctly — toward the mystery, away from unrevealed information?" (If a detail accidentally reveals something the reader shouldn't know yet = FAIL)
-- "Is there at least one detail that will mean something different on re-read?" (If not, consider adding one — this is what separates good from great)
+- "Is there at least one detail that will mean something different on re-read?" (If not, consider adding one)
 - "Does this chapter maintain or reinforce any false belief the reader currently holds?" (Check the plan's Reader Architecture section — if the chapter accidentally corrects a false belief too early = FAIL)
 
-**Register self-check (Phase 41 M12)**: pick three random paragraphs, one per scene. For each, ask: could this paragraph have been written for the wrong level (Reality / Ark / Dome)? If yes, flag the paragraph and rewrite using register cues for the correct level (per `world/register-locks.md`).
+**Register self-check (Phase 41 M12)**: pick three random paragraphs, one per scene. For each, ask: could this paragraph have been written for the wrong level (Reality / Ark / Dome)? If yes, flag it and rewrite using the correct level's register cues (per `world/register-locks.md`).
 
 Note self-grading limit: per `coldread-enum.md` design history, the writer with canon-in-head cannot fully validate. This Pass 9 self-check is upstream defense; the at-pipeline-level cross-validation is `coldread-enum` + `coldread-filter` at step 8.5.
 
@@ -513,7 +513,6 @@ For each tracker item matching THIS chapter (same Book and Ch) that was SHOWN in
 
 **Rules:**
 - NEVER update status for items not rendered in prose — the detail must be visible in the chapter text.
-- Status reflects what's actually in the draft, not what was planned.
 - **Channel match.** The mark is valid only if the prose renders the element in the channel the row names. A row promising coolant as *smell and memory* is not satisfied by burn and stain — the object is there, the named channel is not, so the row stays `planned`. Same test for the Detail column: a row marked `scene` is not satisfied by a one-clause accent.
 - A `written` mark is a claim that `/book fidelity` re-reads against the prose (class (d)). Marking optimistically does not save work; it moves the finding downstream.
 

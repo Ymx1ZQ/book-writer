@@ -1,0 +1,232 @@
+"""Tests for the chapter-load guard (Phase 97 M9).
+
+The guard shipped as a project-side script for three days and grew eight modes
+there, where no other project could reach it and where a partial reimplementation
+had already cost one consuming repo a 314-versus-226 miscount. These tests run it
+against a synthetic project built in a tmpdir, so they pin the model rather than
+one corpus: the four reachability routes, the level register, the co-primary /
+parenthetical distinction in the `**Level:**` field, and the two derivations that
+replaced hand-maintained constants.
+
+The consuming project keeps its own suite. That one is a regression record of
+defects measured in its corpus and cannot move here; this one is what a freshly
+scaffolded project runs.
+"""
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "chapter_load.py"
+
+
+def run(root: Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), *args],
+        capture_output=True, text=True,
+        env={"PATH": "/usr/bin:/bin", "BOOK_PROJECT_ROOT": str(root)},
+    )
+
+
+def verdicts(out: str) -> tuple[int, int]:
+    """(MISSING, CONFLICT) from the --unreachable header.
+
+    Parsed rather than grepped: both words appear in the legend the mode prints
+    under the header, so `"CONFLICT" in out` is true even at zero.
+    """
+    m = re.search(r"\((\d+) MISSING, (\d+) CONFLICT\)", out)
+    assert m, out
+    return int(m.group(1)), int(m.group(2))
+
+
+def tracker(*rows: str) -> str:
+    head = ("## Usage Tracker\n\n"
+            "| Element | Book | Ch | Detail | Status |\n"
+            "|---------|------|----|--------|--------|\n")
+    return head + "".join(rows) + "\n"
+
+
+def scaffold(root: Path, *, level_line: str = "**Level:** Reality | **POV:** A",
+             context: str = "**context:** world/anchors.md") -> None:
+    """The minimum a project needs for the guard to have anything to join."""
+    for d in ("world/level-0-reality", "world/level-1-ark", "plot", "characters",
+              "chapters/book-1"):
+        (root / d).mkdir(parents=True, exist_ok=True)
+    (root / "chapters/book-1/outline.md").write_text(
+        "# Book 1 — Outline\n\n"
+        "**Always-loaded reference files:** `world/overview.md`\n\n"
+        f"## Ch. 01 — Opening\n{level_line}\n{context}\n\n"
+        "## Ch. 02 — Second\n**Level:** Ark | **POV:** B\n"
+        "**context:** world/anchors.md\n",
+        encoding="utf-8")
+    (root / "world/overview.md").write_text("# Overview\n", encoding="utf-8")
+    (root / "world/anchors.md").write_text(
+        "# Anchors\n\n" + tracker("| A reachable element | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+
+
+# --- the empty case: a project that has just been scaffolded ------------------
+
+def test_empty_corpus_passes(tmp_path: Path) -> None:
+    for d in ("world", "plot", "characters", "chapters"):
+        (tmp_path / d).mkdir()
+    r = run(tmp_path, "--check")
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "OK" in r.stdout
+
+
+def test_scaffolded_corpus_passes(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    r = run(tmp_path, "--check")
+    assert r.returncode == 0, r.stdout + r.stderr
+
+
+# --- the four reachability routes ---------------------------------------------
+
+def test_row_absent_from_the_context_list_is_missing(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "world/loose.md").write_text(
+        "# Loose\n\n" + tracker("| An unreachable element | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    r = run(tmp_path, "--check")
+    assert r.returncode == 1
+    assert "unreachable-MISSING" in r.stdout
+
+
+def test_always_loaded_set_reaches_every_chapter(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "world/overview.md").write_text(
+        "# Overview\n\n" + tracker("| Element in the always-loaded set | B1 | 02 | accent | planned |\n"),
+        encoding="utf-8")
+    r = run(tmp_path, "--check")
+    assert r.returncode == 0, r.stdout
+
+
+def test_own_level_directory_reaches_without_a_context_entry(tmp_path: Path) -> None:
+    # The fourth route, and the one a partial reimplementation drops: the writer
+    # lists the chapter's own level directory and opens the files whose rows name
+    # this chapter, so those rows need no context entry.
+    scaffold(tmp_path)
+    (tmp_path / "world/level-0-reality/streets.md").write_text(
+        "# Streets\n\n" + tracker("| Element in the chapter's own level dir | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    r = run(tmp_path, "--check")
+    assert r.returncode == 0, r.stdout
+
+
+# --- the level register --------------------------------------------------------
+
+def test_row_in_a_barred_level_directory_is_a_conflict(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "world/level-1-ark/hull.md").write_text(
+        "# Hull\n\n" + tracker("| Ark element aimed at a Reality chapter | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    assert verdicts(run(tmp_path, "--unreachable").stdout) == (0, 1)
+    # A conflict is never fixable by a context entry, so --check must not count
+    # it among the MISSING rows it fails on.
+    assert run(tmp_path, "--check").returncode == 0
+
+
+def test_declared_secondary_level_authorizes_the_row(tmp_path: Path) -> None:
+    scaffold(tmp_path, level_line="**Level:** Reality (Ark flash) | **POV:** A")
+    (tmp_path / "world/level-1-ark/hull.md").write_text(
+        "# Hull\n\n" + tracker("| Ark element in a declared cross-level chapter | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    assert verdicts(run(tmp_path, "--unreachable").stdout) == (0, 0)
+
+
+def test_context_entry_a_level_bars_is_reported(tmp_path: Path) -> None:
+    # The reverse direction. Listing a barred file silences the CONFLICT verdict
+    # instead of resolving it, so the two checks have to read the same field.
+    scaffold(tmp_path, context="**context:** world/anchors.md, world/level-1-ark/hull.md")
+    (tmp_path / "world/level-1-ark/hull.md").write_text("# Hull\n", encoding="utf-8")
+    r = run(tmp_path, "--illegal-load")
+    assert "level-1-ark/hull.md" in r.stdout
+
+
+def test_declared_secondary_level_exempts_the_context_entry(tmp_path: Path) -> None:
+    scaffold(tmp_path, level_line="**Level:** Reality (Ark flash) | **POV:** A",
+             context="**context:** world/anchors.md, world/level-1-ark/hull.md")
+    (tmp_path / "world/level-1-ark/hull.md").write_text("# Hull\n", encoding="utf-8")
+    r = run(tmp_path, "--illegal-load")
+    assert "level-1-ark/hull.md" not in r.stdout, r.stdout
+
+
+# --- co-primary versus parenthetical -------------------------------------------
+
+def test_co_primary_level_opens_a_placement_slot(tmp_path: Path) -> None:
+    scaffold(tmp_path, level_line="**Level:** Ark + Reality | **POV:** A")
+    out = run(tmp_path, "--free").stdout
+    assert "B1 Ch01" in out, out
+
+
+def test_parenthetical_level_opens_no_placement_slot(tmp_path: Path) -> None:
+    scaffold(tmp_path, level_line="**Level:** Ark (Reality residue) | **POV:** A")
+    out = run(tmp_path, "--free").stdout
+    assert "B1 Ch01" not in out, out
+
+
+# --- the derivations that replaced hand-maintained constants --------------------
+
+def test_level_directories_are_read_off_the_tree(tmp_path: Path) -> None:
+    # A level the tool was never told about must still be a register, not a
+    # level-neutral directory every chapter may load.
+    scaffold(tmp_path)
+    (tmp_path / "world/level-3-garden").mkdir()
+    (tmp_path / "world/level-3-garden/flora.md").write_text(
+        "# Flora\n\n" + tracker("| Element at a level nobody declared | B1 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    assert verdicts(run(tmp_path, "--unreachable").stdout) == (0, 1)
+
+
+def test_books_are_read_off_the_tree(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "world/anchors.md").write_text(
+        "# Anchors\n\n" + tracker("| Element in a second book | B2 | 01 | accent | planned |\n"),
+        encoding="utf-8")
+    assert "world/anchors.md" in run(tmp_path, "--book-form").stdout
+    (tmp_path / "chapters/book-2").mkdir()
+    (tmp_path / "chapters/book-2/outline.md").write_text(
+        "# Book 2 — Outline\n\n## Ch. 01 — Opening\n**Level:** Reality | **POV:** A\n"
+        "**context:** world/anchors.md\n", encoding="utf-8")
+    assert "world/anchors.md" not in run(tmp_path, "--book-form").stdout
+
+
+# --- structural damage ---------------------------------------------------------
+
+def test_a_destroyed_row_is_reported_not_skipped(tmp_path: Path) -> None:
+    # The row parser skips what it cannot match, so a damaged row does not become
+    # malformed -- it stops existing, every count drops by one, and every mode
+    # still reports success.
+    scaffold(tmp_path)
+    (tmp_path / "world/anchors.md").write_text(
+        "# Anchors\n\n"
+        "## Usage Tracker\n\n"
+        "| Element | Book | Ch | Detail | Status |\n"
+        "|---------|------|----|--------|--------|\n"
+        "unchanged\n\n", encoding="utf-8")
+    r = run(tmp_path, "--check")
+    assert r.returncode == 1
+    assert "malformed line(s) inside a Usage Tracker table" in r.stdout
+
+
+def test_a_context_entry_naming_no_file_is_raised(tmp_path: Path) -> None:
+    # Swallowing it would turn every row in that file into a false MISSING.
+    scaffold(tmp_path, context="**context:** world/anchors.md, world/does-not-exist.md")
+    r = run(tmp_path, "--check")
+    assert r.returncode == 2
+    assert "resolves to no file" in r.stderr
+
+
+# --- the read-only contract ----------------------------------------------------
+
+def test_the_guard_never_writes(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    before = {p: p.read_bytes() for p in tmp_path.rglob("*.md")}
+    for mode in ("--check", "--unreachable", "--illegal-load", "--free",
+                 "--unassigned", "--orphans", "--written", "--book-form"):
+        run(tmp_path, mode)
+    after = {p: p.read_bytes() for p in tmp_path.rglob("*.md")}
+    assert before == after

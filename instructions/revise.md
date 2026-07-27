@@ -209,6 +209,27 @@ If the session applied no prose edits — every finding surfaced as TRADE-OFF, a
 
 **Do not regenerate the snapshots here.** Regeneration costs one `/book snapshot` run per chapter from the edited chapter to the last drafted one, each reading a full chapter, and the runs are serial because each snapshot depends on the one below it. How much of the book to rebuild, and when, is the operator's call, made with the rest of the pass in view. Revise records the invalidation and names the command; it does not spend that cost on its own.
 
+### 5.8. Re-point the line citations the edits moved
+
+Run this once, at session end, after every prose edit is applied and **before the commit**. The script compares the working tree against `HEAD`, so a committed edit is invisible to it.
+
+```bash
+python3 <skill>/scripts/remap_citations.py <repo-root> chapters/<book>/chNN.md [more chapter files...]
+```
+
+The corpus cites prose by line number, and those citations are load-bearing: a later pass follows one to check that a canon claim is still true against the text. An insertion invalidates every citation below it in the same file. It does so silently — the stale citation still points at a real line, which now says something else, so the pass that follows it either verifies the wrong text or writes a second false claim on top of the first.
+
+Measured on the ground-truth corpus, 2026-07-26: one revise pass inserted seven lines at `ch07.md:39-45`; a later pass re-verified the five deviation-ledger entries it was told to check and found four of the five carried a wrong line, and the same shift had already propagated into two canon files and an outline. The corpus holds 140 live prose citations, only 11% of which quote the text they cite, and none of the shifted ones pointed past end of file — so neither a quotation check nor a bounds check would have caught any of it. The only component that knows the shift is the one that caused it, which is this step.
+
+What the script does and does not touch:
+
+- It rewrites citations in files that assert current truth — canon, outlines, character files, plot files, writing-notes, state.
+- It leaves **historical records** alone: `archive/`, `SMELL*`, `PROOFREAD*`, `REVIEW*`, `COLDREAD*`, `DEVPLAN.md` and `outline-deviation.md`. A SMELL entry cites the line it actually examined on its own date, and the deviation ledger is append-only by its own rule — a stale citation there is corrected by a dated append, never by editing the ratified text.
+- A citation whose target line was **rewritten or deleted** has no counterpart, so the script reports it and exits 1 rather than picking the nearest surviving line. Resolve each of those by reading the new text; a plausible-looking number is worse than a reported one, because it looks verified.
+- A bare `chNN.md:LINE` names no book. While one book is drafted the reference is unambiguous; once the same chapter number is drafted in two books the script reports the ambiguity instead of guessing.
+
+Exit 1 means at least one citation needs a decision. Do not commit past it without resolving them.
+
 ### 6. Session Complete
 
 ```

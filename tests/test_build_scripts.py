@@ -44,3 +44,65 @@ def test_uv_run_help(name: str) -> None:
     )
     assert r.returncode == 0, r.stderr
     assert "usage" in (r.stdout + r.stderr).lower()
+
+
+# --- remap_citations (skill Phase 26) -------------------------------------
+#
+# A prose edit shifts every line citation below it, silently: the stale citation
+# still points at a real line that now says something else. These tests pin the
+# three behaviours that make the remapper safe to run unattended -- it shifts
+# what moved, it refuses to guess at what was rewritten, and it never touches a
+# historical record.
+
+import subprocess as _sp
+import sys as _sys
+from pathlib import Path as _Path
+
+_SCRIPTS = _Path(__file__).resolve().parent.parent / "scripts"
+_sys.path.insert(0, str(_SCRIPTS))
+
+
+def _repo(tmp_path, chapter_text, note_text, smell_text="historical ch07.md:4\n"):
+    _sp.run(["git", "init", "-q", "."], cwd=tmp_path, check=True)
+    (tmp_path / "chapters" / "book-1").mkdir(parents=True)
+    (tmp_path / "world").mkdir()
+    (tmp_path / "chapters" / "book-1" / "ch07.md").write_text(chapter_text)
+    (tmp_path / "chapters" / "book-1" / "SMELL.md").write_text(smell_text)
+    (tmp_path / "world" / "note.md").write_text(note_text)
+    _sp.run(["git", "add", "-A"], cwd=tmp_path, check=True)
+    _sp.run(["git", "-c", "user.email=t@t", "-c", "user.name=t",
+             "commit", "-qm", "init"], cwd=tmp_path, check=True)
+    return tmp_path
+
+
+def _run(root, *chapters):
+    return _sp.run(
+        [_sys.executable, str(_SCRIPTS / "remap_citations.py"), str(root), *chapters],
+        capture_output=True, text=True,
+    )
+
+
+def test_insertion_shifts_citations_and_ranges(tmp_path):
+    root = _repo(tmp_path, "a\nb\nc\nd\ne\n", "at ch07.md:4 and range ch07.md:3-5\n")
+    (root / "chapters" / "book-1" / "ch07.md").write_text("a\nX\nY\nb\nc\nd\ne\n")
+    r = _run(root, "chapters/book-1/ch07.md")
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert (root / "world" / "note.md").read_text() == "at ch07.md:6 and range ch07.md:5-7\n"
+
+
+def test_historical_files_are_never_rewritten(tmp_path):
+    root = _repo(tmp_path, "a\nb\nc\nd\ne\n", "at ch07.md:4\n")
+    (root / "chapters" / "book-1" / "ch07.md").write_text("a\nX\nY\nb\nc\nd\ne\n")
+    _run(root, "chapters/book-1/ch07.md")
+    # The SMELL entry cites the line it examined on its own date. Rewriting it
+    # would falsify the record rather than repair it.
+    assert (root / "chapters" / "book-1" / "SMELL.md").read_text() == "historical ch07.md:4\n"
+
+
+def test_deleted_target_is_reported_not_guessed(tmp_path):
+    root = _repo(tmp_path, "a\nb\nZZZ\nd\ne\n", "deleted target ch07.md:3\n")
+    (root / "chapters" / "book-1" / "ch07.md").write_text("a\nb\nd\ne\n")
+    r = _run(root, "chapters/book-1/ch07.md")
+    assert r.returncode == 1, r.stdout
+    assert "Needs a decision" in r.stdout
+    assert (root / "world" / "note.md").read_text() == "deleted target ch07.md:3\n"

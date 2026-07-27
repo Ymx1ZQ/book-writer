@@ -1383,3 +1383,94 @@ Reader-state is cumulative: the snapshot for chapter N carries what the reader r
 ### Verification
 
 - `pytest tests/` + `bash tests/test_install.sh` green, single `./install.sh --force` redeploy. — done 2026-07-26 (17 passed / 9 passed)
+
+## Phase 26 ✅ — Three guards move from a consuming project into the skill (2026-07-27)
+
+Source: the `ground-truth` project's Phases 95-97. Each item below was built there, used there, and was
+sitting in one repo where no other project could reach it. `registers.md` already carried the warning that
+a partial reimplementation costs a consuming project a 314-versus-226 miscount; that warning existed
+because the cost had been paid once and nothing had been done about the cause.
+
+### M1 — `/book revise` re-points the line citations its edits moved ✅
+
+A prose edit shifts every line below it. A citation written as `ch07.md:125` still resolves after the
+shift — to a line that now says something else — so nothing fails and the reader of the citation is
+silently misdirected. Measured in `ground-truth`: 140 live prose citations, of which 11% quoted the text
+they cited and none pointed past end of file, so neither a quote check nor a bounds check would have found
+the stale ones.
+
+- [x] `scripts/remap_citations.py` — maps old line numbers to new ones with `difflib.SequenceMatcher`
+  against `HEAD`, and returns `None` rather than the nearest survivor for a line with no counterpart. A
+  rewritten line has no correct new number, and guessing one produces a citation that is wrong and looks
+  right.
+- [x] Historical records are excluded by path: `archive/`, `SMELL`, `PROOFREAD`, `REVIEW`, `COLDREAD`,
+  `DEVPLAN.md`, `outline-deviation.md`. A citation in a record of what was found last month must keep
+  pointing at the text as it was.
+- [x] `revise.md` §5.8 runs it at session end and **before** the commit, because the script compares the
+  working tree against `HEAD`.
+- [x] Tests in `tests/test_build_scripts.py`: it shifts what moved, refuses what was rewritten, leaves
+  historical files alone. The path-resolution bug — resolving a repo-relative path against the process cwd,
+  which works only when the shell is already in the repo — was caught by those tests, not by review.
+- Validated against the real failure: replaying `ground-truth` commit `dc40631` gives `ch07.md:125 → 133`,
+  which is the correction that had been made there by hand. — done 2026-07-27
+
+### M2 — `milestone-format.md` bans command-scoped deferrals ✅
+
+- [x] `Deferred to /book fix book-2`, `Left for that pass`, `Route there` and their variants are banned.
+  This form passed every check in the list because the banned constructs all named a phase or a user and
+  this one names a **command**, so it reads as a routing decision: a reviewer sees a destination and moves
+  on. It is not a destination — the run is one nobody has scheduled.
+- [x] The rule restated as the action rather than the prohibition: an item whose content belongs to an
+  undrafted chapter is not postponed, **its destination is the file the future step loads**. Write the
+  constraint into that file in the form that file uses, then close the item in the same pass.
+- [x] The measured instance recorded: nine items across two phases in `ground-truth`, all nine applicable
+  the day they were parked.
+
+### M3 — `scripts/chapter_load.py` ships with the skill ✅
+
+Twelve of its 1,117 lines were project data; everything else parses this skill's conventions — Usage
+Tracker tables, `**context:**` and `**Level:**` fields, the always-loaded set, the texture-palette proxy.
+
+- [x] Ship the script. The consuming project keeps a small shim so its pipeline scripts, hooks and tests
+  can invoke a stable path; the script resolves the project from `BOOK_PROJECT_ROOT`, then the git top
+  level, never from its own install path.
+- [x] Hold no project list. Books come from `chapters/book-*/`, drafted chapters from the prose on disk,
+  level names and directories from `world/level-<n>-<name>/`, Level-0 chapters from the outlines'
+  `**Level:**` fields. Every one of those was a hand-maintained constant first, and each stopped covering
+  its corpus the day it changed while the guard kept reporting OK.
+- [x] `tests/test_chapter_load.py` — 16 tests against a synthetic project in a tmpdir, including the empty
+  corpus a freshly scaffolded project has. They pin the model, not a corpus: the four reachability routes,
+  both directions of the register, the co-primary/parenthetical distinction, both derivations, the
+  malformed-row check, the exit-2 contract, and the read-only guarantee.
+- [x] `registers.md` §Tools that compute reachability rewritten: it told the next project to build this.
+
+**A project's own suite does not move here.** `ground-truth`'s 114 bats tests assert against its files and
+its history, including five inverted the day its backlog reached zero. That is a regression record and it
+belongs where the regressions happened.
+
+### M4 — `coherence-check.md` gains check U, Single Ownership ✅
+
+The other twenty checks compare two statements of a fact and ask whether they agree. None asks why there
+are two. A project that scaffolds one canonical file per concept states that rule and verifies nothing.
+
+- [x] Check U reports a slug claimed twice, a slug claimed by nobody, and a non-owner that explains a
+  concept instead of pointing at its owner. It reads the slug list from the consuming project's own
+  Concept → Canonical file table — adding a row there must change what the check reports with no edit
+  here, or the check grows the second source of truth it exists to prevent.
+- [x] WARNING, not BLOCKING, on the same grounds as a register CONFLICT: resolving a duplicate means
+  deciding which file keeps the content, which is a judgment and not a repair the pipeline can apply.
+- [x] Runs on every scope. Ownership is a property of the whole canon set, so a scoped run would compare a
+  file against only some of its rivals and report clean while the duplicate sat in the skipped directory.
+
+Three defects of exactly this shape were found by hand, late, in `ground-truth` on 2026-07-27: a simulation
+tell with two different mechanisms across three files, a forbidden causal link restated in three including
+the file that owns the topic, and one rule carried by three different line citations, one pointing at a
+blank line. Each was internally consistent in the file it sat in, which is why twenty checks missed them.
+
+### Verification
+
+- `pytest tests/` 36 passed; `bash tests/test_install.sh` green; single `./install.sh --force`; `--check`
+  reports no drift. — done 2026-07-27
+- Consuming project re-verified through the shim: 114 bats tests green, `./chapter-load.py --check` exit 0,
+  and `--free` / `--check` / `--unreachable` / `--illegal-load` byte-identical to the pre-move output.
+  — done 2026-07-27

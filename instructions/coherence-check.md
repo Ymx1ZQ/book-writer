@@ -61,10 +61,13 @@ Scope options:
 | P — Cross-Substrate Sensory-Echo | `world/temporal-echoes.md` already loaded for A; chapter drafts (re-use). |
 | Q — Redundancy-with-Adjacent-Text | Chapter drafts only (re-use). |
 | T — First-Appearance Delivery | Re-use character sheets from D and chapter drafts from G/L. |
+| U — Single Ownership | The project's Concept → Canonical file table (`CLAUDE.md` §Information Architecture or whatever its own file names), plus the frontmatter of every file that table lists. Read the slug list from the project — never carry a copy here. |
 
 **For scope `characters`:** load only rows D and skip all others.
 **For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
 **For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q and T only run if chapter drafts exist for the scope.
+
+**Check U is corpus-wide and runs on every scope, including `characters` and `world`.** Ownership is a property of the whole canon set: restricting it to a scope would compare a file against only some of its possible rivals and report a clean result while the duplicate sits in the directory that was skipped.
 
 **Graph-assisted load (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists in the project root AND the freshness gate passes (answer mode per `graph-recall.md` §Freshness gate), the relational checks replace their bulk loads:
 
@@ -76,7 +79,7 @@ Scope options:
 
 Checks E, L, M consume verbatim numeric values (never-substitute list per `graph-recall.md`) — their load rows are unchanged. Graph absent or stale → the load table above applies unchanged.
 
-### 2. Check Categories (20 checks)
+### 2. Check Categories (21 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
 
@@ -338,6 +341,19 @@ Checks D and I verify that a character is *consistent* and *cared about*; neithe
 **Flag** each load-bearing premise absent from its character's introduction chapter as **WARNING**: "establishment gap at `chapters/<book>/chNN.md`: <character>'s introduction does not deliver <premise> (canon: `<file>`). A reader finishes the chapter without it." **Route to:** SMELL.md entry on the chapter — INLINE if a line or two can carry the premise, ANCHOR-NEEDED if it needs a new beat.
 
 This is delivery, not contradiction — WARNING, not BLOCKING. Escalate in triage if a documented later plant or reveal depends on the missing premise.
+
+#### U. Single Ownership (WARNING)
+
+Every check above compares two statements of a fact and asks whether they agree. This one asks why there are two. A project that scaffolds an information architecture — one canonical file per concept, everything else cross-referencing with `→ see <file> §<section>` — states that rule and then verifies nothing, so a second explanation accretes in a neighbouring file and drifts. In `ground-truth` on 2026-07-27 three defects had exactly that shape: a simulation tell with two different mechanisms across three files, a forbidden causal link restated in three including the one that owns the topic, and one rule carried by three different line citations, one of which pointed at a blank line. All three were found by hand, late, and none of the twenty checks above could have found any of them — each was internally consistent in the file it sat in.
+
+**Read the slug list from the consuming project, never from here.** The project's `CLAUDE.md` (or the file its own §Information Architecture names) carries a Concept → Canonical file table; each canonical file declares `owns: [<slug>, ...]` in its frontmatter. Adding a row to that table must change what this check reports, with no edit to this instruction — otherwise the check grows the second source of truth it exists to prevent.
+
+**For each slug:**
+- More than one file claims it in `owns:` → **WARNING**: "concept `<slug>` claimed by `<file A>` and `<file B>`; one of them is the canonical owner and the other cross-references it." **Route to:** DEVPLAN milestone.
+- No file claims it → **WARNING**: "concept `<slug>` is named in the Concept → Canonical file table and no file declares it." **Route to:** DEVPLAN milestone adding the frontmatter.
+- A file that does *not* own the slug **explains** the concept rather than pointing at its owner — a mechanism restated, a value re-derived, a rule re-stated in its own words — → **WARNING**: "`<file>` explains `<slug>`, owned by `<owner>`; replace the explanation with `→ see <owner> §<section>`." A passing mention, a name used in a sentence, or a `→ see` line is not an explanation.
+
+**Why WARNING, not BLOCKING** — the same grounds as a register CONFLICT: resolving a duplicate means deciding which file keeps the content and moving it, which is a judgment about the corpus rather than a repair the pipeline can apply. A blocking verdict here would stop a write cycle on a question no automatic fix can answer.
 
 ### 3. Output — Report to User
 

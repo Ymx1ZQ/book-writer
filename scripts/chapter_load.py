@@ -22,6 +22,7 @@ Capacity is measured, not assumed: it is derived from rows already marked
     ./chapter-load.py --stale         artifacts older than the prose they describe
     ./chapter-load.py --renumber      chapter slots whose title moved, and the rows they invalidate
     ./chapter-load.py --devplan-drift open items whose named files moved after them
+    ./chapter-load.py --ownership     concept slugs claimed twice, by nobody, or off-table
 
 Read-only. Safe to run at any time.
 """
@@ -699,6 +700,108 @@ def malformed_rows():
     return bad
 
 
+# --- single ownership -------------------------------------------------------
+#
+# A project that scaffolds an information architecture states one rule -- each
+# concept has one canonical file, everything else cross-references -- and then
+# verifies nothing. A second explanation accretes in a neighbouring file and
+# drifts, and every other check here passes, because each file is internally
+# consistent. Three defects of that shape were found by hand in `ground-truth`
+# on 2026-07-27, all late.
+#
+# This half is mechanical: who claims what. The judgment half -- whether a
+# non-owner *explains* a concept instead of pointing at its owner -- is
+# `coherence-check.md` check U, and no static check can do it.
+
+OWNS_TABLE = re.compile(r"^\|\s*Concept\s*\|\s*Slug\s*\|\s*Canonical file\s*\|", re.I)
+OWNS_FIELD = re.compile(r"^owns:\s*\[([^\]]*)\]\s*$", re.M)
+BACKTICKED_CELL = re.compile(r"`([^`]+)`")
+# `characters/<char>.md`, `chapters/book-N/outline.md`, `plot/episode-N.md`: the
+# cell names a shape, not a file. Ownership there is per character or per book,
+# which is a convention rather than an owner, so it is reported as uncovered
+# instead of being faked with twenty files claiming one slug.
+PATTERN_CELL = re.compile(r"<[^>]+>|\bbook-N\b|\bepisode-N\b")
+
+
+def ownership_table():
+    """[(slug, canonical cell, is_pattern)] from the project's own concept table.
+
+    Read from the project at run time and never held here: a copy in the tool
+    would be the second source of truth this check exists to find.
+    """
+    rows = []
+    for name in ("CLAUDE.md", "README.md", "AGENTS.md"):
+        path = ROOT / name
+        if not path.is_file():
+            continue
+        inside = False
+        for line in path.read_text(encoding="utf-8").split("\n"):
+            if OWNS_TABLE.match(line):
+                inside = True
+                continue
+            if not inside:
+                continue
+            if not line.startswith("|"):
+                inside = False
+                continue
+            if TABLE_SEP.match(line):
+                continue
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) < 3:
+                continue
+            slug = BACKTICKED_CELL.search(cells[1])
+            if not slug:
+                continue
+            rows.append((slug.group(1), cells[2], bool(PATTERN_CELL.search(cells[2]))))
+        if rows:
+            break
+    return rows
+
+
+def ownership_claims():
+    """{slug: [file, ...]} from every `owns:` frontmatter block in the project."""
+    claims = defaultdict(list)
+    for f in sorted(ROOT.rglob("*.md")):
+        rel = f.relative_to(ROOT).as_posix()
+        if "archive" in f.parts or any(d.startswith(".") for d in f.parts):
+            continue
+        head = f.read_text(encoding="utf-8").split("\n---", 1)
+        if not head[0].startswith("---\n"):
+            continue
+        m = OWNS_FIELD.search(head[0])
+        if not m:
+            continue
+        for slug in (s.strip().strip("`") for s in m.group(1).split(",")):
+            if slug:
+                claims[slug].append(rel)
+    return claims
+
+
+def ownership():
+    """(table, claims, findings) -- findings are (kind, slug, detail)."""
+    table = ownership_table()
+    claims = ownership_claims()
+    listed = {slug for slug, _, _ in table}
+    findings = []
+    for slug, cell, is_pattern in table:
+        who = claims.get(slug, [])
+        if is_pattern:
+            continue
+        if len(who) > 1:
+            findings.append(("DUPLICATE", slug, ", ".join(who)))
+            continue
+        if not who:
+            findings.append(("UNCLAIMED", slug, cell))
+            continue
+        named = BACKTICKED_CELL.search(cell)
+        if named and named.group(1) != who[0]:
+            findings.append(("MISPLACED", slug, f"table says {named.group(1)}, claimed by {who[0]}"))
+    for slug, who in sorted(claims.items()):
+        if slug not in listed:
+            findings.append(("STRAY", slug, ", ".join(who)))
+    return table, claims, findings
+
+
 def illegal_loads(books):
     """(book, ch, level, extra, path, barred_level) for every context entry the level bars.
 
@@ -829,6 +932,8 @@ def main():
                     help="context entries a chapter's own Level bars it from loading")
     ap.add_argument("--devplan-drift", action="store_true",
                     help="open devplan items whose named files moved after the item was written")
+    ap.add_argument("--ownership", action="store_true",
+                    help="concept slugs claimed twice, claimed by nobody, or claimed off-table")
     ap.add_argument("--renumber", nargs="?", const="HEAD", metavar="REF",
                     help="chapter slots whose title moved since REF (default HEAD), "
                          "and the tracker rows those slots invalidate")
@@ -995,6 +1100,33 @@ def main():
                 print(f"      {book}  {level_of(rel):<8} {rel}")
         return 0
 
+    if args.ownership:
+        table, claims, findings = ownership()
+        if not table:
+            print("OWNERSHIP — no `| Concept | Slug | Canonical file |` table in the project.")
+            print("This check reads the project's own concept table at run time and holds no")
+            print("copy, so with no table there is nothing to check. Add one to CLAUDE.md.")
+            return 0
+        patterns = [(s, c) for s, c, p in table if p]
+        print(f"OWNERSHIP — {len(table)} concepts declared, {len(findings)} finding(s).")
+        print("Each concept has one canonical file and every other file cross-references it.")
+        print("This half is who claims what; whether a non-owner *explains* a concept instead")
+        print("of pointing at its owner is coherence-check.md check U, which is a judgment.\n")
+        print("  DUPLICATE  two files claim the slug — one is the owner, the other must point at it.")
+        print("  UNCLAIMED  the table names a concept no file declares in `owns:`.")
+        print("  MISPLACED  the claimant is not the file the table names.")
+        print("  STRAY      a file claims a slug the table does not list.\n")
+        for kind, slug, detail in findings:
+            print(f"  {kind:<10} {slug}")
+            print(f"             {detail}")
+        if patterns:
+            print(f"\n  {len(patterns)} row(s) name a pattern rather than a file and are NOT covered.")
+            print("  Ownership there is per character or per book — a convention, not an owner.")
+            print("  Listed rather than faked: a slug claimed by twenty files is not ownership.")
+            for slug, cell in patterns:
+                print(f"      {slug:<28} {cell}")
+        return 1 if findings else 0
+
     if args.devplan_drift:
         import datetime
         flagged, unjudgeable, total = devplan_drift()
@@ -1136,6 +1268,19 @@ def main():
             # off for the duration of exactly the work that fixes it.
             print(f"  WARN  {n_conf} rows unreachable-CONFLICT: the owning file is level-locked "
                   f"away from the chapter. Needs a content move, not a context-list edit.")
+        own = [f for f in ownership()[2] if f[0] in ("DUPLICATE", "MISPLACED", "STRAY")]
+        if own:
+            # FAIL on the same grounds as a malformed row: these three are
+            # mechanical. Two files claiming one concept, a claimant the table
+            # does not name, a slug the table does not list -- none of them needs
+            # a judgment to be wrong. UNCLAIMED is left out deliberately: a
+            # concept nobody has claimed yet is a project mid-adoption, not a
+            # defect, and failing there would gate every run until the last file
+            # was annotated.
+            print(f"  FAIL  {len(own)} ownership finding(s) — a concept the project declares "
+                  f"canonical is claimed twice, off-table, or by the wrong file (run --ownership):")
+            for kind, slug, detail in own[:10]:
+                print(f"          {kind:<10} {slug}  —  {detail}")
         n_ill = len(illegal_loads(books))
         if n_ill:
             # A warning on the same reasoning as CONFLICT, which it is the other
@@ -1150,9 +1295,10 @@ def main():
             print(f"  WARN  {len(hot)} chapters at more than 2x capacity:")
             for n, (book, ch) in sorted(hot, reverse=True)[:5]:
                 print(f"          {book} Ch{ch:02d}  {n} pending ({n / cap:.1f}x)")
-        if not (n_un or orphans or n_miss or bad):
+        if not (n_un or orphans or n_miss or bad or own):
             print("  OK    every row has a chapter; no orphans on drafted chapters; "
-                  "every row's file is loaded by its chapter; every tracker table is intact.")
+                  "every row's file is loaded by its chapter; every tracker table is intact; "
+                  "every declared concept has one owner.")
             return 0
         return 1
 

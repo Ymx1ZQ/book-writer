@@ -230,3 +230,102 @@ def test_the_guard_never_writes(tmp_path: Path) -> None:
         run(tmp_path, mode)
     after = {p: p.read_bytes() for p in tmp_path.rglob("*.md")}
     assert before == after
+
+
+# --- single ownership ----------------------------------------------------------
+
+def concept_table(*rows: str) -> str:
+    head = ("## Information Architecture\n\n"
+            "| Concept | Slug | Canonical file |\n"
+            "|---------|------|----------------|\n")
+    return head + "".join(rows) + "\n"
+
+
+def test_ownership_clean_when_each_slug_has_one_owner(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n"), encoding="utf-8")
+    anchors = tmp_path / "world/anchors.md"
+    anchors.write_text("---\nowns: [timeline]\n---\n" + anchors.read_text(encoding="utf-8"),
+                       encoding="utf-8")
+    r = run(tmp_path, "--ownership")
+    assert r.returncode == 0, r.stdout
+    assert "1 concepts declared, 0 finding(s)" in r.stdout
+
+
+def test_ownership_catches_a_second_claimant(tmp_path: Path) -> None:
+    # The defect this exists for: a second explanation accretes in a neighbouring
+    # file and drifts, and every other check passes because each file is
+    # internally consistent.
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n"), encoding="utf-8")
+    for rel in ("world/anchors.md", "world/overview.md"):
+        p = tmp_path / rel
+        p.write_text("---\nowns: [timeline]\n---\n" + p.read_text(encoding="utf-8"),
+                     encoding="utf-8")
+    r = run(tmp_path, "--ownership")
+    assert r.returncode == 1
+    assert "DUPLICATE" in r.stdout
+    # and it fails the pipeline guard, not only the listing mode
+    assert run(tmp_path, "--check").returncode == 1
+
+
+def test_ownership_catches_a_claim_the_table_does_not_list(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n"), encoding="utf-8")
+    for rel, slug in (("world/anchors.md", "timeline"), ("world/overview.md", "invented")):
+        p = tmp_path / rel
+        p.write_text(f"---\nowns: [{slug}]\n---\n" + p.read_text(encoding="utf-8"),
+                     encoding="utf-8")
+    r = run(tmp_path, "--ownership")
+    assert r.returncode == 1
+    assert "STRAY" in r.stdout and "invented" in r.stdout
+
+
+def test_ownership_unclaimed_is_reported_but_does_not_fail_the_guard(tmp_path: Path) -> None:
+    # A concept nobody has annotated yet is a project mid-adoption, not a defect.
+    # Failing here would gate every run until the last file was annotated.
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n"), encoding="utf-8")
+    assert "UNCLAIMED" in run(tmp_path, "--ownership").stdout
+    assert run(tmp_path, "--check").returncode == 0
+
+
+def test_ownership_reads_the_table_from_the_project(tmp_path: Path) -> None:
+    # The done-when for the whole check: adding a row to the project's table, and
+    # nothing else, changes what the check reports. A copy of the slug list in
+    # the tool would be the second source of truth this check exists to find.
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n"), encoding="utf-8")
+    anchors = tmp_path / "world/anchors.md"
+    anchors.write_text("---\nowns: [timeline]\n---\n" + anchors.read_text(encoding="utf-8"),
+                       encoding="utf-8")
+    assert "1 concepts declared, 0 finding(s)" in run(tmp_path, "--ownership").stdout
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| The timeline | `timeline` | `world/anchors.md` |\n",
+                      "| The tone | `tone` | `world/overview.md` |\n"), encoding="utf-8")
+    out = run(tmp_path, "--ownership").stdout
+    assert "2 concepts declared, 1 finding(s)" in out
+    assert "UNCLAIMED" in out and "tone" in out
+
+
+def test_ownership_pattern_rows_are_reported_as_uncovered(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    (tmp_path / "CLAUDE.md").write_text(
+        concept_table("| Per-character flashbacks | `flashbacks` | `characters/<char>.md` |\n",
+                      "| Chapter detail | `chapter-detail` | `chapters/book-N/outline.md` |\n"),
+        encoding="utf-8")
+    r = run(tmp_path, "--ownership")
+    assert r.returncode == 0, r.stdout
+    assert "2 row(s) name a pattern rather than a file and are NOT covered" in r.stdout
+
+
+def test_ownership_with_no_table_checks_nothing(tmp_path: Path) -> None:
+    scaffold(tmp_path)
+    r = run(tmp_path, "--ownership")
+    assert r.returncode == 0
+    assert "no `| Concept | Slug | Canonical file |` table" in r.stdout

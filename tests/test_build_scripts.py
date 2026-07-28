@@ -9,8 +9,10 @@ dependency block, and wires argparse — and, when `uv` is present, actually run
 from __future__ import annotations
 
 import ast
+import re
 import shutil
 import subprocess
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -18,6 +20,9 @@ import pytest
 REPO = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO / "scripts"
 BUILD_SCRIPTS = ["build_pdf.py", "build_epub.py"]
+NEEDS_UV = pytest.mark.skipif(
+    shutil.which("uv") is None, reason="uv not on PATH — real render skipped"
+)
 
 
 @pytest.mark.parametrize("name", BUILD_SCRIPTS)
@@ -44,6 +49,78 @@ def test_uv_run_help(name: str) -> None:
     )
     assert r.returncode == 0, r.stderr
     assert "usage" in (r.stdout + r.stderr).lower()
+
+
+# --- document language (skill Phase 28) -----------------------------------
+#
+# Both builders read `language` from meta.yaml. Until Phase 28 the EPUB wrote a
+# hardcoded lang="en" into every chapter document and the PDF wrote no lang at
+# all, so an Italian book was narrated in an English voice and no PDF this
+# script ever produced was hyphenated — `hyphens: auto` needs a declared
+# language to key on.
+
+
+def _book(tmp_path: Path, meta: str | None) -> Path:
+    d = tmp_path / "book-1"
+    d.mkdir()
+    (d / "ch01.md").write_text("# Ch. 01 — Uno\n\nUn paragrafo di prova.\n")
+    (d / "ch02.md").write_text("# Ch. 02 — Due\n\nUn altro paragrafo di prova.\n")
+    if meta is not None:
+        (d / "meta.yaml").write_text(meta)
+    return d
+
+
+def _render(script: str, book_dir: Path, out: Path, *extra: str) -> None:
+    r = subprocess.run(
+        ["uv", "run", "--script", str(SCRIPTS / script), str(book_dir),
+         "--out", str(out), *extra],
+        capture_output=True, text=True, timeout=600,
+    )
+    assert r.returncode == 0, r.stderr
+    assert out.is_file() and out.stat().st_size > 0
+
+
+@NEEDS_UV
+@pytest.mark.parametrize(
+    "meta,expected",
+    [("title: T\nauthor: A\nlanguage: it-IT\n", "it-IT"), (None, "en")],
+    ids=["meta-language", "default-when-no-meta"],
+)
+def test_epub_documents_declare_the_book_language(tmp_path, meta, expected) -> None:
+    out = tmp_path / "o.epub"
+    _render("build_epub.py", _book(tmp_path, meta), out)
+    with zipfile.ZipFile(out) as z:
+        docs = [n for n in z.namelist() if n.endswith(".xhtml")]
+        # Two chapters plus the nav: a narrating reader hits the nav first.
+        assert len(docs) == 3, docs
+        for name in docs:
+            tag = re.search(r"<html[^>]*>", z.read(name).decode()).group()
+            assert f'lang="{expected}"' in tag, f"{name}: {tag}"
+
+
+@NEEDS_UV
+def test_pdf_declares_the_book_language(tmp_path) -> None:
+    out = tmp_path / "o.pdf"
+    _render("build_pdf.py", _book(tmp_path, "title: T\nlanguage: it-IT\n"), out)
+    assert out.read_bytes().startswith(b"%PDF")
+
+
+@NEEDS_UV
+def test_pdf_single_chapter_reads_meta(tmp_path) -> None:
+    # render_single had no meta.yaml path at all before Phase 28, so a
+    # single-chapter PDF stayed unhyphenated even once render_book was fixed.
+    out = tmp_path / "ch01.pdf"
+    _render("build_pdf.py", _book(tmp_path, "title: T\nlanguage: it-IT\n"), out,
+            "--chapter", "ch01")
+    assert out.read_bytes().startswith(b"%PDF")
+
+
+def test_pdf_emits_no_language_less_html_element() -> None:
+    # The regression this phase closes is a literal, and it renders without
+    # error — nothing but the source pins it.
+    src = (SCRIPTS / "build_pdf.py").read_text()
+    assert "<html>" not in src, "build_pdf.py emits an <html> element with no lang"
+    assert re.search(r"def wrap\(body: str, language", src), "wrap() takes no language"
 
 
 # --- remap_citations (skill Phase 26) -------------------------------------

@@ -49,6 +49,8 @@ All keys are optional. Defaults:
 - `identifier` → deterministic `urn:uuid:...` derived from the book directory path (stable across re-renders, KDP-friendly)
 - `language` → `"en"`
 
+`language` is not metadata only: it is written as the `lang` of the OPF **and** of every XHTML document in the package — each chapter plus the nav. Readers pick the hyphenation dictionary and the text-to-speech voice per document, so a book whose chapters declare the wrong language is narrated in the wrong voice however correct the OPF is. Use a full tag (`it-IT`, `en-US`) as for any BCP 47 consumer.
+
 PyYAML is now a required dependency (declared in the script's PEP 723 header), so `meta.yaml` Just Works once `uv` is on the PATH.
 
 ## Notes

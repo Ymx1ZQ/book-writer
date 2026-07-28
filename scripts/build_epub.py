@@ -141,8 +141,14 @@ def add_default_css(book: epub.EpubBook) -> epub.EpubItem:
     return css_item
 
 
-def make_chapter_item(filename: str, title: str, html_body: str) -> epub.EpubHtml:
-    chap = epub.EpubHtml(title=title, file_name=filename, lang="en")
+def make_chapter_item(
+    filename: str, title: str, html_body: str, language: str
+) -> epub.EpubHtml:
+    # The document language, not just the book's. Readers pick the hyphenation
+    # dictionary and the text-to-speech voice per XHTML document: a hardcoded
+    # "en" here narrates an Italian book in an English voice while the OPF
+    # dc:language says otherwise.
+    chap = epub.EpubHtml(title=title, file_name=filename, lang=language)
     chap.content = (
         "<?xml version='1.0' encoding='utf-8'?>"
         "<!DOCTYPE html>"
@@ -157,8 +163,14 @@ def make_chapter_item(filename: str, title: str, html_body: str) -> epub.EpubHtm
     return chap
 
 
-def make_nav(items: list, title: str) -> epub.EpubNav:
+def make_nav(items: list, title: str, language: str) -> epub.EpubNav:
+    # The nav is a document too, and the first one a narrating reader reaches.
+    # EpubNav.__init__ takes no lang, so it is set after construction; ebooklib
+    # serializes `self.lang or self.book.language`, which is also why the nav
+    # was already correct while the chapters were not — those passed an
+    # explicit "en" that overrode that fallback.
     nav = epub.EpubNav(uid="nav", file_name="nav.xhtml")
+    nav.lang = language
     nav_li = "\n".join(
         f'<li><a href="{item.file_name}">{item.title}</a></li>'
         for item in items
@@ -197,11 +209,11 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
     if meta.get("series"):
         add_series_metadata(book, meta["series"], meta.get("series_index"))
     add_default_css(book)
-    chap = make_chapter_item(f"{ch}.xhtml", chapter_title, html_body)
+    chap = make_chapter_item(f"{ch}.xhtml", chapter_title, html_body, language)
     book.add_item(chap)
     book.toc = (chap,)
     book.add_item(epub.EpubNcx())
-    book.add_item(make_nav([chap], title))
+    book.add_item(make_nav([chap], title, language))
     book.spine = ["nav", chap]
 
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -232,13 +244,13 @@ def render_book(book_dir: Path, out: Path) -> Path:
         md_text = src.read_text(encoding="utf-8")
         ch_title = first_h1_title(md_text) or src.stem
         html_body = md_to_html(md_text)
-        chap = make_chapter_item(f"{src.stem}.xhtml", ch_title, html_body)
+        chap = make_chapter_item(f"{src.stem}.xhtml", ch_title, html_body, language)
         book.add_item(chap)
         items.append(chap)
 
     book.toc = tuple(items)
     book.add_item(epub.EpubNcx())
-    book.add_item(make_nav(items, title))
+    book.add_item(make_nav(items, title, language))
     book.spine = ["nav"] + items
 
     out.parent.mkdir(parents=True, exist_ok=True)

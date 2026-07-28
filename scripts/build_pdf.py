@@ -67,8 +67,16 @@ def load_meta(book_dir: Path) -> dict:
     return meta
 
 
-def wrap(body: str) -> str:
-    return f"<!doctype html><html><head><meta charset='utf-8'></head><body>{body}</body></html>"
+def wrap(body: str, language: str = "en") -> str:
+    # `lang` is what makes `hyphens: auto` in book.css do anything: WeasyPrint
+    # hyphenates only when the document declares a language, and the stylesheet
+    # justifies every paragraph. Without it the text is justified and never
+    # broken, which opens the word spacing on an A5 page.
+    return (
+        "<!doctype html>"
+        f"<html lang='{language}'><head><meta charset='utf-8'></head>"
+        f"<body>{body}</body></html>"
+    )
 
 
 def render_single(book_dir: Path, ch: str, out: Path) -> Path:
@@ -76,8 +84,11 @@ def render_single(book_dir: Path, ch: str, out: Path) -> Path:
     if not src.is_file():
         sys.exit(f"error: chapter source not found: {src}")
     body = md_to_html(src.read_text(encoding="utf-8"))
+    language = load_meta(book_dir).get("language", "en")
     out.parent.mkdir(parents=True, exist_ok=True)
-    HTML(string=wrap(body)).write_pdf(str(out), stylesheets=[CSS(filename=str(DEFAULT_CSS))])
+    HTML(string=wrap(body, language)).write_pdf(
+        str(out), stylesheets=[CSS(filename=str(DEFAULT_CSS))]
+    )
     return out
 
 
@@ -109,7 +120,7 @@ def render_book(book_dir: Path, out: Path) -> Path:
             parts.append("<div class='chapter-break'></div>")
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    HTML(string=wrap("".join(parts))).write_pdf(
+    HTML(string=wrap("".join(parts), meta.get("language", "en"))).write_pdf(
         str(out), stylesheets=[CSS(filename=str(DEFAULT_CSS))]
     )
     return out

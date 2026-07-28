@@ -32,9 +32,24 @@ The `pub/` subdirectory (shared with `/book epub` — rendered publication artif
    ```
    Do NOT attempt to install dependencies automatically.
 
+## Metadata (optional `meta.yaml`)
+
+`build_pdf.py` reads four keys from `chapters/<book>/meta.yaml` — the same file `/book epub` reads:
+
+```yaml
+title: The Real Title of the Book
+subtitle: Book One
+author: Author Name
+language: it-IT
+```
+
+All keys are optional. `title` and `subtitle` set the title page; without them the title falls back to `outline.md`'s first `# ...` heading, which is an internal-doc heading and not the book title.
+
+`language` is the one with an effect on every page. It becomes the `lang` attribute of the rendered document, and `book.css` justifies every paragraph with `hyphens: auto` — WeasyPrint hyphenates only when the document declares a language. Set it wrong and the text hyphenates by the wrong dictionary; omit it and the default `en` applies, which for a book in another language means justified text that never breaks a word and opens the word spacing to fill the line.
+
 ## Notes
 
 - Typography lives in `~/.claude/skills/book/scripts/book.css` (A5, Georgia 11pt, justified, drop-cap, scene-break ornament, page numbers). Edit that file to adjust look-and-feel — no code changes needed.
-- Whole-book mode pulls the title from the first `# ...` heading of `chapters/<book>/outline.md`; falls back to the directory name if `outline.md` is missing or has no top-level heading.
+- Whole-book mode takes the title from `meta.yaml` when present, else the first `# ...` heading of `chapters/<book>/outline.md`, else the directory name.
 - Chapter order in whole-book mode is `sorted(glob("ch*.md"))` — names like `ch01.md`, `ch02.md`, ... must be zero-padded for correct ordering.
 - This command is on-demand: it is NOT part of the canonical writing pipeline (init / setup / coherence / write / review / proofread / revise / compact / continuity).

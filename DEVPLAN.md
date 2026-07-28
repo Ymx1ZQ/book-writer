@@ -1689,3 +1689,85 @@ reasoning, `factcheck.md` at 1.9%, and no agent invented a cut to hit a figure.
   raise per-invocation cost while lowering the total, which is the wrong number.
 - It does not delete a check, a dimension, or an objection category. If one of those is not worth its
   tokens, that is a separate decision with its own evidence, not a side effect of a compression pass.
+
+---
+
+## Phase 28 ✅ — The rendered book declares the language it is written in (2026-07-29)
+
+Source: a translation of `ground-truth` book-1 into Italian, rendered through these two scripts on
+2026-07-28. Both builders take `language` from `meta.yaml`; neither puts it where a renderer or a reader
+can act on it.
+
+**Measured on that build.** The EPUB carries `dc:language = it-IT` in the OPF, and every one of its nine
+chapter documents opens `<html lang="en" xml:lang="en">` — `make_chapter_item` hardcodes it. A reader that
+selects a text-to-speech voice or a hyphenation dictionary per document gets English for an Italian book.
+The PDF is worse and language-independent: `wrap()` emits `<html>` with no `lang` at all, and
+`book.css` has set `text-align: justify` with `hyphens: auto` since it was written. WeasyPrint hyphenates
+only when the document declares a language, so **no PDF this script has ever produced has been hyphenated**
+— 117 justified A5 pages at 11pt with the word spacing opened to fill every line. `build_pdf.py` loads
+`language` at line 64 and never reads it again.
+
+### M1 — every XHTML document in the EPUB carries the book's language ✅
+
+- [x] `make_chapter_item(filename, title, html_body, language)` — `lang` comes from the caller instead of
+  the literal `"en"`. Both call sites (`render_single`, `render_book`) already hold `language`.
+- [x] `make_nav(items, title, language)` — the nav document is a document too; a reader narrating the table
+  of contents hits it first.
+- [x] Default stays `"en"` via `meta.get("language", "en")`, so a book with no `meta.yaml` renders exactly
+  as it does today.
+
+### M2 — the PDF declares its language, which is what turns hyphenation on ✅
+
+- [x] `wrap(body, language)` emits `<html lang='…'>`. This is the whole fix: the CSS asking for
+  hyphenation has been correct all along and had nothing to key on.
+- [x] `render_single` loads `meta.yaml` — today it does not, so a single-chapter PDF has no metadata path
+  at all and would keep rendering unhyphenated after M2 lands elsewhere.
+- [x] **Consequence, stated because it is visible and not a regression:** the English book-1 PDF re-flows
+  the first time it is rebuilt. Hyphenation changes line breaking, so the page count moves. The rendered
+  artifacts are compiled output under `chapters/*/pub/`, regenerable, and not committed.
+
+### M3 — a test that fails on the hardcoded value, and the two instruction files ✅
+
+- [x] `tests/test_build_scripts.py`: render a two-chapter book with `language: it-IT` through `uv run
+  --script` (guarded by the existing `skipif(shutil.which("uv") is None)`), unzip the EPUB, assert every
+  chapter document and the nav declare `it-IT`. The same test with no `meta.yaml` asserts `en` — the
+  default is the behaviour most consuming projects rely on.
+- [x] The PDF half gets a render-and-exit-0 test plus a source assertion that the `<html` literal carries
+  `lang`. A hyphenation assertion would have to read the PDF text layer for soft hyphens, which is a
+  fragile check of WeasyPrint's dictionary rather than of this script.
+- [x] `instructions/epub.md` — the `language` key stops being described as EPUB metadata only; it sets the
+  per-document language that drives TTS voice and hyphenation.
+- [x] `instructions/pdf.md` — documents `meta.yaml` for the first time. The file currently mentions none of
+  the four keys `build_pdf.py` reads, and `language` is the one with a visible effect on the page.
+- Deploy with `./install.sh --force`, run the full pytest set, then re-render the Italian book-1 EPUB/PDF
+  so the delivered files carry the fix. — done 2026-07-29
+
+### Result — 117 pages to 116, and 124 lines that stopped being needed
+
+Measured on the same nine-chapter Italian book, rendered by the pre-fix and post-fix script into the same
+directory: **117 pages → 116, and 3,130 → 3,006 lines of text.** Same words, 4% fewer lines, because
+hyphenation now breaks them. The EPUB check is exact: all nine chapter documents and the nav declare
+`it-IT` where every one of them declared `en` the day before.
+
+Rendering the same book with `language: en-US` also lands on 116 pages — English patterns applied to
+Italian words still break something. Page count therefore proves that *a* language was declared, not that
+the right one was; the assertion that the declared language is the book's is the EPUB test's job.
+
+**The nav was already right, by an accident worth recording.** ebooklib serializes
+`self.lang or self.book.language`, so a document that declares nothing inherits the book's language.
+`make_nav` passed nothing and was correct; `make_chapter_item` passed `"en"` and was wrong — the defect was
+not a missing value but an explicit one overriding a working fallback. `EpubNav.__init__` takes no `lang`
+argument, so M1 sets the attribute after construction rather than through the constructor.
+
+**Two tests were verified against the pre-fix scripts before the fix was kept**, by stashing them: the EPUB
+assertion fails with `lang="en"` where `it-IT` was expected, and the source assertion fails on the bare
+`<html>` literal. The `default-when-no-meta` case passes both before and after, which is the point — it
+pins the default that every existing project relies on.
+
+### What this phase does not do
+
+- It does not touch `book.css` or `epub.css`. The stylesheets asked for hyphenation correctly and had
+  nothing to key on; changing them would have hidden the defect instead of closing it.
+- It does not assert hyphenation from the PDF text layer. That reads WeasyPrint's dictionary rather than
+  this script, and pdftotext does not reliably preserve the inserted hyphen — the page-count and
+  line-count deltas above are the evidence, recorded here rather than asserted in a test.

@@ -1723,8 +1723,9 @@ only when the document declares a language, so **no PDF this script has ever pro
 - [x] `render_single` loads `meta.yaml` — today it does not, so a single-chapter PDF has no metadata path
   at all and would keep rendering unhyphenated after M2 lands elsewhere.
 - [x] **Consequence, stated because it is visible and not a regression:** the English book-1 PDF re-flows
-  the first time it is rebuilt. Hyphenation changes line breaking, so the page count moves. The rendered
-  artifacts are compiled output under `chapters/*/pub/`, regenerable, and not committed.
+  the first time it is rebuilt, because hyphenation changes line breaking. The rendered artifacts are
+  compiled output under `chapters/*/pub/`, regenerable, and not committed. Measured after the fact, and
+  smaller than predicted here: 2,834 → 2,807 lines and **112 pages either way** — see the Result section.
 
 ### M3 — a test that fails on the hardcoded value, and the two instruction files ✅
 
@@ -1752,6 +1753,15 @@ hyphenation now breaks them. The EPUB check is exact: all nine chapter documents
 Rendering the same book with `language: en-US` also lands on 116 pages — English patterns applied to
 Italian words still break something. Page count therefore proves that *a* language was declared, not that
 the right one was; the assertion that the declared language is the book's is the EPUB test's job.
+
+**The same fix moves English an eighth as far, and the phase predicted otherwise.** The English book-1 PDF
+was re-rendered on 2026-07-29 and measured against the pre-fix script from `8f71727`: **2,834 → 2,807
+lines, and 112 pages both times.** M2 above said the page count would move; it does not for this book.
+English words are shorter and offer fewer break points, so hyphenation recovers 1% of the lines where
+Italian recovers 4% — a book in a compounding language is where this defect was costing something, and it
+took translating one to surface a bug that had been shipping in every render since the stylesheet was
+written. The English EPUB is the unambiguous half: its ten documents declared `{en-US, en}` before the fix
+— the nav inheriting the book language, the nine chapters overriding it — and declare `en-US` after.
 
 **The nav was already right, by an accident worth recording.** ebooklib serializes
 `self.lang or self.book.language`, so a document that declares nothing inherits the book's language.

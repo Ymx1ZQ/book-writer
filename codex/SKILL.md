@@ -1,13 +1,11 @@
 ---
 name: book
 description: >-
-  Codex-side variant of the `book` skill. Exposes the `judge` subcommand: a
-  cross-model chapter comparator for parallel-write book pipelines. Reads N
-  parallel drafts of the same chapter, ranks them on 11 dimensions (6
-  canonical-compliance + 5 brilliance), and writes rank-only JSON to a
-  user-provided output path for downstream Borda-count aggregation. One judge in
-  a multi-model ensemble (codex / Anthropic / Gemini / DeepSeek). The JSON is the
-  entire file content — no prose, no markdown fences.
+  Codex-side variant of the `book` skill: exposes only the `judge` subcommand.
+  `/book judge <manifest> <output>` reads N parallel chapter drafts, ranks them on
+  11 dimensions (canonical-compliance + brilliance), and writes rank-only JSON to
+  `<output>` for downstream Borda aggregation — one lane of a multi-model judge
+  ensemble. The JSON is the entire file content: no prose, no markdown fences.
 ---
 
 # `/book judge` (Codex variant) — Cross-Model Chapter Comparator

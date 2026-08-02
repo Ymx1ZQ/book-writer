@@ -49,6 +49,8 @@ graphify query "<book> ch<NN> — plant instances and payoffs assigned to this c
 
 The result is a **list of files to open**, nothing more. Findings are asserted only from the verbatim reads below — the disk text is the truth. An empty result is never evidence of absence: it sends you to the full file set, per `graph-recall.md` §Fallback ladder. Graph absent or stale → skip triage; the check runs **identically** on file reads alone.
 
+**The two queries above do not need per-chapter nodes — do not skip them because of the note below.** Measured 2026-08-02 on ch09 and ch10: both runs read the paragraph that follows and skipped the whole triage, citing "no per-chapter outline nodes". That paragraph forbids one *discarded* query shape; it says nothing about the tracker and plant queries, which are the ones that survive. If those two return a usable file list, use it. If they return generic community neighbours — which is what ch10's re-check observed on this corpus — say so in the audit line and fall back, but say it about **those** queries, not about a node pair nothing asks for any more.
+
 **Do not reintroduce a per-chapter node pair, and do not "fix" it by renaming the ids.** Until 2026-08-02 this section queried `chapters_book_N_outline_chNN` against `chapters_book_N_chNN`. Neither id has ever existed in any graph this project built, so the pair diff never ran once — and the "either node missing → skip triage silently" clause meant nothing ever reported it.
 
 The reason it cannot simply be renamed is what the measurement found on a freshly rebuilt `ground-truth` graph (5,965 nodes, 10,093 edges, 182/182 documents):

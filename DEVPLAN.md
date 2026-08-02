@@ -1874,3 +1874,36 @@ Measured on the freshly rebuilt graph (5,965 nodes, 10,093 edges, 182/182 docume
   now a place where a broken query can live undetected. The contract test is the cheap standing guard;
   writing a query without checking its shape against a real graph is what it guards against.
 - Suite **69/69**.
+
+### M7 ✅ — The gate is fixed; the graph does not pay for fidelity, and that is the honest result
+
+Three live `/book fidelity` runs on a freshly rebuilt graph (ch10, ch10 re-check, ch09). All three clean —
+0 findings across five classes each. What they establish about the graph:
+
+- [x] **The gate works now.** The ch10 re-check, the first run after M6 installed, declared
+  `Graph triage: fresh (built_at_commit = HEAD)` where the run before it had reported the fabricated
+  *"stale — 128 content files changed"*. The manifest prohibition took.
+- [x] **The queries do not pay, and the run said why.** *"The answer-mode query for this book returns
+  generic community members rather than a usable file list."* Confirmed by hand: asking for
+  `usage-tracker items assigned to book-1 ch10` returns thematically adjacent nodes — book-3's outline,
+  motif-tracking, character nodes — not the set of files carrying a ch10 tracker row. The graph as this
+  extractor builds it answers *what relates to what*, and the tracker question is *where is this recorded*.
+  Those are different questions and I assigned the wrong one.
+- [x] **A defect I introduced, caught by the runs.** The "do not reintroduce a per-chapter node pair" note
+  was more prominent than the two replacement queries, so both runs read it as "the graph cannot help here"
+  and skipped the whole triage — ch09's audit cites the note's line numbers as its reason. Fixed: the
+  queries now carry an explicit instruction that they do not depend on the forbidden shape, and that a
+  fallback must be reported about *them* rather than about a node pair nothing asks for.
+
+**Standing conclusion for this step:** fidelity runs on verbatim reads, which is its authoritative path and
+always was. The graph triage stays in as an opportunistic pre-filter that currently returns little on this
+corpus. It is not load-bearing and must not be made so — three clean runs on file reads are the evidence
+that the check is sound without it.
+
+**The pattern worth carrying out of this phase.** Three separate failures this cycle were hidden by the same
+construct: a silent fallback. The revise step skipped by a guard that matched nothing, a query against nodes
+that never existed, a gate improvised from the wrong file. Each was invisible for as long as it existed
+because the code path said *skip silently* and no report distinguished "skipped because unnecessary" from
+"skipped because broken". **Every `→ skip silently` in this skill is now a candidate for the same defect.**
+The cheap countermeasure is the one that worked here: require the step to declare, in its own output, which
+path it took. That is what turned an invisible failure into a measured one within a single run.

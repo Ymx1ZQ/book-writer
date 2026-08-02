@@ -1907,3 +1907,38 @@ because the code path said *skip silently* and no report distinguished "skipped 
 "skipped because broken". **Every `→ skip silently` in this skill is now a candidate for the same defect.**
 The cheap countermeasure is the one that worked here: require the step to declare, in its own output, which
 path it took. That is what turned an invisible failure into a measured one within a single run.
+
+## Phase 30 ✅ — A skip that narrows coverage must be declared (2026-08-02)
+
+Three defects in the consuming project's pipeline over two days were invisible for as long as they existed,
+and the same construct hid all three:
+
+| Defect | Hidden by | Cost |
+|---|---|---|
+| `/book revise` skipped — its guard matched `**Status:** pending` while the file had written `- **Status:** pending` | `(no pending SMELL entries — revise skipped)` | five reader-comprehension fixes never reached the prose |
+| `/book fidelity` graph triage queried two node ids no graph has ever produced | `node missing → skip triage silently` | the triage never ran once |
+| A session-limit probe wired to a path nothing writes | the probe returned "no limit found" | the fix looked installed and protected nothing |
+
+None produced an error. Each was found by accident. **A silent fallback hides a broken path exactly as well
+as it hides a legitimately unnecessary one**, and from outside the two are indistinguishable.
+
+- [x] `instructions/skip-declaration.md` — the contract, with the three measurements that produced it, the
+  required one-line form, and the two qualities that make the line useful: it names the **path** rather than
+  the outcome, and its reason separates *unnecessary* (a closed question) from *unavailable* (one somebody
+  can go fix).
+- [x] Wired into the ten checks that have a path they can decline: fidelity, coherence-check, adjacency,
+  reviewer, factcheck, sensitivity, readability, coldread-filter, motif, continuity-check.
+- [x] **`coldread-enum` deliberately excluded, and a test pins the exclusion.** It has no graph path to
+  skip; adding the contract there would imply one exists. Its canon-blindness is a *property*, not a skipped
+  path — the distinction matters because the next person reading a list of ten will wonder about the
+  eleventh.
+- [x] The doctrine says what it is **not**: the fallback ladders still govern *whether* a path may be
+  skipped. This governs only that the skip is *stated*. A step that skips something it should have run is
+  still wrong, merely no longer invisible.
+- [x] Three tests, including one asserting the doctrine still carries its evidence — the rule without the
+  measurements is a preference, with them it is a finding. Suite **73/73**.
+
+**The evidence that this is cheap and works:** `/book fidelity` was given the declaration first, and the very
+next run reported `Graph triage: skipped (stale — 128 content files changed)` on a graph rebuilt eleven
+minutes earlier. That single line exposed the step improvising its own freshness test against the wrong
+file — a defect nothing else in the pipeline would have surfaced.

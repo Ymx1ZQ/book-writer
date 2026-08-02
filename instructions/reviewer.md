@@ -20,6 +20,8 @@ This is NOT the chapter-writer's verification (which checks completeness: beats,
 
 ## Execution
 
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+
 ### 1. Load Reference
 
 Read these files:

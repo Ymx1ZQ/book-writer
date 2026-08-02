@@ -66,6 +66,8 @@ may not close an operational item that names the book-scoped invocation.
 
 ## Process
 
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+
 ### 1. Load Files (deferred — load per check category, not all upfront)
 
 **Do NOT load everything at once.** Load only what each check category needs, just before running that category; the rest is context spent on files the check never reads.

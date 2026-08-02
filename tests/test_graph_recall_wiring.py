@@ -208,3 +208,46 @@ def test_gate_forbids_deriving_freshness_from_the_manifest():
     gate = recall_text().split("## Freshness gate")[1].split("\n## ")[0]
     assert "manifest.json" in gate
     assert "never derive freshness" in gate.lower()
+
+
+# --- (5) Phase 30 — a skip that narrows coverage must be declared ---
+#
+# Three defects over 2026-08-01/02 were invisible for as long as they existed,
+# all hidden by the same construct: revise skipped by a guard that matched
+# nothing, fidelity's triage querying nodes that never existed, a session-limit
+# probe reading a file nobody writes. None produced an error. The countermeasure
+# that worked within one run was making the step declare which path it took.
+
+SKIP_DECLARERS = {
+    "fidelity", "coherence-check", "adjacency", "reviewer", "factcheck",
+    "sensitivity", "readability", "coldread-filter", "motif", "continuity-check",
+}
+
+
+def test_the_skip_declaration_doctrine_exists_and_carries_its_evidence():
+    f = INSTRUCTIONS / "skip-declaration.md"
+    assert f.exists()
+    body = f.read_text(encoding="utf-8")
+    # The rule without the measurements is a preference; with them it is a finding.
+    assert "revise skipped" in body or "revise` skipped" in body
+    assert "node ids no graph has ever produced" in body
+    assert "reads a file nothing writes" in body or "read a file nothing writes" in body
+    # And it must say what it is NOT, or it reads as permission to skip.
+    assert "not a licence to skip" in body.lower()
+
+
+def test_every_skipping_detector_references_the_contract():
+    missing = []
+    for name in sorted(SKIP_DECLARERS):
+        f = INSTRUCTIONS / f"{name}.md"
+        assert f.exists(), f"{name}.md does not exist"
+        if "skip-declaration.md" not in f.read_text(encoding="utf-8"):
+            missing.append(name)
+    assert not missing, f"these detectors can skip but do not declare it: {missing}"
+
+
+def test_coldread_enum_is_not_asked_to_declare_a_graph_skip():
+    # It has no graph path to skip, and adding the contract there would imply
+    # one exists. Its canon-blindness is a property, not a skipped path.
+    body = (INSTRUCTIONS / "coldread-enum.md").read_text(encoding="utf-8")
+    assert "skip-declaration.md" not in body

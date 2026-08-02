@@ -30,6 +30,8 @@ Readability asks the cumulative, textural question the others miss: **does prolo
 
 ## Output
 
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report below with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+
 Appends entries to `chapters/<book>/SMELL.md` with `Source: readability`, plus a mandatory **"Readability / Flow Audit"** section (metrics per scene, always present — transparency). If `SMELL.md` does not exist, create it with the standard header; otherwise append, never overwrite — sniff and coherence may have written to it already.
 
 ## Reader persona for the executing agent

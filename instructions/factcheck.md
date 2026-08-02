@@ -23,6 +23,8 @@ The difference from sniff §5.a is *posture*: sniff flags what looks suspicious 
 
 ## Output
 
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report below with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+
 - Findings → `chapters/<book>/SMELL.md` (`Source: factcheck`); canon → `DEVPLAN.md`.
 - A mandatory **"Fact-Check Audit"** section in SMELL.md: the full claim ledger with each claim's bucket.
 

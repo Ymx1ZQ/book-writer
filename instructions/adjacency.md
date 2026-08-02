@@ -98,6 +98,8 @@ The structural tier is load-bearing: hand-reshaping a QC-closed chapter is high-
 
 ## Output — entries appended to `SMELL.md`
 
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report below with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+
 Standard SMELL.md entry format, `Source: adjacency`, with a `Window:` field:
 
 ```markdown

@@ -75,6 +75,13 @@ fi
 
 DEST="$HOME/.claude/skills/book"
 CODEX_DEST="$HOME/.codex/skills/book"
+# Phase 101 M9 (ground-truth) — third target. The two OpenRouter judge lanes
+# (DeepSeek, Gemini) run under opencode rather than Claude Code, because
+# OpenRouter takes provider routing and reasoning effort as request-BODY fields
+# that Claude Code's Anthropic-shaped path cannot send. Same judge-only
+# SKILL.md as the codex variant: it already describes itself as one lane of a
+# four-model ensemble and names all four families, so it needs no per-CLI fork.
+OPENCODE_DEST="$HOME/.config/opencode/skills/book"
 
 # --- Drift check (no writes) ---
 
@@ -97,6 +104,7 @@ if [ "$CHECK" = true ]; then
     [ -d "$SRC_ROOT/scripts" ] && check_path "$SRC_ROOT/scripts" "$DEST/scripts" "claude scripts/"
     if [ -f "$SRC_ROOT/codex/SKILL.md" ]; then
         check_path "$SRC_ROOT/codex/SKILL.md" "$CODEX_DEST/SKILL.md" "codex judge SKILL.md"
+        check_path "$SRC_ROOT/codex/SKILL.md" "$OPENCODE_DEST/SKILL.md" "opencode judge SKILL.md"
     fi
     exit "$STATUS"
 fi
@@ -172,6 +180,14 @@ if [ -f "$SRC_ROOT/codex/SKILL.md" ]; then
     [ -d "$SRC_ROOT/codex/agents" ] && cp -r "$SRC_ROOT/codex/agents" "$CODEX_DEST/agents"
     [ -n "$SRC_SHA" ] && printf '%s\n' "$SRC_SHA" > "$CODEX_DEST/.installed-from"
     echo "Installed book skill (codex variant — judge subcommand) → $CODEX_DEST"
+
+    # opencode gets the same judge-only skill: it is the CLI for the two
+    # OpenRouter lanes, which need body-level provider routing.
+    rm -rf "$OPENCODE_DEST"
+    mkdir -p "$OPENCODE_DEST"
+    cp "$SRC_ROOT/codex/SKILL.md" "$OPENCODE_DEST/SKILL.md"
+    [ -n "$SRC_SHA" ] && printf '%s\n' "$SRC_SHA" > "$OPENCODE_DEST/.installed-from"
+    echo "Installed book skill (opencode variant — judge subcommand) → $OPENCODE_DEST"
 fi
 
 echo ""

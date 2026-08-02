@@ -262,3 +262,53 @@ def test_refresh_doctrine_tells_the_extractor_how_to_chunk():
     assert "budget by lines" in body or "line-budget" in body
     assert "mitigation and not a fix" in body
     assert "2,553" in body and "5,965" in body, "the measurement is what makes it a finding"
+
+
+# --- (6) Phase 31 — coherence: canon at book scope, prose at chapter scope ---
+
+COHERENCE = INSTRUCTIONS / "coherence-check.md"
+PROSE_CHECKS = ["G", "L", "M", "N", "P", "Q", "T"]
+
+
+def test_book_scope_declares_it_loads_no_prose():
+    body = COHERENCE.read_text(encoding="utf-8")
+    assert "Loads no chapter prose" in body
+    # And the reason, which is retrieval and not cost: at ~378k the model
+    # returns clean because it did not find the contradiction.
+    assert "378" in body and "52.2%" in body
+
+
+def test_book_scope_defers_every_prose_check():
+    body = COHERENCE.read_text(encoding="utf-8")
+    line = next(l for l in body.splitlines() if l.startswith("- `book-N` —"))
+    for c in PROSE_CHECKS:
+        assert f"{c}" in line, f"book scope does not name prose check {c}"
+    assert "defers" in line
+
+
+def test_check_O_is_gone_and_its_owner_is_named():
+    body = COHERENCE.read_text(encoding="utf-8")
+    assert "#### O. Outline-to-Draft Coverage" not in body
+    assert "| O — Outline-to-Draft Coverage |" not in body
+    # A deletion with no forwarding address gets re-added by the next author.
+    assert "O — deleted" in body
+    assert "fidelity" in body.split("O — deleted")[1][:400]
+
+
+def test_N_and_Q_survived_the_duplication_review():
+    # Both were proposed for deletion as duplicates and both are covered by
+    # nothing. The record of that check has to live next to the deletion, or
+    # the next cleanup pass repeats the mistake and loses real coverage.
+    body = COHERENCE.read_text(encoding="utf-8")
+    assert "#### N. Interior-Labeling Detector" in body
+    assert "#### Q. Redundancy-with-Adjacent-Text" in body
+    assert "covered by nothing" in body
+    assert "only *between* chapters" in body
+
+
+def test_the_check_count_matches_the_headings():
+    body = COHERENCE.read_text(encoding="utf-8")
+    headings = [l for l in body.splitlines() if l.startswith("#### ") and l[5:6].isupper() and l[6:7] == "."]
+    assert f"({len(headings)} checks)" in body, (
+        f"the declared count disagrees with {len(headings)} check headings"
+    )

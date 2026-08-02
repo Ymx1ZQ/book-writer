@@ -22,10 +22,27 @@ A single finding may produce paired entries in BOTH channels when the contradict
 
 Scope options:
 - `all` — full project review (default)
-- `book-N` — a single book's outline + relevant worldbuilding/characters. Discover available books by listing `chapters/book-*/outline.md`.
+- `book-N` — a single book's **canon and outline**. Discover available books by listing `chapters/book-*/outline.md`. **Loads no chapter prose** (see §Book scope loads no prose): runs A, B, C, D, E, F, H, I, J, K, U and defers the per-chapter prose checks — G, L, M, N, P, Q, T — to `book-N chNN` runs.
 - `book-N chNN` — **one chapter.** Runs only the checks whose findings are properties of that chapter; the corpus-wide checks are deferred, not silently skipped (see §Chapter scope below).
 - `characters` — character files only
 - `world` — worldbuilding files only
+
+### Book scope loads no prose, and that is a correctness fix before a cost one
+
+Eight of the checks below read chapter drafts. At book scope that meant every chapter of the book in one
+context: **~378 k tokens on `ground-truth`**. Third-party MRCR v2 puts Sonnet 5 at 52.9% retrieval at 128 k
+and 52.2% at 256 k, so at that depth **a clean verdict is not evidence of a clean book — it is evidence the
+contradiction was not retrieved.** That is the exact failure this check exists to prevent, arriving as a
+pass.
+
+So the per-chapter prose checks do not run at book scope. They are not weakened: they run at `book-N chNN`,
+one chapter at a time, in a context small enough to retrieve from. What remains at book scope is the work
+that genuinely needs the whole book at once — plants and their payoffs across books (J), tracker and
+context-tag reconciliation (K), plot holes (B), concept ownership (U), and the canon-to-canon checks.
+
+The cost follows the correctness: `coherence` was **42% of the pipeline's whole input** at ~$5.79 per
+invocation and 11 invocations per chapter, for a measured **0.19 findings per run** — simultaneously the
+most expensive step in the suite and the worst-yielding. `fidelity` finds 40× more per run for less.
 
 ### Chapter scope — what it runs, and what it does not certify
 
@@ -95,7 +112,6 @@ may not close an operational item that names the book-scoped invocation.
 | L — Economic-Anchor Audit | The level-appropriate anchor file for each chapter draft in scope: Reality → `world/level-0-reality/economy.md` (+ `consumer-anchors.md` if present); Ark → `world/level-1-ark/daily-life.md` §Economy; Dome → `world/level-2-dome/bureaucracy.md` §Allocation Mathematics + `context.md` §Economy and Distribution; cross-level → `world/economy-cross-level.md` (if present). Load chapter drafts (`chapters/book-N/ch*.md`). |
 | M — System-Implying-Number Audit | Re-use level files already loaded for L and E; load `world/level-0-reality/surveillance.md`, `world/level-0-reality/agent-capabilities.md`, `world/the-authors-method.md` if present; load chapter drafts. |
 | N — Interior-Labeling Detector | Chapter drafts only (re-use those loaded for G); reference `world/prose-rules.md` if not already loaded. |
-| O — Outline-to-Draft Coverage | Outlines already loaded for the scope; chapter drafts (re-use); `chapters/book-N/outline-deviation.md` if present (written by chapter-writer Step 2.5.d when scenes are cut/split/merged). |
 | P — Cross-Substrate Sensory-Echo | `world/temporal-echoes.md` already loaded for A, §Cross-Substrate Sensory Resonances if present; chapter drafts (re-use). |
 | Q — Redundancy-with-Adjacent-Text | Chapter drafts only (re-use). |
 | T — First-Appearance Delivery | Re-use character sheets from D and chapter drafts from G/L. |
@@ -118,7 +134,7 @@ may not close an operational item that names the book-scoped invocation.
 
 Checks E, L, M consume verbatim numeric values (never-substitute list per `graph-recall.md`) — their load rows are unchanged. Graph absent or stale → the load table above applies unchanged.
 
-### 2. Check Categories (21 checks)
+### 2. Check Categories (20 checks)
 
 For every issue found: **cite the specific file and section**, and **propose a practical fix**.
 
@@ -297,16 +313,20 @@ Patterns:
 
 NOT BLOCKING — advisory; revise applies them flagged `Severity: NOTE` so a downstream pass can deprioritize.
 
-#### O. Outline-to-Draft Coverage (WARNING; BLOCKING if undocumented)
+#### O — deleted 2026-08-02: `/book fidelity` owns it
 
-**For each chapter draft in scope:**
-- Read the outline entry for the chapter (use the per-chapter targeted load — locate `## Ch. NN` header, read to next chapter header).
-- Enumerate the outlined scenes (each `### N.` or numbered beat block).
-- For each outlined scene, verify a corresponding section/passage exists in the draft. Heuristic: the scene's distinctive props, character names, location, or beat-summary keywords must appear in the draft text. A draft missing 30%+ of an outlined scene's distinctive markers is "missing".
+`O. Outline-to-Draft Coverage` enumerated the outlined scenes for a chapter and verified each appeared in
+the draft. That is `fidelity.md` class (a), *planned-not-rendered*, and fidelity does it better: it reads
+`outline-deviation.md` as the ledger of ratified differences, so a scene deliberately cut is a clean
+deviation rather than a finding, and it checks four further classes O never had.
 
-**Flag:**
-- Outlined scene missing from draft AND documented in `outline-deviation.md` → **WARNING**: "scene <name> moved/cut per outline-deviation.md — verify the deviation entry's plant-shift list is complete." **Route to:** DEVPLAN milestone (verify `outline-deviation.md` plant-shift list).
-- Outlined scene missing from draft AND NOT documented in `outline-deviation.md` → **BLOCKING**: "SILENT CUT: outlined scene <name> is absent from the draft and has no entry in outline-deviation.md." **Route to:** PAIRED entries — (a) SMELL.md entry on the chapter classified ANCHOR-NEEDED with the suggestion "restore the scene to the draft per outline" (the prose-side restore), AND (b) DEVPLAN milestone "document the deviation retroactively in `chapters/<book>/outline-deviation.md` with plant-shift list" (the canon-side documentation). The orchestration applies fix first (canon docs the deviation), then revise restores or confirms via the SMELL.md entry.
+**Checked before deleting, because two of the three checks originally proposed for removal survived that
+check.** `N. Interior-Labeling` is covered by nothing — `register_leak_lint.py` carries four patterns and
+none of N's, and neither `readability.md` nor `sniff.md` mentions the formulas; its only other line of
+defence is the writer's own self-edit, which is the proposer certifying its own work. `Q.
+Redundancy-with-Adjacent-Text` is not covered by `adjacency.md`, which states it reads defects that exist
+only *between* chapters, while Q reads paragraphs adjacent *within* one. Both stay, moved to chapter scope
+rather than deleted.
 
 #### P. Cross-Substrate Sensory-Echo Audit (WARNING — confirm intent)
 

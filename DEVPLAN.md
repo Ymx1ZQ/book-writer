@@ -1965,3 +1965,33 @@ The size of the effect: the same extractor produced **2,553 nodes / 3,604 edges*
   `ground-truth` uses `graph-refresh-prompt.sh`, sourced by its merge phase.
 - Suite **74/74**. The test asserts the measurement is present, not just the advice: the rule without
   `2,553 → 5,965` is a preference.
+
+## Phase 31 ✅ — coherence: canon at book scope, prose at chapter scope (2026-08-02)
+
+`coherence` was measured as **42% of the consuming pipeline's whole input**, ~$5.79 per invocation, 11
+invocations per chapter, for **0.19 findings per run** across 125 recorded runs — simultaneously the most
+expensive step in the suite and the worst-yielding. `fidelity` finds 40× more per run for less.
+
+The cost is a symptom. Eight of the checks read chapter drafts, and at book scope that put every chapter of
+the book in one context: **~378 k tokens**. MRCR v2 puts Sonnet 5 at 52.2% retrieval at 256 k, so at that
+depth **a clean verdict is not evidence of a clean book — it is evidence the contradiction was not
+retrieved.** That is precisely the failure this check exists to prevent, arriving as a pass.
+
+- [x] **Book scope loads no prose.** It runs A, B, C, D, E, F, H, I, J, K, U — the work that genuinely needs
+  the whole book at once: plants and payoffs across books, tracker and context-tag reconciliation, plot
+  holes, concept ownership, canon-to-canon. The per-chapter prose checks G, L, M, N, P, Q, T are deferred to
+  `book-N chNN`, where they run in a context small enough to retrieve from. **Nothing is weakened; the
+  checks move.**
+- [x] **Check O deleted — `/book fidelity` owns it.** O enumerated a chapter's outlined scenes and verified
+  each appeared in the draft; that is fidelity class (a), and fidelity does it better, reading
+  `outline-deviation.md` so a deliberately cut scene is a ratified deviation rather than a finding, plus
+  four classes O never had. 21 checks → 20.
+- [x] **Two of the three checks proposed for deletion survived the review, and the record of that lives next
+  to the deletion.** `N. Interior-Labeling` is covered by **nothing**: `register_leak_lint.py` carries four
+  patterns and none of N's, and neither `readability.md` nor `sniff.md` mentions the formulas — its only
+  other line of defence is the writer's own self-edit, which is the proposer certifying its own work.
+  `Q. Redundancy-with-Adjacent-Text` is not covered by `adjacency.md`, which states it reads defects
+  existing only *between* chapters while Q reads paragraphs adjacent *within* one. Deleting either would
+  have removed real coverage on a duplication claim that was asserted and not checked.
+- [x] Five tests, four of which fail against the pre-split instructions. One asserts the declared check
+  count matches the actual headings, so the next deletion cannot leave the header lying. Suite **79/79**.

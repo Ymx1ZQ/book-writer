@@ -23,8 +23,44 @@ A single finding may produce paired entries in BOTH channels when the contradict
 Scope options:
 - `all` — full project review (default)
 - `book-N` — a single book's outline + relevant worldbuilding/characters. Discover available books by listing `chapters/book-*/outline.md`.
+- `book-N chNN` — **one chapter.** Runs only the checks whose findings are properties of that chapter; the corpus-wide checks are deferred, not silently skipped (see §Chapter scope below).
 - `characters` — character files only
 - `world` — worldbuilding files only
+
+### Chapter scope — what it runs, and what it does not certify
+
+A chapter scope exists because the orchestration calls this check **inside a per-chapter polish loop**: once
+per cycle per parallel draft variant, plus a post-cycle pass. Measured on `ground-truth` 2026-08-01, that is
+eleven book-scoped invocations per chapter and 42% of the whole pipeline's input tokens, re-reading every
+outline in the trilogy and every tracker file to re-answer questions about a chapter that has not changed
+since the last cycle asked them.
+
+There is a correctness argument next to the cost one. The book-scoped load is ~378k tokens, and long-context
+retrieval degrades well before that: third-party MRCR v2 puts Sonnet 5 at 52.9% at 128k and 52.2% at 256k. A
+check that cannot reliably retrieve at that depth reports clean because it did not find the contradiction —
+the failure mode this instruction exists to prevent, arriving as a passing verdict.
+
+**Runs under `book-N chNN`** — checks whose subject is the chapter itself: **C** (causal flow and knowledge,
+against what this chapter's characters can know by now), **D** (character consistency, for characters on the
+page here), **E** (technology used in this chapter), **G** (infodump), **L** (economic anchors), **M**
+(system-implying numbers), **N** (interior labeling), **O** (outline-to-draft coverage), **P** (cross-substrate
+sensory echo), **Q** (redundancy with adjacent text), **R** and **S** (this chapter's `context:` list), **T**
+(first-appearance delivery, when this is a character's introduction).
+
+**Deferred to the next `book-N` or `all` run** — checks that are properties of the corpus and cannot be
+answered from one chapter: **A** (cross-level architecture), **B** (plot holes and dangling threads), **F**
+(pacing and cross-level balance), **H** (thematic resonance), **I** (reader experience across the book),
+**J** (Chekhov's inventory — a plant's payoff can land in any book), **K** (context-tag and tracker audit —
+reachability is a whole-register property), **U** (single ownership — a scoped run compares a file against
+only some of its rivals and reports clean while the duplicate sits in the skipped directory).
+
+Those eight are exactly the checks that force the all-outlines and all-tracker loads, which is why the scope
+is worth having and also why it is not a substitute for the book-scoped pass.
+
+**A chapter-scoped run therefore certifies nothing about the corpus, and must say so.** Its §Summary states
+`Scope: book-N chNN (chapter) — corpus checks A, B, F, H, I, J, K, U deferred`, and **§4.5 never fires on a
+chapter scope**: a clean chapter is not evidence that `/book coherence book-N` would come back clean, so it
+may not close an operational item that names the book-scoped invocation.
 
 ---
 
@@ -66,8 +102,9 @@ Scope options:
 **For scope `characters`:** load only rows D and skip all others.
 **For scope `world`:** load only rows A, E, H, L (anchor files only), and skip character/outline/draft checks.
 **For scope `book-N`:** load outlines upfront for that book only; load ALL books' outlines only for check J. Checks L–Q and T only run if chapter drafts exist for the scope.
+**For scope `book-N chNN`:** load this chapter's outline entry (locate `## Ch. NN`, read to the next chapter header) rather than the whole outline, this chapter's draft, and — per check — only the canon files that chapter's own `**context:**` list and level directory name. Load no other book's outline and no tracker file: checks J, K and U are deferred (→ §Chapter scope), and they are the only rows that required them.
 
-**Check U is corpus-wide and runs on every scope, including `characters` and `world`.** Ownership is a property of the whole canon set: a scoped run would compare a file against only some of its rivals and report clean while the duplicate sits in the skipped directory.
+**Check U is corpus-wide and runs on every scope that can answer it — `all`, `book-N`, `characters`, `world`.** Ownership is a property of the whole canon set: a scoped run would compare a file against only some of its rivals and report clean while the duplicate sits in the skipped directory. That reasoning is also why a `book-N chNN` run must **defer** U rather than run it narrowly — one chapter cannot see the rival claim, and a narrow pass reporting clean is worse than no pass, because it looks like an answer.
 
 **Graph-assisted load (optional — see `instructions/graph-recall.md`):** if `graphify-out/graph.json` exists in the project root AND the freshness gate passes (answer mode per `graph-recall.md` §Freshness gate), the relational checks replace their bulk loads:
 
@@ -421,6 +458,8 @@ Fixes ordered by severity, then by file.
 
 If findings are non-zero, skip §4.5 — convergence has not been re-verified.
 
+**§4.5 never fires on a `book-N chNN` scope**, whatever the finding count. Eight corpus checks were deferred, so a clean chapter is not evidence that the book-scoped invocation would come back clean, and closing a `book-N` operational item from a chapter run would record a verification that never happened.
+
 If 0/0/0:
 
 Scan DEVPLAN.md for plain-bullet operational items in any phase whose action names this invocation. Match patterns (scope-aware):
@@ -439,7 +478,7 @@ Operational items closed: X (in phases: [list])
 
 ```
 Book Coherence Check Complete
-Scope: [scope]
+Scope: [scope]        ← for a chapter scope, append: "(chapter) — corpus checks A, B, F, H, I, J, K, U deferred"
 Files reviewed: X
 Issues found: X blocking / X warning / X note
 Devplan milestones created: X

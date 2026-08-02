@@ -251,3 +251,14 @@ def test_coldread_enum_is_not_asked_to_declare_a_graph_skip():
     # one exists. Its canon-blindness is a property, not a skipped path.
     body = (INSTRUCTIONS / "coldread-enum.md").read_text(encoding="utf-8")
     assert "skip-declaration.md" not in body
+
+
+def test_refresh_doctrine_tells_the_extractor_how_to_chunk():
+    # graphify budgets chunks by file count, which under-extracts by ~3x on a
+    # corpus of small files. The caller has to say so, and the doctrine has to
+    # say it is a mitigation -- prose competing with graphify's own SKILL.md --
+    # or a thin refresh gets blamed on the corpus.
+    body = recall_text()
+    assert "budget by lines" in body or "line-budget" in body
+    assert "mitigation and not a fix" in body
+    assert "2,553" in body and "5,965" in body, "the measurement is what makes it a finding"

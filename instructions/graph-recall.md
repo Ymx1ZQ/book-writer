@@ -112,6 +112,10 @@ Query results cite `source_location` (file + section) per node — in index mode
 
 ## Keeping the graph fresh (write side)
 
+**Instruct the extractor how to chunk, every time.** graphify splits work into chunks of 20-25 **files** with no line budget, so how much text one extraction agent receives depends on how large the files happen to be. Measured on `ground-truth` 2026-08-02: 216 files / 34,340 lines gives 10 agents at ~3,400 lines each, against a ~1,200-line budget — three times over, and not because of one oversized file (the largest was 1,179 lines). The symptom is under-extraction, and it is large: the same extractor produced **2,553 nodes / 3,604 edges** with file-count chunks and **5,965 / 10,093** with line-budget chunks over 40% *less* text. So every refresh this skill triggers should carry an instruction to budget by lines, to give any file over the budget its own agent, and to reject a chunk that returns zero edges or partial coverage rather than merge it.
+
+A consuming project should keep that instruction in one versioned file rather than retyping it per call site — `ground-truth` uses `graph-refresh-prompt.sh`. **It is a mitigation and not a fix:** it is prose competing with graphify's own SKILL.md, it won when measured, and a refresh that comes back thin should be checked for whether the instruction was followed before the corpus is blamed. The fix belongs in graphify.
+
 Any command whose edits touch graph-covered sources (`world/`, `characters/`, `plot/`, `chapters/`) ends with a refresh step, so the next consumer's freshness gate passes instead of degrading to file loads. Commands carrying the step: `fix.md`, `revise.md`, `chapter-writer.md`, `compact.md`, `integrate-anchors.md`, `arbiter.md` (APPLY outcomes only — a pure ACCEPT-keep run changes no prose and skips it).
 
 - **Gate** — same opt-in as the read side: `test -f graphify-out/graph.json`. Absent → skip silently, no warning.

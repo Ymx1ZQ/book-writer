@@ -1942,3 +1942,26 @@ as it hides a legitimately unnecessary one**, and from outside the two are indis
 next run reported `Graph triage: skipped (stale — 128 content files changed)` on a graph rebuilt eleven
 minutes earlier. That single line exposed the step improvising its own freshness test against the wrong
 file — a defect nothing else in the pipeline would have surfaced.
+
+### M8 ✅ — Tell the extractor how to chunk, since we cannot change how it chunks
+
+graphify splits work into chunks of 20-25 **files** with no line budget. Measured on `ground-truth`
+2026-08-02, *after* `.graphifyignore` had already removed the worst file: 216 files / 34,340 lines → **10
+agents at ~3,400 lines each**, against the ~1,200 the extractor's own guidance recommends. Three times over,
+and **not** because of one oversized file — the largest remaining is 1,179 lines. Counting files instead of
+weighing them is the whole cause.
+
+The size of the effect: the same extractor produced **2,553 nodes / 3,604 edges** with file-count chunks and
+**5,965 / 10,093** with line-budget chunks over 40% *less* text.
+
+- [x] The refresh doctrine now instructs the caller to budget by lines, give any oversized file its own
+  agent, and reject a chunk returning zero edges or partial coverage instead of merging it — that was the
+  actual truncation signature observed, and merging it silently is how nodes go missing.
+- [x] **Recorded as a mitigation, not a fix, in both places.** It is prose competing with graphify's own
+  SKILL.md. It won when measured; it is not a code path. A refresh that comes back thin must be checked for
+  whether the instruction was followed *before* the corpus is blamed — without that sentence the next reader
+  treats a soft override as a guarantee.
+- [x] Consuming projects keep the instruction in one versioned file rather than retyping it per call site;
+  `ground-truth` uses `graph-refresh-prompt.sh`, sourced by its merge phase.
+- Suite **74/74**. The test asserts the measurement is present, not just the advice: the rule without
+  `2,553 → 5,965` is a preference.

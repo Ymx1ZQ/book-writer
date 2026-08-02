@@ -37,14 +37,30 @@ The three registers a chapter is judged against — Usage Tracker, `context:` li
 4. Every canon file holding a `## Usage Tracker` row for this Book+Ch — collected the way `chapter-writer.md` 2.6.c collects them (`grep -rlF "| B<N> | <NN> |" characters/ world/ plot/`, span rows like `B1 | 01-30` ignored), NOT restricted to the chapter's `context:` list — 2.6.c's collection step only: its own-level-directory exemption governs auto-add, never what fidelity reads. Class (d) only; the rows' Status column is the claim under test.
 5. The book outline header's §Inline Plant Tracking table — this chapter's column, every non-`—` cell, with its instance number and payoff marking. Class (e) only.
 
-**Graph triage (optional — see `instructions/graph-recall.md` for gating):** only when `graphify-out/graph.json` exists AND the freshness gate passes, run a cheap planned-vs-rendered diff BEFORE the verbatim reads, against the chapter's node pair — planned node `chapters_book_N_outline_chNN`, rendered node `chapters_book_N_chNN`:
+**Graph triage (optional — see `instructions/graph-recall.md` for gating).** Only when `graphify-out/graph.json` exists AND the freshness gate passes. Read the asymmetry first, because it decides what the graph is for here:
+
+- **The planned side is cheap. Read it from disk, never query it.** One `## Ch. NN` block is around twenty lines. A query costs more than the read and adds a layer between you and the plan of record.
+- **The rendered side is where the cost is**, and most of it is not the prose: it is the tracker rows marked `written` for this chapter, scattered across character and world files, and the plant-table instances assigned to it. Finding *which files* carry them is the expensive question, and it is the one the graph answers.
 
 ```bash
-graphify query "chapters_book_N_outline_chNN — planned beats, plants, cliffhanger" --budget 4000
-graphify query "chapters_book_N_chNN — beats, plants, cliffhanger actually rendered" --budget 4000
+graphify query "usage-tracker items assigned to <book> ch<NN>"
+graphify query "<book> ch<NN> — plant instances and payoffs assigned to this chapter"
 ```
 
-Both queries pass `--budget 4000`: per-chapter node detail sits deep in the traversal output and the default 2000-token cap truncates it (project-side Phase 80 M5 re-extraction finding). The pair diff yields a **candidate list** that prioritizes the verbatim comparison — it never replaces it: findings are asserted only from the verbatim reads (the disk text is the truth). Graph absent, stale, or either node missing → skip triage; the check runs **identically** on file reads alone (an empty query result is never evidence of absence, per `instructions/graph-recall.md` fallback ladder).
+The result is a **list of files to open**, nothing more. Findings are asserted only from the verbatim reads below — the disk text is the truth. An empty result is never evidence of absence: it sends you to the full file set, per `graph-recall.md` §Fallback ladder. Graph absent or stale → skip triage; the check runs **identically** on file reads alone.
+
+**Do not reintroduce a per-chapter node pair, and do not "fix" it by renaming the ids.** Until 2026-08-02 this section queried `chapters_book_N_outline_chNN` against `chapters_book_N_chNN`. Neither id has ever existed in any graph this project built, so the pair diff never ran once — and the "either node missing → skip triage silently" clause meant nothing ever reported it.
+
+The reason it cannot simply be renamed is what the measurement found on a freshly rebuilt `ground-truth` graph (5,965 nodes, 10,093 edges, 182/182 documents):
+
+| Side | Coverage | Verdict |
+|---|---|---|
+| Rendered prose | **19-47 nodes for every chapter file**, ch01 through ch10, none missing | Reliable — query it |
+| Planned outline | book-3's outline carries per-chapter nodes (`Ch. 29 — The Lighthouse Swim`, `loc=Ch. 29`); **book-1's carries zero**, only 207 concept nodes | Not reliable — read it |
+
+**Outline granularity is inconsistent between books, from the same extractor on the same run.** A query written against book-3's shape returns nothing for book-1 and says so in no way a caller can distinguish from "nothing planned". Reading twenty lines from disk is both cheaper and the only form that behaves the same in every book.
+
+**A silent fallback hides a query that matches nothing exactly as well as it hides a stale graph.** That is why the fallback clause now sits under queries whose shape was checked against a real graph, and why `tests/test_graph_recall_wiring.py` asserts that no instruction names a synthetic per-chapter node id.
 
 ## The five finding classes
 

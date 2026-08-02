@@ -159,3 +159,41 @@ def test_new_consumers_declare_index_mode():
     for name in ("factcheck", "sensitivity", "coldread-filter", "readability"):
         body = (INSTRUCTIONS / f"{name}.md").read_text(encoding="utf-8")
         assert "index mode" in body.lower(), f"{name}.md does not declare its mode"
+
+
+# --- (4) no instruction may name a synthetic per-chapter node id ---
+#
+# fidelity.md queried `chapters_book_N_outline_chNN` against
+# `chapters_book_N_chNN` for months. Neither id has ever existed in a built
+# graph, so its triage never ran, and the step's own "node missing -> skip
+# silently" clause meant nothing reported it. Measured on a freshly rebuilt
+# ground-truth graph (5,965 nodes, 182/182 documents): rendered prose gets
+# 19-47 nodes per chapter file reliably, while outline granularity differs
+# BETWEEN BOOKS from the same run -- book-3 got per-chapter nodes, book-1 got
+# zero. So the id cannot be repaired by renaming; the planned side is read from
+# disk instead.
+
+SYNTHETIC_CHAPTER_NODE = re.compile(r"`?chapters_book_[N\d]+_(outline_)?ch(NN|\d+)`?")
+
+
+def test_no_instruction_names_a_synthetic_per_chapter_node_id():
+    offenders = []
+    for f in sorted(INSTRUCTIONS.glob("*.md")):
+        for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            if not SYNTHETIC_CHAPTER_NODE.search(line):
+                continue
+            # The prohibition itself has to name the shape to forbid it.
+            if "Do not reintroduce" in line or "never existed" in line:
+                continue
+            offenders.append(f"{f.name}:{i}")
+    assert not offenders, (
+        "these lines name a per-chapter graph node id that the extractor does "
+        f"not produce: {offenders}"
+    )
+
+
+def test_fidelity_reads_the_planned_side_from_disk():
+    body = (INSTRUCTIONS / "fidelity.md").read_text(encoding="utf-8")
+    assert "Read it from disk, never query it" in body
+    # And says why, so the next author does not "optimise" it back into a query.
+    assert "inconsistent between books" in body.lower()

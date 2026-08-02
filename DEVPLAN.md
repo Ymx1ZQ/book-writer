@@ -1843,3 +1843,34 @@ stale, six were ledgers and two were narrative.**
   specifically. Third instance today of an assertion matching prose instead of code — the note is in the
   test so the next author sees it.
 - Full skill suite **67/67**.
+
+### M5 ✅ — `/book fidelity` queried two node ids that have never existed
+
+Found while deciding what to test after the graph rebuild. The step's triage compared a "node pair" —
+`chapters_book_N_outline_chNN` planned against `chapters_book_N_chNN` rendered. **Neither id has ever been
+produced by any graph this project built.** So the pair diff never ran once, and the step's own *"either node
+missing → skip triage silently"* clause meant nothing ever said so. The check itself was never wrong: it
+falls back to verbatim reads, which are the authority. What was lost is the saving, silently, for as long as
+the section has existed.
+
+Measured on the freshly rebuilt graph (5,965 nodes, 10,093 edges, 182/182 documents):
+
+| Side | Coverage | Conclusion |
+|---|---|---|
+| Rendered prose | 19-47 nodes for **every** chapter file, ch01-ch10, none missing | query it |
+| Planned outline | book-3 has per-chapter nodes (`Ch. 29 — The Lighthouse Swim`, `loc=Ch. 29`); **book-1 has zero**, only 207 concept nodes | read it |
+
+- [x] **The id cannot be repaired by renaming.** Outline granularity differs *between books from the same
+  extractor on the same run* — so a query written against book-3's shape returns nothing for book-1, in a
+  way the caller cannot distinguish from "nothing was planned". Rewritten around the asymmetry instead: the
+  planned side is one ~20-line `## Ch. NN` block read from disk, and the expensive half — tracker rows
+  marked `written` scattered across character and world files, plant-table instances — goes to the graph,
+  which covers it reliably. Cheaper than what was specified, and identical in every book.
+- [x] Two tests, both failing against the pre-change instructions: no instruction may name a synthetic
+  per-chapter node id, and fidelity must say it reads the planned side from disk **and why**, so the next
+  author does not optimise it back into a query.
+- **The general lesson, recorded because it outlives this step:** a silent fallback hides a query that
+  matches nothing exactly as well as it hides a stale graph. Every `→ skip silently` clause in this skill is
+  now a place where a broken query can live undetected. The contract test is the cheap standing guard;
+  writing a query without checking its shape against a real graph is what it guards against.
+- Suite **69/69**.

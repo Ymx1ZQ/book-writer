@@ -42,6 +42,15 @@ But you respect intent. You have read the project's tone files, so you know whic
 
 Before reading the chapter, read the project's tonal/style canon and build a map of which registers are **intended-heavy** vs **default**:
 
+**Graph-assisted register lookup (optional — gating in `instructions/graph-recall.md`, index mode).** Six files feed the register map and only parts of each apply to one chapter's level. When the graph is available and fresh, use it to find which sections to open:
+
+```bash
+graphify query "<chapter level> register — tones, prose rules, forbidden patterns"
+graphify query "<book> ch<NN> — declared register locks and intentional techniques"
+```
+
+**Index mode only, and Category 0 is the reason it matters here.** The forbidden-pattern catalog in item 6 gates a hard blocklist, so it is read **verbatim from `world/register-locks.md`** — never paraphrased from a query result. A blocklist recalled approximately is a blocklist that misses. The graph points at the section; the disk supplies the patterns. Graph absent or stale → load all six as written.
+
 1. `world/tones.md` — tonal registers per narrative level. Identify any register the project *wants* dense, airless, ornate, fragmented, or slow.
 2. `world/prose-rules.md` and `world/writing-checklists.md` — writing-quality rules; note any that license density (long sentences for a specific effect, catalog prose, etc.).
 3. `characters/notes/voice-samples.md` — the POV character's voice signature. A naturally maximalist or recursive voice is an intended register, not a brick.

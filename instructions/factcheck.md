@@ -28,6 +28,14 @@ The difference from sniff §5.a is *posture*: sniff flags what looks suspicious 
 
 ## Step 0 — Load the reality baseline
 
+**Graph-assisted anchor lookup (optional — gating in `instructions/graph-recall.md`, index mode).** The expensive half of this check is not the enumeration, it is adjudicating each claim against whatever canon anchors it: a chapter can raise twenty external-world claims scattered across `world/`, and finding each one's anchor by reading is what costs. When `graphify-out/graph.json` exists and the freshness gate passes, resolve anchors by query instead:
+
+```bash
+graphify query "<claim subject> — where is this anchored in world/ or characters/"
+```
+
+**Index mode only: the query returns *pointers*, and every pointer is then read from disk before a verdict.** A claim is never adjudicated from graph content. An empty result is never evidence that no anchor exists — it sends you to the file reads below, which are the authority. Graph absent or stale → this subsection is a no-op and Step 0 proceeds exactly as written.
+
 1. `world/timeline.md` — the in-world year and the macro trajectory (climate, technology, economy, society) from the present-day baseline. Every period-plausibility judgment is relative to this year, not 2024.
 2. `world/canon-hierarchy.md` — resolution doctrine for ANCHOR-NEEDED.
 3. The level files for the scene's setting, and any `consumer-anchors.md` / economic-anchor files — the real-world numbers the project has already canonicalized (prices, distances, tech availability).

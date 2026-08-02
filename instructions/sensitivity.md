@@ -26,6 +26,15 @@ The distinction is **diegetic intent**: a bigoted *character* is the book workin
 
 ## Step 0 — Load intent
 
+**Graph-assisted intent lookup (optional — gating in `instructions/graph-recall.md`, index mode).** Two of the three questions below are corpus-wide, not chapter-local: is this depicted group represented with depth *elsewhere* in the book, and is this viewpoint marked as deliberately biased *anywhere* in its sheet. Answering them by reading means opening every character sheet. When the graph is available and fresh:
+
+```bash
+graphify query "<depicted group> — appearances and depth across characters/ and chapters/"
+graphify query "<POV character> — narration bias, deliberate limitation, narrator boundaries"
+```
+
+**Index mode only: the results locate the sheets to open, they do not settle intent.** A thin depiction is only a finding after reading what the located files actually say — the difference between a slice of a well-drawn group and the whole of a flat one is a judgment the disk text has to support. Graph absent or stale → load as written below.
+
 1. `characters/notes/narrator-boundaries.md` — per-POV narration constraints. A close-POV narrator inside a biased character's head *should* carry that bias; that is boundary-correct, not a finding.
 2. The relevant `characters/` sheets — is a viewpoint deliberately bigoted, naive, or limited? Is a depicted group represented elsewhere with depth (so a thin appearance here is a slice, not the whole)?
 3. `world/tones.md` and the outline beat — is the darkness/edge here intended?

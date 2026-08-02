@@ -12,6 +12,15 @@ This is the validation layer between paranoid enumeration (high recall, low prec
 
 ## Inputs
 
+**Graph-assisted triage (optional — gating in `instructions/graph-recall.md`, index mode).** This step is where canon knowledge belongs, and the division of labour with `coldread-enum` is the reason the pair works: **enum enumerates blind, filter triages informed.** Enum is forbidden the graph precisely so a fact the prose never established shows up as a stumble instead of being supplied from canon; this step then decides whether each stumble is a real gap or a reader who simply has not reached the setup yet. That decision is a corpus-wide lookup per finding — with forty findings, it is the whole cost of the step.
+
+```bash
+graphify query "where is <the fact the reader is missing> established across the corpus"
+graphify query "<element> — which chapter introduces it, which pays it off"
+```
+
+**Index mode only.** A finding is dismissed as NOISE only after reading the file the query points at and confirming the setup is really there, in a chapter the reader has already passed. An empty query result is not evidence the setup is absent — it means read, not conclude. Graph absent or stale → triage on the file reads below, identically.
+
 1. **Enum findings** at `chapters/<book>/COLDREAD.md` (output of `/book coldread-enum`)
 2. **Chapter prose** at `chapters/<book>/chNN.md`
 3. **Outline Ch.NN section** extracted from `chapters/<book>/outline.md` — find the `## Ch. NN` block to the next `## Ch.` block.

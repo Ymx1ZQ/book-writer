@@ -1,6 +1,6 @@
 # Graph-Assisted Recall (graphify) — Shared Doctrine
 
-Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`, `sniff.md`, `reviewer.md`) cross-reference this file — they never restate it.
+Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`, `sniff.md`, `reviewer.md`, `factcheck.md`, `sensitivity.md`, `coldread-filter.md`, `readability.md`) cross-reference this file — they never restate it.
 
 ## Opt-in detection
 
@@ -31,18 +31,26 @@ git rev-parse HEAD
 ```
 
 - Same commit → **fresh**.
-- Different → list the content files changed since the build:
+- Different → list the **narrative content** files changed since the build:
 
 ```bash
-git diff --name-only "$BUILT" HEAD -- 'world/' 'characters/' 'plot/' 'chapters/'
+git diff --name-only "$BUILT" HEAD -- 'world/' 'characters/' 'plot/' 'chapters/' \
+  | grep '\.md$' \
+  | grep -vE '(^|/)(SMELL|REVIEW|PROOFREAD|COLDREAD)[^/]*\.md$' \
+  | grep -vE '(^|/)DEVPLAN\.md$' \
+  | grep -vE '(^|/)(archive|coldread-state|pub)/'
 ```
 
-Filter the output to `.md` files. Empty → **fresh** (only non-canon files moved). Non-empty → **stale**:
+Empty → **fresh** (only non-canon files moved). Non-empty → **stale**:
 
 - **Answer mode** is forbidden on a stale graph. Either run the incremental update first (`/graphify --update`) or fall back to file loading for that check.
 - **Index mode** may proceed — but every pointer into a file on the changed list MUST be re-read from disk (which index mode does anyway).
 
 If the gate cannot be evaluated (`jq` missing, not a git repo, `built_at_commit` absent from graph.json), treat the graph as stale: index mode only.
+
+**Why the filters, and why they must match the project's `.graphifyignore`.** The gate asks whether the graph still describes the corpus, so it must only count files the graph *contains*. The excluded names are working ledgers the pipeline rewrites many times per chapter — `SMELL.md` alone is touched by sniff, coherence, factcheck, motif, sensitivity, fidelity, readability, adjacency, coldread-filter and revise — plus rotated archives, reader-state snapshots and build output. Measured on `ground-truth` 2026-08-02: of the eight files that marked the graph stale after a chapter merge, **six were ledgers and two were narrative**. Counting them meant the gate read stale from the second step of every cycle, so all eight consumers below fell back to whole-file loading, silently, and the saving this file exists to describe never arrived.
+
+The filter list and the project's `.graphifyignore` are one decision in two places: a file the graph indexes but the gate ignores can go stale unnoticed, and a file the gate counts but the graph never held makes the gate lie in the safe direction forever. **Change one, change the other.**
 
 ## Never-substitute list
 
@@ -62,7 +70,9 @@ Reason: these files carry voice, register, and numeric fidelity. A paraphrase th
 The graph is a canon-recall device. Commands whose value depends on NOT having canon, or on verbatim-load fidelity, never use it:
 
 - `coldread-enum.md` and `snapshot.md` — **MUST NOT gain graph access.** Their measured detector value (Phase 40: 0.5/19 → 13/19 user-class bugs) depends on canon-blindness; a graph query is a canon leak.
+  **Second measurement, `ground-truth` ch10 on 2026-08-02:** coldread-enum returned **40 findings on a chapter where factcheck, motif, sensitivity, fidelity, adjacency and readability each returned zero**. The gap is not enum being noisy — it is the only step reading as a reader who does not know the project, and it is the class of defect the canon-aware checks structurally cannot see. Anything that closes that gap deletes the capability. Its partner `coldread-filter` is where canon belongs: **enumerate blind, triage informed** — which is why the 2026-08-02 rollout added the graph to the filter and not the enum.
 - `judge.md`, `arbiter.md`, `integrate-anchors.md` — keep their verbatim loads (voice/rule fidelity). No graph substitution.
+  For `judge.md` there is a second, independent reason worth recording so nobody re-opens it: **three of its four lanes run outside Claude Code** (codex, and DeepSeek/Gemini under opencode) and have no `graphify query`. Wiring only the Anthropic lane would give one judge of four a different evidence base from the other three — worse for the ensemble than giving none of them the graph.
 - `reviewer.md` (Phase 21) keeps its verbatim rubric set (`prose-rules.md`, `voice-samples.md`, `writing-notes.md`, the target chapters) but uses index-mode graph triage to name which prior-chapter §§ its checks K and M re-read — see `reviewer.md` step 2.6. Nothing in the rubric or the review set is substituted.
 
 ## Fallback ladder

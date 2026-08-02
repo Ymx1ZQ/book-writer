@@ -1781,3 +1781,65 @@ pins the default that every existing project relies on.
 - It does not assert hyphenation from the PDF text layer. That reads WeasyPrint's dictionary rather than
   this script, and pdftotext does not reliably preserve the inserted hyphen — the page-count and
   line-count deltas above are the evidence, recorded here rather than asserted in a test.
+
+## Phase 29 ✅ — The graph was in the flow and never fresh enough to be used (2026-08-02)
+
+Eight steps query the graph instead of loading canon in bulk. On the consuming project's ch10 cycle, not one
+of them used it: the freshness gate reported stale from the second step onward, every consumer fell back to
+whole-file loading, and nothing said so. The accelerator was wired, documented, and inert.
+
+### M1 ✅ — The gate counted files the graph does not contain
+
+The gate globbed `world/ characters/ plot/ chapters/` wholesale. Those directories also hold the working
+ledgers — `SMELL.md` alone is rewritten by sniff, coherence, factcheck, motif, sensitivity, fidelity,
+readability, adjacency, coldread-filter and revise — so a step that touched no narrative content still
+invalidated the graph for the next step. Measured after the ch10 merge: **of the eight files that marked it
+stale, six were ledgers and two were narrative.**
+
+- [x] The gate now filters `SMELL*`, `REVIEW*`, `PROOFREAD*`, `COLDREAD*`, `DEVPLAN.md`, `archive/`,
+  `coldread-state/` and `pub/` before deciding. Verified against three consecutive real pipeline steps
+  (coldread-enum, sensitivity, fidelity) that each changed exactly one ledger: raw 1 → filtered 0, so the
+  graph stays usable across all three where it previously died at the first.
+- [x] The filter list and the consuming project's `.graphifyignore` are declared as **one decision in two
+  places**, with the failure mode of letting them drift written next to it: a file the graph indexes but the
+  gate ignores goes stale unnoticed, and a file the gate counts but the graph never held makes the gate lie
+  in the safe direction forever.
+
+### M2 ✅ — Four steps that were paying full price
+
+- [x] `factcheck`, `sensitivity`, `coldread-filter` and `readability` added as consumers, all **index mode** —
+  the query returns pointers, the disk supplies the verdict. Each does a corpus-wide lookup per item, which
+  is the shape the graph serves: factcheck resolving an anchor per claim (18 on ch10), sensitivity asking
+  whether a depicted group has depth elsewhere, coldread-filter asking whether a missing setup exists
+  somewhere the reader has already passed, readability locating the register rules for one level.
+- [x] `readability` carries an extra constraint because Category 0 gates a hard blocklist: the forbidden
+  patterns are read **verbatim** from `register-locks.md`, never paraphrased from a query. A blocklist
+  recalled approximately is a blocklist that misses.
+
+### M3 ✅ — The exclusions were already there, and the first draft duplicated them
+
+- [x] **Caught in review of my own change.** The first version of this work added a new "Steps that must NOT
+  use the graph" section — while `## Canon-blind exclusions` had covered `coldread-enum`, `snapshot`,
+  `judge`, `arbiter` and `integrate-anchors` since Phase 40. Two sections stating one rule is exactly the
+  restatement this skill's own information-architecture doctrine forbids. The new section was deleted and
+  the existing one strengthened instead.
+- [x] Added to the existing section: a second measurement for the canon-blind rule — ch10, where
+  **coldread-enum returned 40 findings on a chapter that factcheck, motif, sensitivity, fidelity, adjacency
+  and readability each passed clean** — and the pairing that follows from it, *enumerate blind, triage
+  informed*, which is why this phase gave the graph to the filter and not the enum.
+- [x] Added an independent second reason for `judge`: **three of its four lanes run outside Claude Code** and
+  have no `graphify query`, so wiring the Anthropic lane alone would give one judge of four a different
+  evidence base from the other three. Recorded so the question is not re-opened on the token-saving argument.
+
+### M4 ✅ — Tests
+
+- [x] `tests/test_graph_recall_wiring.py`, 11 tests, verified in both directions: **6 fail against the
+  pre-change instructions**, all 11 pass after. They pin the canon-blind exclusion, the gate's exclusion set,
+  the gate/`.graphifyignore` coupling, the declared-consumer set, that every declared consumer actually
+  cross-references the doctrine, and that no undeclared file quietly queries the graph.
+- [x] **One test first passed for the wrong reason and was rewritten.** `consumer_list()` parsed "everything
+  before the exclusions heading"; with the heading absent it fell back to scanning the whole file and
+  reported `coldread-enum` as a declared consumer. It now parses the `Consumers (...)` parenthetical
+  specifically. Third instance today of an assertion matching prose instead of code — the note is in the
+  test so the next author sees it.
+- Full skill suite **67/67**.

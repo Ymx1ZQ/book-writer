@@ -197,3 +197,14 @@ def test_fidelity_reads_the_planned_side_from_disk():
     assert "Read it from disk, never query it" in body
     # And says why, so the next author does not "optimise" it back into a query.
     assert "inconsistent between books" in body.lower()
+
+
+def test_gate_forbids_deriving_freshness_from_the_manifest():
+    # graphify-out/manifest.json lists every path ever scanned, including those
+    # .graphifyignore keeps out of the graph, so comparing it against disk
+    # reports ledgers as changes to a graph that never held them. A fidelity run
+    # on 2026-08-02 did exactly that and reported "stale - 128 content files
+    # changed" eleven minutes after a rebuild, with the git gate returning 0.
+    gate = recall_text().split("## Freshness gate")[1].split("\n## ")[0]
+    assert "manifest.json" in gate
+    assert "never derive freshness" in gate.lower()

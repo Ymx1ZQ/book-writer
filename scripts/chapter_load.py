@@ -13,6 +13,7 @@ Capacity is measured, not assumed: it is derived from rows already marked
     ./chapter-load.py                 per-chapter load, overloaded first
     ./chapter-load.py --unassigned    rows with no chapter, grouped by file
     ./chapter-load.py --chapter B2:09 everything queued for one chapter
+    ./chapter-load.py --chapter B2:09 --written  the rows that chapter already rendered
     ./chapter-load.py --free          Level-0 chapters with room, least-loaded first
     ./chapter-load.py --unreachable   rows whose owning file the target chapter never loads
     ./chapter-load.py --illegal-load  context entries a chapter's own Level bars it from loading
@@ -1011,11 +1012,19 @@ def main():
         done = written.get(k, [])
         print(f"{book} Ch{int(ch):02d} — {len(items)} pending, {len(done)} rendered "
               f"(measured capacity ~{cap})\n")
+        # --written narrows this to the RENDERED rows for the one chapter.
+        # /book fidelity audits exactly that claim against the page, and until
+        # 2026-08-03 the only way to reach the rows was bare --written, which
+        # prints all of them across every drafted chapter. So the instruction
+        # reached for a graph query to answer "which files carry ch<NN>'s
+        # written rows" -- a question this script already had the data for, and
+        # which a graph can only answer when it happens to be fresh.
+        rows = done if args.written else items
         by_file = defaultdict(list)
-        for path, el, detail in items:
+        for path, el, detail in rows:
             by_file[path].append((el, detail))
         for path in sorted(by_file):
-            print(f"  {path}")
+            print(f"  {path}  ({len(by_file[path])})")
             for el, detail in by_file[path]:
                 print(f"      [{detail:^6}] {el[:96]}")
         return

@@ -329,3 +329,70 @@ def test_ownership_with_no_table_checks_nothing(tmp_path: Path) -> None:
     r = run(tmp_path, "--ownership")
     assert r.returncode == 0
     assert "no `| Concept | Slug | Canonical file |` table" in r.stdout
+
+
+# --- --chapter X --written: the rendered rows for one chapter -----------------
+#
+# /book fidelity audits the claim that a row marked `written` reached the page,
+# and needs the files carrying those rows for ONE chapter. Until 2026-08-03 the
+# combination printed only the summary line -- `--chapter` returned before
+# `--written` was ever consulted -- so the rows were reachable only through bare
+# `--written`, which prints every drafted chapter at once. The instruction
+# reached for a graph query instead, and inherited a staleness failure mode for
+# a question the trackers already answer.
+
+def rendered_scaffold(root: Path) -> None:
+    scaffold(root)
+    (root / "world/anchors.md").write_text(
+        "# Anchors\n\n" + tracker(
+            "| Still queued | B1 | 01 | accent | planned |\n",
+            "| Already on the page | B1 | 01 | accent | written |\n",
+            "| Also rendered | B1 | 01 | scene | written |\n",
+            "| A later chapter's | B1 | 02 | accent | written |\n",
+        ),
+        encoding="utf-8")
+
+
+def test_chapter_written_lists_the_rendered_rows(tmp_path: Path) -> None:
+    rendered_scaffold(tmp_path)
+    r = run(tmp_path, "--chapter", "B1:01", "--written")
+    assert r.returncode == 0, r.stderr or r.stdout
+    assert "1 pending, 2 rendered" in r.stdout
+    assert "Already on the page" in r.stdout
+    assert "Also rendered" in r.stdout
+    # The pending row must not leak into the rendered list, or the caller
+    # verifies elements against the page that were never claimed to be there.
+    assert "Still queued" not in r.stdout
+
+
+def test_chapter_without_written_still_lists_the_pending_rows(tmp_path: Path) -> None:
+    rendered_scaffold(tmp_path)
+    r = run(tmp_path, "--chapter", "B1:01")
+    assert "Still queued" in r.stdout
+    assert "Already on the page" not in r.stdout
+
+
+def test_chapter_written_does_not_bleed_across_chapters(tmp_path: Path) -> None:
+    # Both halves are needed. Asserting only that ch02's row is absent from
+    # ch01's output passes against the pre-2026-08-03 script too, which listed
+    # ch01's PENDING rows and so excluded it for the wrong reason. The pairing
+    # is what shows the rendered set is being selected per chapter.
+    rendered_scaffold(tmp_path)
+    first = run(tmp_path, "--chapter", "B1:01", "--written").stdout
+    second = run(tmp_path, "--chapter", "B1:02", "--written").stdout
+    assert "Already on the page" in first and "A later chapter's" not in first
+    assert "A later chapter's" in second and "Already on the page" not in second
+
+
+def test_chapter_written_names_the_file_carrying_each_row(tmp_path: Path) -> None:
+    # The point of the mode is the file list -- a count sends the caller nowhere.
+    rendered_scaffold(tmp_path)
+    out = run(tmp_path, "--chapter", "B1:01", "--written").stdout
+    assert "world/anchors.md" in out
+    assert "(2)" in out, "the per-file count is missing"
+
+
+def test_chapter_written_on_a_chapter_with_nothing_rendered(tmp_path: Path) -> None:
+    rendered_scaffold(tmp_path)
+    out = run(tmp_path, "--chapter", "B1:02", "--written").stdout
+    assert "0 pending, 1 rendered" in out

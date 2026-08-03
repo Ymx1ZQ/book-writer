@@ -53,6 +53,44 @@ Two qualities make the line useful, and a line missing either is not worth writi
 2. **The reason distinguishes *unnecessary* from *unavailable*.** `skipped (ch01 has no predecessor)` is a
    closed question. `skipped (graph stale)` is an open one — somebody can go make it fresh.
 
+## The reason must be checkable, not just stated
+
+The prose line above says a path was declined. It cannot say whether the stated reason is **true**, and a
+false reason reads exactly like a true one.
+
+**Measured, `ground-truth` ch09 and ch10, 2026-08-02.** `/book fidelity` skipped its entire graph triage on
+both runs, declaring `skipped — no per-chapter outline nodes`. The declaration worked: the skip was visible
+in both reports. The reason was wrong — it belonged to a query shape already discarded and said nothing
+about the two queries then in force. **The rule above caught the skip and could not catch the reason**, so
+the triage stayed dead through two more chapters. (That particular path is gone — `fidelity.md` now uses
+`chapter-load.py` — but the failure shape is general and every graph-reading check still has it.)
+
+So a declared skip carries a second line, next to the prose one, in a form a script can re-evaluate:
+
+```
+SKIP: <path-name> reason=<token> <field>=<value> ...
+```
+
+The permitted tokens, and the predicate each one promises:
+
+| `reason=` | Means | Re-checked by |
+|---|---|---|
+| `stale` | the graph is behind the working tree | re-running the two-command freshness gate; contradicted if it passes |
+| `absent` | a required input is not on disk | `test -f <path>`; the line must carry `path=` |
+| `empty-result` | a query ran and returned nothing usable | re-running it; the line must carry `query=` and is contradicted if rows come back |
+| `no-predecessor` | first chapter of a book, nothing to compare against | the chapter number; a closed question, never re-opened |
+| `out-of-scope` | the sub-check belongs to a different scope | the declared scope; `coherence-check.md` book scope deferring the prose checks is this |
+
+**An unrecognised token is itself a finding.** Without that, a run evades the checker by inventing a reason
+no predicate covers — which is the precise shape of the ch09/ch10 failure, where the reason named a
+condition nothing was testing. If a genuine new reason appears, it is added to this table with its
+predicate; it is not declared ad hoc.
+
+The checker reports a contradiction; it does not fail the step. A step that skipped for a false reason has
+already produced a narrowed report, and failing it afterwards deletes the partial coverage without
+recovering the rest. What matters is that the contradiction is visible in the same cycle rather than found
+by accident months later, which is how all three defects in the table above surfaced.
+
 ## What this is not
 
 It is not a licence to skip. The fallback ladders and gating rules each check defines still govern **whether**

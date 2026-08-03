@@ -37,32 +37,32 @@ The three registers a chapter is judged against — Usage Tracker, `context:` li
 4. Every canon file holding a `## Usage Tracker` row for this Book+Ch — collected the way `chapter-writer.md` 2.6.c collects them (`grep -rlF "| B<N> | <NN> |" characters/ world/ plot/`, span rows like `B1 | 01-30` ignored), NOT restricted to the chapter's `context:` list — 2.6.c's collection step only: its own-level-directory exemption governs auto-add, never what fidelity reads. Class (d) only; the rows' Status column is the claim under test.
 5. The book outline header's §Inline Plant Tracking table — this chapter's column, every non-`—` cell, with its instance number and payoff marking. Class (e) only.
 
-**Graph triage (optional — see `instructions/graph-recall.md` for gating).** Only when `graphify-out/graph.json` exists AND the freshness gate passes. Read the asymmetry first, because it decides what the graph is for here:
+**File triage — deterministic, no graph.** Read the asymmetry first, because it decides what triage is for here:
 
-- **The planned side is cheap. Read it from disk, never query it.** One `## Ch. NN` block is around twenty lines. A query costs more than the read and adds a layer between you and the plan of record.
-- **The rendered side is where the cost is**, and most of it is not the prose: it is the tracker rows marked `written` for this chapter, scattered across character and world files, and the plant-table instances assigned to it. Finding *which files* carry them is the expensive question, and it is the one the graph answers.
+- **The planned side is cheap. Read it from disk, never query it.** One `## Ch. NN` block is around twenty lines. A lookup costs more than the read and adds a layer between you and the plan of record.
+- **The rendered side is where the cost is**, and most of it is not the prose: it is the tracker rows marked `written` for this chapter, scattered across character and world files. Finding *which files* carry them is the expensive question, and a script answers it exactly:
 
 ```bash
-graphify query "usage-tracker items assigned to <book> ch<NN>"
-graphify query "<book> ch<NN> — plant instances and payoffs assigned to this chapter"
+./chapter-load.py --chapter <B>:<NN> --written   # rendered rows, grouped by file, with counts
+./chapter-load.py --chapter <B>:<NN>             # the same chapter's still-pending rows
 ```
 
-The result is a **list of files to open**, nothing more. Findings are asserted only from the verbatim reads below — the disk text is the truth. An empty result is never evidence of absence: it sends you to the full file set, per `graph-recall.md` §Fallback ladder. Graph absent or stale → skip triage; the check runs **identically** on file reads alone.
+The result is a **list of files to open**, nothing more. Findings are asserted only from the verbatim reads above — the disk text is the truth, and read (4) above, not this triage, defines which rows are in scope. The two invocations together carry both Status values, which is the claim class (d) tests.
 
-**The two queries above do not need per-chapter nodes — do not skip them because of the note below.** Measured 2026-08-02 on ch09 and ch10: both runs read the paragraph that follows and skipped the whole triage, citing "no per-chapter outline nodes". That paragraph forbids one *discarded* query shape; it says nothing about the tracker and plant queries, which are the ones that survive. If those two return a usable file list, use it. If they return generic community neighbours — which is what ch10's re-check observed on this corpus — say so in the audit line and fall back, but say it about **those** queries, not about a node pair nothing asks for any more.
+**This was two `graphify query` calls until 2026-08-03, and must not become one again.** The graph could answer only while it happened to be fresh, and the documented fallback for a stale graph was to skip the triage. Measured on ch09 and ch10: both runs skipped it, citing "no per-chapter outline nodes" — a reason belonging to a query shape already discarded, which said nothing about the two queries actually in force. Both runs declared the skip correctly, so the skip-declaration contract surfaced *that* a path was declined and could not tell that the reason was false.
 
-**Do not reintroduce a per-chapter node pair, and do not "fix" it by renaming the ids.** Until 2026-08-02 this section queried `chapters_book_N_outline_chNN` against `chapters_book_N_chNN`. Neither id has ever existed in any graph this project built, so the pair diff never ran once — and the "either node missing → skip triage silently" clause meant nothing ever reported it.
+`chapter-load.py` reads the Usage Trackers, which are the source of truth for these rows. It cannot go stale, it has no fallback to decline, and it costs no extraction — the three ways the graph path could fail here, removed rather than guarded. Its own docstring already named this consumer: *"this lists the rows so /book fidelity has something to check against the page rather than a count."* **The plant side needs no lookup at all**: read (5) above already opens the outline's §Inline Plant Tracking table, which is that index.
 
-The reason it cannot simply be renamed is what the measurement found on a freshly rebuilt `ground-truth` graph (5,965 nodes, 10,093 edges, 182/182 documents):
+**Do not reintroduce a per-chapter node pair, and do not "fix" it by renaming the ids.** Until 2026-08-02 this section queried `chapters_book_N_outline_chNN` against `chapters_book_N_chNN`. Neither id has ever existed in any graph this project built, so the pair diff never ran once — and the "either node missing → skip triage silently" clause meant nothing ever reported it. The measurement on a freshly rebuilt `ground-truth` graph (5,965 nodes, 10,093 edges, 182/182 documents) is why renaming would not have helped either:
 
 | Side | Coverage | Verdict |
 |---|---|---|
-| Rendered prose | **19-47 nodes for every chapter file**, ch01 through ch10, none missing | Reliable — query it |
-| Planned outline | book-3's outline carries per-chapter nodes (`Ch. 29 — The Lighthouse Swim`, `loc=Ch. 29`); **book-1's carries zero**, only 207 concept nodes | Not reliable — read it |
+| Rendered prose | **19-47 nodes for every chapter file**, ch01 through ch10, none missing | Was reliable — superseded by the script above |
+| Planned outline | book-3's outline carries per-chapter nodes (`Ch. 29 — The Lighthouse Swim`, `loc=Ch. 29`); **book-1's carries zero**, only 207 concept nodes | Never reliable — read it |
 
 **Outline granularity is inconsistent between books, from the same extractor on the same run.** A query written against book-3's shape returns nothing for book-1 and says so in no way a caller can distinguish from "nothing planned". Reading twenty lines from disk is both cheaper and the only form that behaves the same in every book.
 
-**A silent fallback hides a query that matches nothing exactly as well as it hides a stale graph.** That is why the fallback clause now sits under queries whose shape was checked against a real graph, and why `tests/test_graph_recall_wiring.py` asserts that no instruction names a synthetic per-chapter node id.
+**A silent fallback hides a query that matches nothing exactly as well as it hides a stale graph.** Both of this check's fallbacks are now gone: there is nothing here to decline, so there is nothing here to decline silently.
 
 ## The five finding classes
 
@@ -113,7 +113,7 @@ Every finding must name the concrete **story debt**: an orphaned plant, an unpre
 
 ## Output — SMELL.md entries
 
-**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — a stale graph, an absent input, a deferred sub-check — is stated in the report below with its reason, on its own line, before the findings. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late.
+**Skip declaration (mandatory — see `instructions/skip-declaration.md`).** Any path this check declines to run — an absent `outline-deviation.md`, a missing input, a deferred sub-check — is stated in the report below with its reason, on its own line, before the findings, in the machine-checkable form that file specifies. A skip that narrows coverage and is not declared is indistinguishable from a path that is quietly broken; all three defects that rule was written for were found by accident, late. Since 2026-08-03 this check has no graph path, so `reason=stale` is not among the reasons it may declare.
 
 Standard SMELL.md format with `Source: fidelity` and a `Class:` field:
 
@@ -136,7 +136,9 @@ Standard SMELL.md format with `Source: fidelity` and a `Class:` field:
 ```markdown
 ## Fidelity Audit (Source: fidelity)
 
-Chapter: ch04. Outline elements enumerated: N. Ledger entries touching ch04: M. Tracker rows for ch04 marked `written`: W (files: <list>). Plant-table instances assigned to ch04: P. Graph triage: <fresh — pair diff used | skipped (absent/stale/no node)>.
+Chapter: ch04. Outline elements enumerated: N. Ledger entries touching ch04: M. Tracker rows for ch04 marked `written`: W (files: <list>). Plant-table instances assigned to ch04: P. File triage: `chapter-load.py --chapter <B>:04 --written` — F files.
+
+COVERAGE chapter=ch04 outline_elements=N ledger_entries=M written_rows=W written_files=F plant_instances=P
 
 | Planned element / prose beat / tracker row | Rendered | Ledger | Verdict |
 |---|---|---|---|
@@ -150,6 +152,8 @@ Chapter: ch04. Outline elements enumerated: N. Ledger entries touching ch04: M. 
 Findings: A class (a) / B class (b) / C class (c) / D class (d) / E class (e). Acknowledged deviations: F. Ledger-, tracker- and plant-table-side milestones → DEVPLAN Phase NN.
 ```
 
+**The `COVERAGE` line is not decoration and its numbers are checked.** The prose sentence above it is for a reader; the `COVERAGE` line is for the pipeline, which re-derives `written_rows` and `written_files` from `chapter-load.py --chapter <B>:<NN> --written` and reports a mismatch. A run that read less than it should have collapses those two numbers, and a collapsed count is the one symptom that distinguishes "checked the chapter and found nothing" from "did not really look" — the two outcomes that otherwise produce an identical clean report. Emit the line even when every count is zero; an absent line is treated as a mismatch, because a check that prints nothing must not be indistinguishable from a check that passed.
+
 ## DEVPLAN milestone format (ledger-side findings)
 
 Per `instructions/milestone-format.md`, same shape sniff uses for ANCHOR-NEEDED (see `sniff.md` §"DEVPLAN milestone format"): append `## Phase <NN+1> — Fidelity ledger fixes (<book> <chNN>) (<date>)`, one `- [ ]` milestone per finding carrying the retroactive `outline-deviation.md` entry text (append-only, dated), the outline annotation to apply (`[moved to chXX]` / cut marker), and any orphaned-plant reassignment target derived per the §Autonomous-decision principle — never "user picks A or B?". Class (d) milestones carry instead: the owning file, the row quoted verbatim, and the single edit `written` → `planned`. Class (e) milestones carry the plant row, the cell being moved, and the renumbering of the row's remaining instances.
@@ -157,7 +161,7 @@ Per `instructions/milestone-format.md`, same shape sniff uses for ANCHOR-NEEDED 
 ## Steps for the executing agent
 
 1. Resolve the chapter prose file and its outline §. Either missing → print the error and exit.
-2. Graph triage only when fresh per `instructions/graph-recall.md`: query the planned/rendered node pair with `--budget 4000`; hold the diff as a candidate list. Node missing or result empty → skip triage silently.
+2. File triage: run `./chapter-load.py --chapter <B>:<NN> --written` and `--chapter <B>:<NN>` from the project root; hold the two file lists. This is a deterministic read of the Usage Trackers and has no skip path — an empty rendered list on a drafted chapter is a finding, not a fallback.
 3. Read the outline § verbatim; enumerate every beat, plant assignment, motif assignment, and cliffhanger. Read `outline-deviation.md` if present; extract the entries touching this chapter. Collect the tracker files per Input 4; extract the rows for this Book+Ch marked `written`. Read the plant table per Input 5; extract this chapter's column.
 4. Read the prose verbatim. Run classes (a), (b), (c), (d), (e), applying the acknowledged rule, the substantive-beat bar, and the channel test that classes (d) and (e) share.
 5. Append SMELL.md entries (`Source: fidelity` — append, never overwrite) + the Fidelity Audit section to `chapters/<book>/SMELL.md`.

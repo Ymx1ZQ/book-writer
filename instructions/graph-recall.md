@@ -1,16 +1,18 @@
 # Graph-Assisted Recall (graphify) — Shared Doctrine
 
-Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `fidelity.md`, `sniff.md`, `reviewer.md`, `factcheck.md`, `sensitivity.md`, `coldread-filter.md`, `readability.md`) cross-reference this file — they never restate it.
+Optional accelerator: when the consuming project keeps a graphify knowledge graph, pipeline steps replace bulk canon loading with targeted graph queries — same conclusions, a fraction of the tokens. This file is the SINGLE SOURCE OF TRUTH for how the graph is used. Consumers (`chapter-writer.md`, `coherence-check.md`, `continuity-check.md`, `motif.md`, `adjacency.md`, `sniff.md`, `reviewer.md`, `factcheck.md`, `sensitivity.md`, `coldread-filter.md`, `readability.md`) cross-reference this file — they never restate it.
 
 ## Opt-in detection
 
 Graph use activates ONLY if `graphify-out/graph.json` exists in the project root:
 
 ```bash
-test -f graphify-out/graph.json
+test -f graphify-out/graph.json && [ "${GRAPH_DISABLE:-0}" != "1" ]
 ```
 
 Absent → every instruction behaves exactly as today. No graph, no change, no warning. The skill stays project-agnostic: whether a project builds a graph (via `/graphify`) is the project's choice.
+
+**`GRAPH_DISABLE=1` forces the no-graph path with the graph still on disk.** It exists to test the claim this whole file rests on — that a check reaches the same findings either way. Nothing has ever measured that: the fallback ladder below is a *design*, and every defence around it (the skip declaration, the wiring tests) catches a step that declined a path, not a step that took both paths and got different answers. Run a chapter's detectors twice, once with the flag, and diff the findings; a material difference falsifies the equivalence and the savings are not free. It is a measurement switch, not a mode — nothing in the pipeline sets it by default.
 
 ## Two modes
 
@@ -77,6 +79,26 @@ The graph is a canon-recall device. Commands whose value depends on NOT having c
   For `judge.md` there is a second, independent reason worth recording so nobody re-opens it: **three of its four lanes run outside Claude Code** (codex, and DeepSeek/Gemini under opencode) and have no `graphify query`. Wiring only the Anthropic lane would give one judge of four a different evidence base from the other three — worse for the ensemble than giving none of them the graph.
 - `reviewer.md` (Phase 21) keeps its verbatim rubric set (`prose-rules.md`, `voice-samples.md`, `writing-notes.md`, the target chapters) but uses index-mode graph triage to name which prior-chapter §§ its checks K and M re-read — see `reviewer.md` step 2.6. Nothing in the rubric or the review set is substituted.
 
+## Answered without the graph
+
+A question a deterministic script already answers does not belong here. The graph's value is recall over
+text nothing has indexed; where the project ships an index, the graph is a slower copy of it that can also
+be stale.
+
+- `fidelity.md` — **removed as a consumer 2026-08-03.** Its triage asked "which files carry the tracker rows
+  marked `written` for ch<NN>", and `chapter-load.py --chapter <B>:<NN> --written` answers exactly that from
+  the Usage Trackers, which are the source of truth for those rows. The script cannot go stale, has no
+  fallback to decline, and costs no extraction. Its second query, for plant instances, was redundant with a
+  read the check already performs (the outline's §Inline Plant Tracking table).
+
+  Recorded rather than dropped, because the cost of the graph path was not hypothetical: measured on ch09
+  and ch10, both runs skipped the whole triage citing a reason that did not apply, and both declared the
+  skip correctly — the contract surfaced *that* a path was declined and could not tell the reason was false.
+  Re-adding a query here re-adds that failure mode.
+
+**Before wiring a new consumer, ask whether a script already knows.** `chapter_load.py` alone answers
+tracker reachability, per-chapter load, orphans, rendered rows, concept ownership and devplan drift.
+
 ## Fallback ladder
 
 At every rung, the answer is "load files as the instruction specifies today" — the file path is always the safety net, never an error state:
@@ -120,7 +142,13 @@ Any command whose edits touch graph-covered sources (`world/`, `characters/`, `p
 
 - **Gate** — same opt-in as the read side: `test -f graphify-out/graph.json`. Absent → skip silently, no warning.
 - **Mechanics** — run the incremental update flow: `/graphify . --update`. It re-extracts only changed files; the session itself is the extractor, so cost is proportional to the edit — typically 1-10 files.
-- **Bound** — before refreshing, count what the update would re-extract (same diff as the freshness gate: `git diff --name-only "$BUILT" HEAD -- 'world/' 'characters/' 'plot/' 'chapters/'`, filtered to `.md`). If the count exceeds 25, SKIP the inline refresh and leave it to the cycle-boundary backstop (`run-merge-phase.sh` terminal refresh), logging one line: `graph refresh skipped: N changed files > 25, deferred to cycle boundary`. A bulk rewrite must not trigger a mid-command mega-extraction.
+- **Bound — measured in LINES, not files.** Before refreshing, size what the update would re-extract: take the same diff the freshness gate uses (`git diff --name-only "$BUILT" HEAD -- 'world/' 'characters/' 'plot/' 'chapters/'`, filtered to `.md` and to the same exclusions), then `wc -l` the survivors. **Over ~1,200 lines — one extraction agent's budget — SKIP the inline refresh** and leave it to the cycle-boundary backstop (`run-merge-phase.sh` terminal refresh), logging one line: `graph refresh skipped: N lines across M files > 1200, deferred to cycle boundary`. A bulk rewrite must not trigger a mid-command mega-extraction.
+
+  **Why lines, and do not "simplify" this back to a file count.** Extraction runs at **~90 lines per minute** and it is model work, so it does not get cheaper on faster hardware. Measured on `ground-truth` 2026-08-03: a `/book fix` applying 14 items took 48 minutes, of which the edits were 11 and the inline refresh 37 — 33 of those in extraction alone, on 3,008 lines across 11 files. The chunking was correct; the gate that let it run inline was not, because it counted files and the cost is paid in lines. A file count errs both ways: 25 files at that delta's 273-line mean is ~6,800 lines and roughly 75 minutes inline without firing, while 26 character files at 40 lines is cheaper than a single chapter draft and is blocked. This is the same defect the paragraph above diagnoses in graphify's own chunker, and writing it here once already failed to stop it being written into the gate.
+
+  For scale, the deltas this bound actually sees: a chapter draft is 135-176 lines, a routine `/book fix` around 330. The common case stays inline; only the bulk canon pass defers.
+
+- **A deferral is recorded, not just logged.** On skipping, write `graphify-out/.refresh-deferred` containing the command name, the current commit and the line count. The cycle-boundary refresh clears it on success and, on failure with the marker present, reports a finding instead of a stderr warning. Without the marker the boundary run cannot tell whether it is the only thing keeping the graph fresh or a routine top-up, and it is allowed to fail quietly — which is safe only in the second case.
 - **Ordering** — the refresh runs AFTER the command's own commit (SKILL.md dispatch step 5), so graph artifacts never enter the command's commit. `graphify-out/` is also gitignored project-side.
 - **Soft-fail** — a failed refresh never fails the command. Log and move on; consumers are protected by the read-side freshness gate above.
 

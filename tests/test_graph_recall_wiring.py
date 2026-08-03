@@ -35,13 +35,21 @@ RECALL = INSTRUCTIONS / "graph-recall.md"
 
 EXPECTED_CONSUMERS = {
     "chapter-writer", "coherence-check", "continuity-check", "motif",
-    "adjacency", "fidelity", "sniff", "reviewer",
+    "adjacency", "sniff", "reviewer",
     # Added 2026-08-02: each does a corpus-wide lookup the graph can serve.
     "factcheck", "sensitivity", "coldread-filter", "readability",
 }
 
 # Never wire these. See the module docstring and graph-recall's own section.
 FORBIDDEN_CONSUMERS = {"coldread-enum", "judge"}
+
+# Removed 2026-08-03: a deterministic script already answers the question, so
+# the graph here was a slower copy of an index the project ships -- one that can
+# also be stale, and whose stale path was measured being skipped for a reason
+# that did not hold. Kept as a named set rather than simply deleted from
+# EXPECTED_CONSUMERS: a consumer that quietly disappears is re-addable by anyone
+# who does not know why it left.
+SCRIPT_ANSWERED = {"fidelity"}
 
 # Ledger and build paths the graph does not index, so the gate must not count
 # them. Kept in step with the consuming project's .graphifyignore.
@@ -140,16 +148,42 @@ def test_every_declared_consumer_cross_references_the_doctrine():
         assert "graph-recall" in body, f"{name}.md does not cross-reference the doctrine"
 
 
+# A file can name the phrase without invoking it -- a prohibition has to say
+# what it forbids. The discriminator is the shape: a MENTION is the bare phrase
+# inside backticks, and anything else is an invocation. Checked against the
+# whole corpus on 2026-08-03: this separates exactly fidelity.md (which forbids
+# the query) from the twelve files that run one, including adjacency.md and
+# sniff.md, whose invocations are inline rather than in a fenced block -- a
+# line-start regex would have silently stopped covering those two.
+QUERY_MENTION = "`graphify query`"
+
+
+def invokes_a_query(body: str) -> bool:
+    return "graphify query" in body.replace(QUERY_MENTION, "")
+
+
 def test_no_undeclared_file_queries_the_graph():
     declared = consumer_list()
     for f in sorted(INSTRUCTIONS.glob("*.md")):
         if f.name == "graph-recall.md":
             continue
-        body = f.read_text(encoding="utf-8")
-        if "graphify query" in body:
+        if invokes_a_query(f.read_text(encoding="utf-8")):
             assert f.stem in declared, (
                 f"{f.name} queries the graph but is not a declared consumer"
             )
+
+
+def test_the_mention_discriminator_still_sees_a_real_query():
+    # Guard on the guard: if the discriminator ever stops matching invocations,
+    # the test above passes for every file and protects nothing.
+    assert invokes_a_query('graphify query "anything"')
+    assert invokes_a_query('run `graphify query "x" --budget 4000` first')
+    assert not invokes_a_query("three lanes have no `graphify query` at all")
+    declared_bodies = [(INSTRUCTIONS / f"{n}.md").read_text(encoding="utf-8")
+                       for n in sorted(EXPECTED_CONSUMERS)]
+    assert sum(invokes_a_query(b) for b in declared_bodies) == len(EXPECTED_CONSUMERS), (
+        "a declared consumer no longer reads as invoking a query"
+    )
 
 
 def test_new_consumers_declare_index_mode():
@@ -197,6 +231,114 @@ def test_fidelity_reads_the_planned_side_from_disk():
     assert "Read it from disk, never query it" in body
     # And says why, so the next author does not "optimise" it back into a query.
     assert "inconsistent between books" in body.lower()
+
+
+# --- (5) questions a script already answers are not graph questions ---
+
+def test_script_answered_consumers_are_not_declared():
+    declared = consumer_list()
+    for name in sorted(SCRIPT_ANSWERED):
+        assert name not in declared, (
+            f"{name}.md was removed as a consumer because a script answers its "
+            "question; re-adding it re-adds a stale path that was measured failing"
+        )
+
+
+def test_the_removal_is_written_down_with_its_reason():
+    # A consumer deleted from a list is indistinguishable from one nobody ever
+    # wired. The reason has to survive in the doctrine, not in a commit message.
+    text = recall_text()
+    assert "## Answered without the graph" in text
+    section = text.split("## Answered without the graph")[1].split("\n## ")[0]
+    for name in sorted(SCRIPT_ANSWERED):
+        assert f"`{name}.md`" in section, f"{name}'s removal is not recorded"
+    assert "chapter-load.py" in section, "the replacing script is not named"
+
+
+def test_fidelity_triage_names_the_script_and_no_graph_query():
+    body = (INSTRUCTIONS / "fidelity.md").read_text(encoding="utf-8")
+    assert "--chapter <B>:<NN> --written" in body, (
+        "fidelity does not name the deterministic triage invocation"
+    )
+    # The prohibition may quote the phrase; a live invocation may not exist.
+    live = [ln for ln in body.splitlines()
+            if "graphify query" in ln and "must not become one again" not in ln]
+    assert not live, f"fidelity.md still carries a graph query: {live}"
+
+
+def test_fidelity_has_no_stale_skip_left_to_declare():
+    body = (INSTRUCTIONS / "fidelity.md").read_text(encoding="utf-8")
+    assert "`reason=stale` is not among the reasons it may declare" in body
+
+
+def test_fidelity_emits_a_machine_checkable_coverage_line():
+    body = (INSTRUCTIONS / "fidelity.md").read_text(encoding="utf-8")
+    assert "COVERAGE chapter=" in body
+    for field in ("written_rows=", "written_files=", "plant_instances="):
+        assert field in body, f"the COVERAGE line has no {field} field"
+    # An absent line must not read as a pass -- that is the whole point.
+    assert "an absent line is treated as a mismatch" in body.lower()
+
+
+# --- (6) the refresh bound is sized in the unit the cost is paid in ---
+
+def test_the_refresh_bound_is_expressed_in_lines():
+    fresh = recall_text().split("## Keeping the graph fresh")[1]
+    assert "1,200 lines" in fresh or "1200" in fresh
+    assert "measured in LINES, not files" in fresh
+
+
+def test_the_refresh_bound_states_no_file_count_threshold():
+    # The prior bound was "exceeds 25 [files]". It errs both ways and it is the
+    # same defect this file diagnoses in graphify's chunker eight paragraphs up.
+    fresh = recall_text().split("## Keeping the graph fresh")[1]
+    offenders = [ln for ln in fresh.splitlines()
+                 if re.search(r"exceeds 25|> ?25 (changed )?files", ln)
+                 and "errs both ways" not in ln]
+    assert not offenders, f"a file-count threshold survives: {offenders}"
+
+
+def test_the_bound_carries_the_measurement_that_sets_the_unit():
+    fresh = recall_text().split("## Keeping the graph fresh")[1]
+    assert "90 lines per minute" in fresh, (
+        "the unit cost is not recorded, so the next editor has no reason not to "
+        "simplify the bound back to a file count"
+    )
+
+
+def test_a_deferral_is_recorded_for_the_boundary_run():
+    fresh = recall_text().split("## Keeping the graph fresh")[1]
+    assert ".refresh-deferred" in fresh
+    assert "clears it on success" in fresh
+
+
+# --- (7) the equivalence claim has a switch that can test it ---
+
+def test_the_opt_in_gate_honours_a_disable_switch():
+    gate = recall_text().split("## Opt-in detection")[1].split("\n## ")[0]
+    assert "GRAPH_DISABLE" in gate
+    assert "measurement switch, not a mode" in gate
+
+
+# --- (8) a declared skip reason is re-checkable ---
+
+def test_skip_reasons_are_enumerated_with_predicates():
+    body = (INSTRUCTIONS / "skip-declaration.md").read_text(encoding="utf-8")
+    assert "SKIP: <path-name> reason=<token>" in body
+    for token in ("stale", "absent", "empty-result", "no-predecessor", "out-of-scope"):
+        assert f"`{token}`" in body, f"reason token {token} is not enumerated"
+
+
+def test_an_unrecognised_skip_reason_is_itself_a_finding():
+    body = (INSTRUCTIONS / "skip-declaration.md").read_text(encoding="utf-8")
+    assert "An unrecognised token is itself a finding" in body
+
+
+def test_the_skip_contract_records_why_declaring_was_not_enough():
+    # ch09/ch10 declared their skip correctly and the reason was false. Without
+    # that measurement in the file, the new half reads as belt-and-braces.
+    body = (INSTRUCTIONS / "skip-declaration.md").read_text(encoding="utf-8")
+    assert "caught the skip and could not catch the reason" in body
 
 
 def test_gate_forbids_deriving_freshness_from_the_manifest():
